@@ -104,6 +104,8 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 		break;
 	case hashstr("win32u.dll"):
 		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\win32u.dll"));
+	case hashstr("user32.dll"):
+		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\user32.dll"));
 		break;
 	default:
 		return status;
@@ -139,14 +141,14 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 	return status;
 }
 
-using NtYieldExecution            = NTSTATUS(NTAPI*)();
-using NtSetInformationThread      = NTSTATUS(NTAPI*)();
-using NtSetInformationProcess     = NTSTATUS(NTAPI*)();
+using NtYieldExecution_t            = NTSTATUS(NTAPI*)();
+using NtSetInformationThread_t      = NTSTATUS(NTAPI*)();
+using NtSetInformationProcess_t     = NTSTATUS(NTAPI*)();
 using NtQuerySystemInformation_t  = NTSTATUS(NTAPI*)();
 using NtQueryInformationProcess_t = NTSTATUS(NTAPI*)();
 using NtQueryObject_t             = NTSTATUS(NTAPI*)();
-using NtCreateThreadEx            = NTSTATUS(NTAPI*)();
-using NtSetDebugFilterState       = NTSTATUS(NTAPI*)();
+using NtCreateThreadEx_t            = NTSTATUS(NTAPI*)();
+using NtSetDebugFilterState_t       = NTSTATUS(NTAPI*)();
 using NtClose_t                   = NTSTATUS(NTAPI*)();
 using NtQueryPerformanceCounter_t = NTSTATUS(NTAPI*)();
 using NtGetContextThread_t        = NTSTATUS(NTAPI*)();
@@ -157,3 +159,4 @@ using GetTickCount64_t            = ULONGLONG(WINAPI*)();
 using OutputDebugStringA_t        = DWORD(WINAPI*)(LPCSTR lpOutputString);
 using GetSystemTime_t             = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
 using GetLocalTime_t              = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
+typedef BOOL(WINAPI* BlockInput_t)(BOOL fBlockIt);

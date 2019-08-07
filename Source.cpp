@@ -43,7 +43,7 @@ void ntdll_detection()
 			log(xorstr_("[OK] NtYieldExecution\r\n"));
 		}
 
-		reinterpret_cast<NtYieldExecution>(hooked_func)();
+		reinterpret_cast<NtYieldExecution_t>(hooked_func)();
 	}
 	catch (...)
 	{
@@ -81,7 +81,7 @@ void ntdll_detection()
 			log(xorstr_("[OK] NtSetInformationThread\r\n"));
 		}
 
-		reinterpret_cast<NtSetInformationThread>(hooked_func)();
+		reinterpret_cast<NtSetInformationThread_t>(hooked_func)();
 	}
 	catch (...)
 	{
@@ -118,7 +118,7 @@ void ntdll_detection()
 			log(xorstr_("[OK] NtSetInformationProcess\r\n"));
 		}
 
-		reinterpret_cast<NtSetInformationProcess>(hooked_func)();
+		reinterpret_cast<NtSetInformationProcess_t>(hooked_func)();
 	}
 	catch (...)
 	{
@@ -266,7 +266,7 @@ void ntdll_detection()
 			log(xorstr_("[OK] NtCreateThreadEx\r\n"));
 		}
 
-		reinterpret_cast<NtCreateThreadEx>(hooked_func)();
+		reinterpret_cast<NtCreateThreadEx_t>(hooked_func)();
 	}
 	catch (...)
 	{
@@ -303,7 +303,7 @@ void ntdll_detection()
 			log(xorstr_("[OK] NtSetDebugFilterState\r\n"));
 		}
 
-		reinterpret_cast<NtSetDebugFilterState>(hooked_func)();
+		reinterpret_cast<NtSetDebugFilterState_t>(hooked_func)();
 	}
 	catch (...)
 	{
@@ -702,13 +702,74 @@ void kernelbase_detection()
 	{
 	}
 }
+void user32_detection()
+{
+	DWORD dwVersion, dwBuild;
 
+#pragma warning(disable : 4996)
+	dwVersion = ::GetVersion();
+	// Get the build number.
+	if (dwVersion < 0x80000000)
+		dwBuild = (DWORD)(HIWORD(dwVersion));
+	else    // Windows Me/98/95
+		dwBuild = 0;
+
+	if (dwBuild >= 14393)
+	{
+		// win32u.dll
+	}
+	else
+	{
+		LoadLibraryA("user32.dll");
+
+		auto user_32 = GetModuleBaseAddress(L"user32.dll");
+		PVOID user32_mapped = nullptr;
+		MapNativeModule("user32.dll", &user32_mapped);
+
+		// BlockInput
+		try
+		{
+			auto hooked_func = GetProcedureAddress(user_32, "BlockInput");
+			auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)& user_32, nullptr);
+			auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			auto original_func = GetProcedureAddress(user32_mapped, "BlockInput");
+
+			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			// detect hook and restore bytes
+			if (result != func_size)
+			{
+				log(xorstr_("[DETECTED] BlockInput\r\n"));
+				DWORD oldprotect = 0;
+				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+				RtlCopyMemory(hooked_func, original_func, func_size);
+
+				result = RtlCompareMemory(hooked_func, original_func, func_size);
+				if (result == func_size)
+				{
+					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+				}
+			}
+			else
+			{
+				log(xorstr_("[OK] BlockInput\r\n"));
+			}
+
+			reinterpret_cast<BlockInput_t>(hooked_func)(false);
+		}
+		catch (...)
+		{
+		}
+	}
+}
 int main()
 {
 	/*ntdll*/
 	ntdll_detection();
 	/*kernel32 / kernelbase*/
 	kernelbase_detection();
+	/*user32*/
+	user32_detection();
 
 	system("pause");
 

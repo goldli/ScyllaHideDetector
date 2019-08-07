@@ -24,6 +24,7 @@ Allows you to find the use of ScyllaHide, if your program will debug and *restor
 - [x] OutputDebugStringA
 - [x] GetLocalTime
 - [x] GetSystemTime
+- [x] BlockInput
 
 ## Screenshots
 ![Normal](screen.png)
