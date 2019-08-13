@@ -1,5 +1,4 @@
 #pragma once
-#include "XorStr.h"
 
 inline void log()
 {
@@ -24,7 +23,7 @@ inline PVOID _GetModuleHandle(void) noexcept
 		     pListEntry != &pPeb->Ldr->InLoadOrderModuleList;
 		     pListEntry = pListEntry->Flink)
 		{
-			auto pEntry = CONTAINING_RECORD(pListEntry, nt::LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+			const auto pEntry = CONTAINING_RECORD(pListEntry, nt::LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
 
 			if (ModuleHash == NULL || GetHash(pEntry->BaseDllName) == ModuleHash)
 				return pEntry->DllBase;
@@ -37,7 +36,7 @@ inline PVOID _GetModuleHandle(void) noexcept
 template <const hash_t::value_type FunctionHash>
 inline PVOID _GetProcAddress(const PVOID ModuleBaseAddress) noexcept
 {
-	PIMAGE_DOS_HEADER dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ModuleBaseAddress);
+	const PIMAGE_DOS_HEADER dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ModuleBaseAddress);
 	PIMAGE_NT_HEADERS32 nt32 = nullptr;
 	PIMAGE_NT_HEADERS64 nt64 = nullptr;
 	PIMAGE_EXPORT_DIRECTORY export_directory = nullptr;
@@ -94,18 +93,18 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 	switch (ModuleHash)
 	{
 	case hashstr("kernel32.dll"):
-		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\kernel32.dll"));
+		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernel32.dll");
 		break;
 	case hashstr("kernelbase.dll"):
-		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\kernelbase.dll"));
+		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernelbase.dll");
 		break;
 	case hashstr("ntdll.dll"):
-		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\ntdll.dll"));
+		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\ntdll.dll");
 		break;
 	case hashstr("win32u.dll"):
-		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\win32u.dll"));
+		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\win32u.dll");
 	case hashstr("user32.dll"):
-		RtlInitUnicodeString(&usSectionName, xorstr_(L"\\KnownDlls\\user32.dll"));
+		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\user32.dll");
 		break;
 	default:
 		return status;
@@ -116,7 +115,9 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 	status = NtFunctionCall(NtOpenSection)(&sectionHandle, SECTION_MAP_READ, &objAttrib);
 	if (!NT_SUCCESS(status))
 	{
+#ifdef _DEBUG
 		print("NtOpenSection failed: %llx", status);
+#endif
 		return status;
 	}
 
@@ -124,7 +125,9 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 	                                            &viewSize, nt::SECTION_INHERIT::ViewShare, NULL, PAGE_READONLY);
 	if (!NT_SUCCESS(status))
 	{
+#ifdef _DEBUG
 		print("NtMapViewOfSection failed: %llx", status);
+#endif
 		return status;
 	}
 
@@ -133,7 +136,9 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 		status = NtClose(sectionHandle);
 		if (!NT_SUCCESS(status))
 		{
+#ifdef _DEBUG
 			print("NtClose failed: %llx", status);
+#endif
 			return status;
 		}
 	}
@@ -141,22 +146,22 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 	return status;
 }
 
-using NtYieldExecution_t            = NTSTATUS(NTAPI*)();
-using NtSetInformationThread_t      = NTSTATUS(NTAPI*)();
-using NtSetInformationProcess_t     = NTSTATUS(NTAPI*)();
-using NtQuerySystemInformation_t  = NTSTATUS(NTAPI*)();
+using NtYieldExecution_t = NTSTATUS(NTAPI*)();
+using NtSetInformationThread_t = NTSTATUS(NTAPI*)();
+using NtSetInformationProcess_t = NTSTATUS(NTAPI*)();
+using NtQuerySystemInformation_t = NTSTATUS(NTAPI*)();
 using NtQueryInformationProcess_t = NTSTATUS(NTAPI*)();
-using NtQueryObject_t             = NTSTATUS(NTAPI*)();
-using NtCreateThreadEx_t            = NTSTATUS(NTAPI*)();
-using NtSetDebugFilterState_t       = NTSTATUS(NTAPI*)();
-using NtClose_t                   = NTSTATUS(NTAPI*)();
+using NtQueryObject_t = NTSTATUS(NTAPI*)();
+using NtCreateThreadEx_t = NTSTATUS(NTAPI*)();
+using NtSetDebugFilterState_t = NTSTATUS(NTAPI*)();
+using NtClose_t = NTSTATUS(NTAPI*)();
 using NtQueryPerformanceCounter_t = NTSTATUS(NTAPI*)();
-using NtGetContextThread_t        = NTSTATUS(NTAPI*)();
-using NtSetContextThread_t        = NTSTATUS(NTAPI*)();
-using NtQuerySystemTime_t         = NTSTATUS(NTAPI*)(OUT PLARGE_INTEGER SystemTime);
-using GetTickCount_t              = DWORD(WINAPI*)();
-using GetTickCount64_t            = ULONGLONG(WINAPI*)();
-using OutputDebugStringA_t        = DWORD(WINAPI*)(LPCSTR lpOutputString);
-using GetSystemTime_t             = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
-using GetLocalTime_t              = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
-typedef BOOL(WINAPI* BlockInput_t)(BOOL fBlockIt);
+using NtGetContextThread_t = NTSTATUS(NTAPI*)();
+using NtSetContextThread_t = NTSTATUS(NTAPI*)();
+using NtQuerySystemTime_t = NTSTATUS(NTAPI*)(OUT PLARGE_INTEGER SystemTime);
+using GetTickCount_t = DWORD(WINAPI*)();
+using GetTickCount64_t = ULONGLONG(WINAPI*)();
+using OutputDebugStringA_t = DWORD(WINAPI*)(LPCSTR lpOutputString);
+using GetSystemTime_t = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
+using GetLocalTime_t = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
+typedef BOOL (WINAPI* BlockInput_t)(BOOL fBlockIt);

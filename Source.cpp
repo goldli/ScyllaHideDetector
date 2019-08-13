@@ -3,7 +3,6 @@
 #include <iostream>
 #include "utils/Native.h"
 #include "utils/Hash.h"
-#define JM_XORSTR_DISABLE_AVX_INTRINSICS
 #include "utils/Helpers.h"
 
 void ntdll_detection()
@@ -26,7 +25,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtYieldExecution\r\n"));
+			log("[DETECTED] NtYieldExecution\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -40,7 +39,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtYieldExecution\r\n"));
+			log("[OK] NtYieldExecution\r\n");
 		}
 
 		reinterpret_cast<NtYieldExecution_t>(hooked_func)();
@@ -63,7 +62,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtSetInformationThread\r\n"));
+			log("[DETECTED] NtSetInformationThread\r\n");
 
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
@@ -78,7 +77,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtSetInformationThread\r\n"));
+			log("[OK] NtSetInformationThread\r\n");
 		}
 
 		reinterpret_cast<NtSetInformationThread_t>(hooked_func)();
@@ -101,7 +100,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtSetInformationProcess\r\n"));
+			log("[DETECTED] NtSetInformationProcess\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -115,7 +114,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtSetInformationProcess\r\n"));
+			log("[OK] NtSetInformationProcess\r\n");
 		}
 
 		reinterpret_cast<NtSetInformationProcess_t>(hooked_func)();
@@ -138,7 +137,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtQuerySystemInformation\r\n"));
+			log("[DETECTED] NtQuerySystemInformation\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -152,7 +151,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtQuerySystemInformation\r\n"));
+			log("[OK] NtQuerySystemInformation\r\n");
 		}
 
 		reinterpret_cast<NtQuerySystemInformation_t>(hooked_func)();
@@ -175,7 +174,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtQueryInformationProcess\r\n"));
+			log("[DETECTED] NtQueryInformationProcess\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -189,7 +188,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtQueryInformationProcess\r\n"));
+			log("[OK] NtQueryInformationProcess\r\n");
 		}
 
 		reinterpret_cast<NtQueryInformationProcess_t>(hooked_func)();
@@ -212,7 +211,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtQueryObject\r\n"));
+			log("[DETECTED] NtQueryObject\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -226,7 +225,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtQueryObject\r\n"));
+			log("[OK] NtQueryObject\r\n");
 		}
 
 		reinterpret_cast<NtQueryObject_t>(hooked_func)();
@@ -249,7 +248,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtCreateThreadEx\r\n"));
+			log("[DETECTED] NtCreateThreadEx\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -263,7 +262,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtCreateThreadEx\r\n"));
+			log("[OK] NtCreateThreadEx\r\n");
 		}
 
 		reinterpret_cast<NtCreateThreadEx_t>(hooked_func)();
@@ -286,7 +285,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtSetDebugFilterState\r\n"));
+			log("[DETECTED] NtSetDebugFilterState\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -300,7 +299,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtSetDebugFilterState\r\n"));
+			log("[OK] NtSetDebugFilterState\r\n");
 		}
 
 		reinterpret_cast<NtSetDebugFilterState_t>(hooked_func)();
@@ -323,7 +322,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtClose\r\n"));
+			log("[DETECTED] NtClose\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -337,7 +336,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtClose\r\n"));
+			log("[OK] NtClose\r\n");
 		}
 
 		reinterpret_cast<NtClose_t>(hooked_func)();
@@ -360,7 +359,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtQueryPerformanceCounter\r\n"));
+			log("[DETECTED] NtQueryPerformanceCounter\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -374,7 +373,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtQueryPerformanceCounter\r\n"));
+			log("[OK] NtQueryPerformanceCounter\r\n");
 		}
 
 		reinterpret_cast<NtQueryPerformanceCounter_t>(hooked_func)();
@@ -397,7 +396,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtGetContextThread\r\n"));
+			log("[DETECTED] NtGetContextThread\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -411,7 +410,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtGetContextThread\r\n"));
+			log("[OK] NtGetContextThread\r\n");
 		}
 
 		reinterpret_cast<NtGetContextThread_t>(hooked_func)();
@@ -434,7 +433,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtSetContextThread\r\n"));
+			log("[DETECTED] NtSetContextThread\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -448,7 +447,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtSetContextThread\r\n"));
+			log("[OK] NtSetContextThread\r\n");
 		}
 
 		reinterpret_cast<NtSetContextThread_t>(hooked_func)();
@@ -461,20 +460,20 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func = GetProcedureAddress(ntdll, "NtQuerySystemTime");
-		if (*(PUCHAR)hooked_func == 0xE9) // jmp rel32
+		if (*static_cast<PUCHAR>(hooked_func) == 0xE9) // jmp rel32
 		{
 			LONG relativeOffset = *(PLONG)((ULONG_PTR)hooked_func + 1);
 			hooked_func = (NtQuerySystemTime_t)((ULONG_PTR)hooked_func + relativeOffset + 5);
 		}
 		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQuerySystemTime");
 
-		if (*(PUCHAR)original_func == 0xE9) // jmp rel32
+		if (*static_cast<PUCHAR>(original_func) == 0xE9) // jmp rel32
 		{
 			LONG relativeOffset = *(PLONG)((ULONG_PTR)original_func + 1);
 			original_func = (NtQuerySystemTime_t)((ULONG_PTR)original_func + relativeOffset + 5);
 		}
 
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)& ntdll, nullptr);
+		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
 		auto func_size = func_data->EndAddress - func_data->BeginAddress;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
@@ -482,7 +481,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log(xorstr_("[DETECTED] NtQuerySystemTime\r\n"));
+			log("[DETECTED] NtQuerySystemTime\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -496,7 +495,7 @@ void ntdll_detection()
 		}
 		else
 		{
-			log(xorstr_("[OK] NtQuerySystemTime\r\n"));
+			log("[OK] NtQuerySystemTime\r\n");
 		}
 		LARGE_INTEGER time;
 		reinterpret_cast<NtQuerySystemTime_t>(hooked_func)(&time);
@@ -508,18 +507,18 @@ void ntdll_detection()
 
 void kernelbase_detection()
 {
-	auto kernelbase = GetModuleBaseAddress("kernelbase.dll");
+	const auto kernelbase = GetModuleBaseAddress("kernelbase.dll");
 	PVOID kernelbase_mapped = nullptr;
 	MapNativeModule("kernelbase.dll", &kernelbase_mapped);
 
 	// GetTickCount
 	try
 	{
-		auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount");
+		const auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount");
 
-		auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount");
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount");
 
-		auto func_size = 0x18;
+		const auto func_size = 0x18;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
@@ -534,14 +533,14 @@ void kernelbase_detection()
 			result = RtlCompareMemory(hooked_func, original_func, func_size);
 			if (static_cast<int>(result) == func_size)
 			{
-				log(xorstr_("[DETECTED] GetTickCount\r\n"));
+				log("[DETECTED] GetTickCount\r\n");
 
 				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
 			}
 		}
 		else
 		{
-			log(xorstr_("[OK] GetTickCount\r\n"));
+			log("[OK] GetTickCount\r\n");
 		}
 
 		reinterpret_cast<GetTickCount_t>(hooked_func)();
@@ -553,11 +552,11 @@ void kernelbase_detection()
 	// GetTickCount64
 	try
 	{
-		auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount64");
+		const auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount64");
 
-		auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount64");
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount64");
 
-		auto func_size = 0x18;
+		const auto func_size = 0x18;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
@@ -572,14 +571,14 @@ void kernelbase_detection()
 			result = RtlCompareMemory(hooked_func, original_func, func_size);
 			if (static_cast<int>(result) == func_size)
 			{
-				log(xorstr_("[DETECTED] GetTickCount64\r\n"));
+				log("[DETECTED] GetTickCount64\r\n");
 
 				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
 			}
 		}
 		else
 		{
-			log(xorstr_("[OK] GetTickCount64\r\n"));
+			log("[OK] GetTickCount64\r\n");
 		}
 
 		reinterpret_cast<GetTickCount64_t>(hooked_func)();
@@ -591,11 +590,11 @@ void kernelbase_detection()
 	// OutputDebugStringA
 	try
 	{
-		auto hooked_func = GetProcedureAddress(kernelbase, "OutputDebugStringA");
+		const auto hooked_func = GetProcedureAddress(kernelbase, "OutputDebugStringA");
 
-		auto original_func = GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA");
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA");
 
-		auto func_size = 0x18;
+		const auto func_size = 0x18;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
@@ -610,14 +609,14 @@ void kernelbase_detection()
 			result = RtlCompareMemory(hooked_func, original_func, func_size);
 			if (static_cast<int>(result) == func_size)
 			{
-				log(xorstr_("[DETECTED] OutputDebugStringA\r\n"));
+				log("[DETECTED] OutputDebugStringA\r\n");
 
 				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
 			}
 		}
 		else
 		{
-			log(xorstr_("[OK] OutputDebugStringA\r\n"));
+			log("[OK] OutputDebugStringA\r\n");
 		}
 
 		reinterpret_cast<OutputDebugStringA_t>(hooked_func)("");
@@ -629,11 +628,11 @@ void kernelbase_detection()
 	// GetLocalTime
 	try
 	{
-		auto hooked_func = GetProcedureAddress(kernelbase, "GetLocalTime");
+		const auto hooked_func = GetProcedureAddress(kernelbase, "GetLocalTime");
 
-		auto original_func = GetProcedureAddress(kernelbase_mapped, "GetLocalTime");
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetLocalTime");
 
-		auto func_size = 0x18;
+		const auto func_size = 0x18;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
@@ -648,14 +647,14 @@ void kernelbase_detection()
 			result = RtlCompareMemory(hooked_func, original_func, func_size);
 			if (static_cast<int>(result) == func_size)
 			{
-				log(xorstr_("[DETECTED] GetLocalTime\r\n"));
+				log("[DETECTED] GetLocalTime\r\n");
 
 				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
 			}
 		}
 		else
 		{
-			log(xorstr_("[OK] GetLocalTime\r\n"));
+			log("[OK] GetLocalTime\r\n");
 		}
 		SYSTEMTIME sm;
 		reinterpret_cast<GetLocalTime_t>(hooked_func)(&sm);
@@ -667,11 +666,11 @@ void kernelbase_detection()
 	// GetSystemTime
 	try
 	{
-		auto hooked_func = GetProcedureAddress(kernelbase, "GetSystemTime");
+		const auto hooked_func = GetProcedureAddress(kernelbase, "GetSystemTime");
 
-		auto original_func = GetProcedureAddress(kernelbase_mapped, "GetSystemTime");
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetSystemTime");
 
-		auto func_size = 0x18;
+		const auto func_size = 0x18;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
@@ -686,14 +685,14 @@ void kernelbase_detection()
 			result = RtlCompareMemory(hooked_func, original_func, func_size);
 			if (static_cast<int>(result) == func_size)
 			{
-				log(xorstr_("[DETECTED] GetSystemTime\r\n"));
+				log("[DETECTED] GetSystemTime\r\n");
 
 				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
 			}
 		}
 		else
 		{
-			log(xorstr_("[OK] GetSystemTime\r\n"));
+			log("[OK] GetSystemTime\r\n");
 		}
 		SYSTEMTIME sm;
 		reinterpret_cast<GetSystemTime_t>(hooked_func)(&sm);
@@ -702,16 +701,17 @@ void kernelbase_detection()
 	{
 	}
 }
+
 void user32_detection()
 {
-	DWORD dwVersion, dwBuild;
+	DWORD dwBuild;
 
 #pragma warning(disable : 4996)
-	dwVersion = ::GetVersion();
+	DWORD dwVersion = ::GetVersion();
 	// Get the build number.
 	if (dwVersion < 0x80000000)
-		dwBuild = (DWORD)(HIWORD(dwVersion));
-	else    // Windows Me/98/95
+		dwBuild = static_cast<DWORD>(HIWORD(dwVersion));
+	else // Windows Me/98/95
 		dwBuild = 0;
 
 	if (dwBuild >= 14393)
@@ -730,15 +730,15 @@ void user32_detection()
 		try
 		{
 			auto hooked_func = GetProcedureAddress(user_32, "BlockInput");
-			auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)& user_32, nullptr);
-			auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			auto original_func = GetProcedureAddress(user32_mapped, "BlockInput");
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&user_32, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			const auto original_func = GetProcedureAddress(user32_mapped, "BlockInput");
 
 			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 			// detect hook and restore bytes
 			if (result != func_size)
 			{
-				log(xorstr_("[DETECTED] BlockInput\r\n"));
+				log("[DETECTED] BlockInput\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -752,7 +752,7 @@ void user32_detection()
 			}
 			else
 			{
-				log(xorstr_("[OK] BlockInput\r\n"));
+				log("[OK] BlockInput\r\n");
 			}
 
 			reinterpret_cast<BlockInput_t>(hooked_func)(false);
@@ -762,6 +762,7 @@ void user32_detection()
 		}
 	}
 }
+
 int main()
 {
 	/*ntdll*/

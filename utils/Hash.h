@@ -63,7 +63,7 @@ FORCEINLINE hash_t::value_type GetHash(
 	const UNICODE_STRING& str) noexcept
 {
 	auto first = str.Buffer;
-	const auto last = first + (str.Length / sizeof(wchar_t));
+	const auto last = first + str.Length / sizeof(wchar_t);
 	auto value = hash_t::offset;
 	for (; first != last; ++first)
 		value = hash_t::single(value, static_cast<char>(*first));
