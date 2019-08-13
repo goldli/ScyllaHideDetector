@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <iostream>
-#include "utils/Obfy.h"
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"

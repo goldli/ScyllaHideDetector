@@ -144,11 +144,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="3rd\Obfy.h" />
     <ClInclude Include="utils\Hash.h" />
     <ClInclude Include="utils\Native.h" />
     <ClInclude Include="utils\Helpers.h" />
-    <ClInclude Include="utils\Obfy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
