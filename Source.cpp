@@ -4,6 +4,8 @@
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"
+#include <vector>
+#include <assert.h>
 
 void ntdll_detection()
 {
@@ -309,41 +311,41 @@ void ntdll_detection()
 	}
 
 	// NtClose
-	try
-	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtClose");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+	//try
+	//{
+	//	auto hooked_func = GetProcedureAddress(ntdll, "NtClose");
+	//	auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
+	//	auto func_size = func_data->EndAddress - func_data->BeginAddress;
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtClose");
+	//	auto original_func = GetProcedureAddress(ntdll_mapped, "NtClose");
 
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+	//	auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 
-		// detect hook and restore bytes
-		if (result != func_size)
-		{
-			log("[DETECTED] NtClose\r\n");
-			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+	//	// detect hook and restore bytes
+	//	if (result != func_size)
+	//	{
+	//		log("[DETECTED] NtClose\r\n");
+	//		DWORD oldprotect = 0;
+	//		VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+	//		RtlCopyMemory(hooked_func, original_func, func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
-		}
-		else
-		{
-			log("[OK] NtClose\r\n");
-		}
+	//		result = RtlCompareMemory(hooked_func, original_func, func_size);
+	//		if (result == func_size)
+	//		{
+	//			VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		log("[OK] NtClose\r\n");
+	//	}
 
-		reinterpret_cast<NtClose_t>(hooked_func)();
-	}
-	catch (...)
-	{
-	}
+	//	reinterpret_cast<NtClose_t>(hooked_func)();
+	//}
+	//catch (...)
+	//{
+	//}
 
 	// NtQueryPerformanceCounter
 	try
@@ -704,19 +706,66 @@ void kernelbase_detection()
 
 void user32_detection()
 {
-	DWORD dwBuild;
+	std::wstring regSubKey;
+#ifdef _WIN64 // Manually switching between 32bit/64bit for the example. Use dwFlags instead.
+	regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
+#else
+	regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\"; // TODO: support 32bit
+#endif
+	std::wstring regValue(L"CurrentBuildNumber");
+	std::wstring CurrentBuildNumber;
+	try
+	{
+		CurrentBuildNumber = GetStringValueFromHKLM(regSubKey, regValue);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what();
+	}
 
-#pragma warning(disable : 4996)
-	DWORD dwVersion = ::GetVersion();
-	// Get the build number.
-	if (dwVersion < 0x80000000)
-		dwBuild = static_cast<DWORD>(HIWORD(dwVersion));
-	else // Windows Me/98/95
-		dwBuild = 0;
-
-	if (dwBuild >= 14393)
+	if (std::stoi(CurrentBuildNumber) >= 14393)
 	{
 		// win32u.dll
+		LoadLibraryA("win32u.dll");
+
+		auto user_32 = GetModuleBaseAddress(L"win32u.dll");
+		PVOID user32_mapped = nullptr;
+		MapNativeModule("win32u.dll", &user32_mapped);
+
+		// BlockInput
+		try
+		{
+			auto hooked_func = GetProcedureAddress(user_32, "NtUserBlockInput");
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&user_32, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			const auto original_func = GetProcedureAddress(user32_mapped, "NtUserBlockInput");
+
+			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			// detect hook and restore bytes
+			if (result != func_size)
+			{
+				log("[DETECTED] BlockInput\r\n");
+				DWORD oldprotect = 0;
+				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+				RtlCopyMemory(hooked_func, original_func, func_size);
+
+				result = RtlCompareMemory(hooked_func, original_func, func_size);
+				if (result == func_size)
+				{
+					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+				}
+			}
+			else
+			{
+				log("[OK] BlockInput\r\n");
+			}
+
+			reinterpret_cast<BlockInput_t>(hooked_func)(false);
+		}
+		catch (...)
+		{
+		}
 	}
 	else
 	{
