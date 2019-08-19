@@ -104,6 +104,8 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 		break;
 	case hashstr("win32u.dll"):
 		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\win32u.dll");
+		break;
+
 	case hashstr("user32.dll"):
 		RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\user32.dll");
 		break;
@@ -216,3 +218,28 @@ using OutputDebugStringA_t        = DWORD(WINAPI*)(LPCSTR lpOutputString);
 using GetSystemTime_t             = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
 using GetLocalTime_t              = void (WINAPI*)(LPSYSTEMTIME lpSystemTime);
 typedef BOOL(WINAPI* BlockInput_t)(BOOL fBlockIt);
+typedef BOOL(NTAPI* NtUserBlockInput_t)(IN BOOL fBlockIt);
+
+typedef enum _WINDOWINFOCLASS
+{
+	WindowProcess = 0, //HANDLE
+	WindowRealWindowOwner = 1,
+	WindowThread = 2, //HANDLE
+	WindowIsHung = 5 //BOOL
+} WINDOWINFOCLASS;
+
+typedef HANDLE(NTAPI* NtUserQueryWindow_t)(IN HWND hwnd, IN WINDOWINFOCLASS WindowInfo);
+
+typedef HWND(NTAPI* NtUserFindWindowEx_t)(IN HWND hwndParent,
+	IN HWND hwndChild,
+	IN PUNICODE_STRING pstrClassName OPTIONAL,
+	IN PUNICODE_STRING pstrWindowName OPTIONAL,
+	IN DWORD dwType);
+
+typedef NTSTATUS(NTAPI* NtUserBuildHwndList_t)(IN HDESK hdesk,
+	IN HWND hwndNext,
+	IN BOOL fEnumChildren,
+	IN DWORD idThread,
+	IN UINT cHwndMax,
+	OUT HWND *phwndFirst,
+	OUT PUINT pcHwndNeeded);

@@ -726,25 +726,25 @@ void user32_detection()
 	if (std::stoi(CurrentBuildNumber) >= 14393)
 	{
 		// win32u.dll
-		LoadLibraryA("win32u.dll");
+		LoadLibrary(L"user32.dll");
 
-		auto user_32 = GetModuleBaseAddress(L"win32u.dll");
-		PVOID user32_mapped = nullptr;
-		MapNativeModule("win32u.dll", &user32_mapped);
-
+		auto win32u = GetModuleBaseAddress("win32u.dll");
+		PVOID win32u_mapped = nullptr;
+		MapNativeModule("win32u.dll", &win32u_mapped);
+		
 		// BlockInput
 		try
 		{
-			auto hooked_func = GetProcedureAddress(user_32, "NtUserBlockInput");
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&user_32, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			const auto original_func = GetProcedureAddress(user32_mapped, "NtUserBlockInput");
+			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserBlockInput");
+			auto hooked_func = GetProcedureAddress(win32u, "NtUserBlockInput");
 
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
 			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
 			// detect hook and restore bytes
 			if (result != func_size)
 			{
-				log("[DETECTED] BlockInput\r\n");
+				log("[DETECTED] NtUserBlockInput\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -758,10 +758,120 @@ void user32_detection()
 			}
 			else
 			{
-				log("[OK] BlockInput\r\n");
+				log("[OK] NtUserBlockInput\r\n");
 			}
 
-			reinterpret_cast<BlockInput_t>(hooked_func)(false);
+			reinterpret_cast<NtUserBlockInput_t>(hooked_func)(false);
+		}
+		catch (...)
+		{
+		}
+
+		// NtUserQueryWindow
+		try
+		{
+			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserQueryWindow");
+			auto hooked_func = GetProcedureAddress(win32u, "NtUserQueryWindow");
+
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			// detect hook and restore bytes
+			if (result != func_size)
+			{
+				log("[DETECTED] NtUserQueryWindow\r\n");
+				DWORD oldprotect = 0;
+				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+				RtlCopyMemory(hooked_func, original_func, func_size);
+
+				result = RtlCompareMemory(hooked_func, original_func, func_size);
+				if (result == func_size)
+				{
+					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+				}
+			}
+			else
+			{
+				log("[OK] NtUserQueryWindow\r\n");
+			}
+			HWND   a = {};
+			reinterpret_cast<NtUserQueryWindow_t>(hooked_func)(a, WindowProcess);
+		}
+		catch (...)
+		{
+		}
+
+		// NtUserFindWindowEx
+		try
+		{
+			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserFindWindowEx");
+			auto hooked_func = GetProcedureAddress(win32u, "NtUserFindWindowEx");
+
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			// detect hook and restore bytes
+			if (result != func_size)
+			{
+				log("[DETECTED] NtUserFindWindowEx\r\n");
+				DWORD oldprotect = 0;
+				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+				RtlCopyMemory(hooked_func, original_func, func_size);
+
+				result = RtlCompareMemory(hooked_func, original_func, func_size);
+				if (result == func_size)
+				{
+					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+				}
+			}
+			else
+			{
+				log("[OK] NtUserFindWindowEx\r\n");
+			}
+			HWND a = {};
+			HWND b = {};
+			reinterpret_cast<NtUserFindWindowEx_t>(hooked_func)(a,b,(PUNICODE_STRING)"",(PUNICODE_STRING)"",0);
+		}
+		catch (...)
+		{
+		}
+
+		// NtUserBuildHwndList
+		try
+		{
+			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserBuildHwndList");
+			auto hooked_func = GetProcedureAddress(win32u, "NtUserBuildHwndList");
+
+			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
+			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
+			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			// detect hook and restore bytes
+			if (result != func_size)
+			{
+				log("[DETECTED] NtUserBuildHwndList\r\n");
+				DWORD oldprotect = 0;
+				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+				RtlCopyMemory(hooked_func, original_func, func_size);
+
+				result = RtlCompareMemory(hooked_func, original_func, func_size);
+				if (result == func_size)
+				{
+					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+				}
+			}
+			else
+			{
+				log("[OK] NtUserBuildHwndList\r\n");
+			}
+			HDESK a = {};
+			HWND b = {};
+			HWND *c={};
+			UINT  d;
+			UINT  f=0;
+			reinterpret_cast<NtUserBuildHwndList_t>(hooked_func)(a,b,false,0,f,c,&d);
 		}
 		catch (...)
 		{
