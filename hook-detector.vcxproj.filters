@@ -24,6 +24,12 @@
     <ClInclude Include="utils\Native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LengthDisasm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">

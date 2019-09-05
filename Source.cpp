@@ -4,6 +4,8 @@
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"
+#include "utils/crc32.h"
+#include "utils/LengthDisasm.h"
 #include <vector>
 #include <assert.h>
 
