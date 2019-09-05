@@ -963,11 +963,11 @@ void user32_detection()
 int main()
 {
 	/*ntdll*/
-	//ntdll_detection();
+	ntdll_detection();
 	/*kernel32 / kernelbase*/
 	kernelbase_detection();
 	/*user32*/
-	//user32_detection();
+	user32_detection();
 
 	system("pause");
 
