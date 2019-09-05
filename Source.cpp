@@ -513,6 +513,44 @@ void kernelbase_detection()
 	PVOID kernelbase_mapped = nullptr;
 	MapNativeModule("kernelbase.dll", &kernelbase_mapped);
 
+	// CheckRemoteDebuggerPresent
+	try
+	{
+		const auto hooked_func = GetProcedureAddress(kernelbase, "CheckRemoteDebuggerPresent");
+
+		const auto original_func = GetProcedureAddress(kernelbase_mapped, "CheckRemoteDebuggerPresent");
+
+		const auto func_size = 0x18;
+
+		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+
+		// detect hook and restore bytes
+		if (static_cast<int>(result) != func_size)
+		{
+			DWORD oldprotect = 0;
+			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+
+			RtlCopyMemory(hooked_func, original_func, func_size);
+
+			result = RtlCompareMemory(hooked_func, original_func, func_size);
+			if (static_cast<int>(result) == func_size)
+			{
+				log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
+
+				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
+			}
+		}
+		else
+		{
+			log("[OK] CheckRemoteDebuggerPresent\r\n");
+		}
+
+		reinterpret_cast<GetTickCount_t>(hooked_func)();
+	}
+	catch (...)
+	{
+	}
+
 	// GetTickCount
 	try
 	{
@@ -925,11 +963,11 @@ void user32_detection()
 int main()
 {
 	/*ntdll*/
-	ntdll_detection();
+	//ntdll_detection();
 	/*kernel32 / kernelbase*/
 	kernelbase_detection();
 	/*user32*/
-	user32_detection();
+	//user32_detection();
 
 	system("pause");
 
