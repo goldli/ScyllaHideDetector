@@ -430,6 +430,7 @@ void ntdll_detection()
 	}
 
 	// NtQuerySystemTime
+	// Disable if u don't needed it.
 	try
 	{
 		auto hooked_func = GetProcedureAddress(ntdll, "NtQuerySystemTime");
@@ -485,37 +486,35 @@ void kernelbase_detection()
 	MapNativeModule("kernelbase.dll", &kernelbase_mapped);
 
 	// CheckRemoteDebuggerPresent
-	try
-	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "CheckRemoteDebuggerPresent"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+	//try
+	//{
+	//	auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "CheckRemoteDebuggerPresent"), 1);
+	//	size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+	//	unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "CheckRemoteDebuggerPresent"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+	//	auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "CheckRemoteDebuggerPresent"), 1);
+	//	size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+	//	unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
-		// detect hook and restore bytes
-		if (crc_original != crc_hooked)
-		{
-			log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
-			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+	//	// detect hook and restore bytes
+	//	if (crc_original != crc_hooked)
+	//	{
+	//		log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
+	//		DWORD oldprotect = 0;
+	//		VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
+	//		RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
-		}
-		else
-		{
-			log("[OK] CheckRemoteDebuggerPresent\r\n");
-		}
-
-		reinterpret_cast<GetTickCount_t>(hooked_func_adress)();
-	}
-	catch (...)
-	{
-	}
+	//		VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+	//	}
+	//	else
+	//	{
+	//		log("[OK] CheckRemoteDebuggerPresent\r\n");
+	//	}
+	//}
+	//catch (...)
+	//{
+	//}
 
 	// GetTickCount
 	try
@@ -894,11 +893,8 @@ void user32_detection()
 
 int main()
 {
-	/*ntdll*/
 	ntdll_detection();
-	/*kernel32 / kernelbase*/
 	kernelbase_detection();
-	/*user32*/
 	user32_detection();
 
 	system("pause");
