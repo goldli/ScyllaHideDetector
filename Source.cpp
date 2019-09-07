@@ -9,6 +9,24 @@
 #include <vector>
 #include <assert.h>
 
+void* ResolveJmp(void* Address, uint8_t Is64Bit)
+{
+	TLengthDisasm Data = { 0 };
+
+	uint8_t Size = 0;
+	uint8_t *Offset = (uint8_t*)Address;
+
+	Size = LengthDisasm(Offset, Is64Bit, &Data);
+
+	if ((Data.Opcode[0] == 0xE9) && (Data.Length == 5) && (Data.OpcodeSize == 1))
+	{
+		uint32_t delta = *(uint32_t*)((size_t)Address + Data.OpcodeSize);
+		return ResolveJmp((void*)((size_t)Address + delta + Data.Length), Is64Bit);
+	}
+
+	return Address;
+}
+
 void ntdll_detection()
 {
 	auto ntdll = GetModuleBaseAddress(L"ntdll.dll");
@@ -18,35 +36,31 @@ void ntdll_detection()
 	// NtYieldExecution
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtYieldExecution");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtYieldExecution"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtYieldExecution");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtYieldExecution"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtYieldExecution\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
-
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
+		
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtYieldExecution\r\n");
 		}
 
-		reinterpret_cast<NtYieldExecution_t>(hooked_func)();
+		reinterpret_cast<NtYieldExecution_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -55,36 +69,31 @@ void ntdll_detection()
 	// NtSetInformationThread
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtSetInformationThread");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetInformationThread"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtSetInformationThread");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetInformationThread"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtSetInformationThread\r\n");
-
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtSetInformationThread\r\n");
 		}
 
-		reinterpret_cast<NtSetInformationThread_t>(hooked_func)();
+		reinterpret_cast<NtSetInformationThread_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -93,35 +102,31 @@ void ntdll_detection()
 	// NtSetInformationProcess
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtSetInformationProcess");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetInformationProcess"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtSetInformationProcess");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetInformationProcess"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtSetInformationProcess\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtSetInformationProcess\r\n");
 		}
 
-		reinterpret_cast<NtSetInformationProcess_t>(hooked_func)();
+		reinterpret_cast<NtSetInformationProcess_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -130,35 +135,31 @@ void ntdll_detection()
 	// NtQuerySystemInformation
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtQuerySystemInformation");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQuerySystemInformation"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQuerySystemInformation");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQuerySystemInformation"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtQuerySystemInformation\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtQuerySystemInformation\r\n");
 		}
 
-		reinterpret_cast<NtQuerySystemInformation_t>(hooked_func)();
+		reinterpret_cast<NtQuerySystemInformation_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -167,35 +168,31 @@ void ntdll_detection()
 	// NtQueryInformationProcess
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtQueryInformationProcess");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryInformationProcess"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQueryInformationProcess");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryInformationProcess"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtQueryInformationProcess\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtQueryInformationProcess\r\n");
 		}
 
-		reinterpret_cast<NtQueryInformationProcess_t>(hooked_func)();
+		reinterpret_cast<NtQueryInformationProcess_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -204,35 +201,31 @@ void ntdll_detection()
 	// NtQueryObject
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtQueryObject");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryObject"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQueryObject");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryObject"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtQueryObject\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtQueryObject\r\n");
 		}
 
-		reinterpret_cast<NtQueryObject_t>(hooked_func)();
+		reinterpret_cast<NtQueryObject_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -241,35 +234,31 @@ void ntdll_detection()
 	// NtCreateThreadEx
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtCreateThreadEx");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtCreateThreadEx"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtCreateThreadEx");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtCreateThreadEx"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtCreateThreadEx\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtCreateThreadEx\r\n");
 		}
 
-		reinterpret_cast<NtCreateThreadEx_t>(hooked_func)();
+		reinterpret_cast<NtCreateThreadEx_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -278,109 +267,97 @@ void ntdll_detection()
 	// NtSetDebugFilterState
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtSetDebugFilterState");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetDebugFilterState"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtSetDebugFilterState");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetDebugFilterState"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtSetDebugFilterState\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtSetDebugFilterState\r\n");
 		}
 
-		reinterpret_cast<NtSetDebugFilterState_t>(hooked_func)();
+		reinterpret_cast<NtSetDebugFilterState_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
 	}
 
 	// NtClose
-	//try
-	//{
-	//	auto hooked_func = GetProcedureAddress(ntdll, "NtClose");
-	//	auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-	//	auto func_size = func_data->EndAddress - func_data->BeginAddress;
+	try
+	{
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtClose"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-	//	auto original_func = GetProcedureAddress(ntdll_mapped, "NtClose");
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtClose"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
-	//	auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		// detect hook and restore bytes
+		if (crc_original != crc_hooked)
+		{
+			log("[DETECTED] NtClose\r\n");
+			DWORD oldprotect = 0;
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-	//	// detect hook and restore bytes
-	//	if (result != func_size)
-	//	{
-	//		log("[DETECTED] NtClose\r\n");
-	//		DWORD oldprotect = 0;
-	//		VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-	//		RtlCopyMemory(hooked_func, original_func, func_size);
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+		}
+		else
+		{
+			log("[OK] NtClose\r\n");
+		}
 
-	//		result = RtlCompareMemory(hooked_func, original_func, func_size);
-	//		if (result == func_size)
-	//		{
-	//			VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-	//		}
-	//	}
-	//	else
-	//	{
-	//		log("[OK] NtClose\r\n");
-	//	}
-
-	//	reinterpret_cast<NtClose_t>(hooked_func)();
-	//}
-	//catch (...)
-	//{
-	//}
+		reinterpret_cast<NtClose_t>(hooked_func_adress)();
+	}
+	catch (...)
+	{
+	}
 
 	// NtQueryPerformanceCounter
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtQueryPerformanceCounter");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryPerformanceCounter"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQueryPerformanceCounter");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryPerformanceCounter"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtQueryPerformanceCounter\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtQueryPerformanceCounter\r\n");
 		}
 
-		reinterpret_cast<NtQueryPerformanceCounter_t>(hooked_func)();
+		reinterpret_cast<NtQueryPerformanceCounter_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -389,35 +366,31 @@ void ntdll_detection()
 	// NtGetContextThread
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtGetContextThread");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtGetContextThread"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtGetContextThread");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtGetContextThread"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtGetContextThread\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtGetContextThread\r\n");
 		}
 
-		reinterpret_cast<NtGetContextThread_t>(hooked_func)();
+		reinterpret_cast<NtGetContextThread_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -426,35 +399,31 @@ void ntdll_detection()
 	// NtSetContextThread
 	try
 	{
-		auto hooked_func = GetProcedureAddress(ntdll, "NtSetContextThread");
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
-		auto func_size = func_data->EndAddress - func_data->BeginAddress;
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetContextThread"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		auto original_func = GetProcedureAddress(ntdll_mapped, "NtSetContextThread");
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetContextThread"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (result != func_size)
+		if (crc_original != crc_hooked)
 		{
 			log("[DETECTED] NtSetContextThread\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (result == func_size)
-			{
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] NtSetContextThread\r\n");
 		}
 
-		reinterpret_cast<NtSetContextThread_t>(hooked_func)();
+		reinterpret_cast<NtSetContextThread_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -518,36 +487,31 @@ void kernelbase_detection()
 	// CheckRemoteDebuggerPresent
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "CheckRemoteDebuggerPresent");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "CheckRemoteDebuggerPresent"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "CheckRemoteDebuggerPresent");
-
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "CheckRemoteDebuggerPresent"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (static_cast<int>(result) != func_size)
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] CheckRemoteDebuggerPresent\r\n");
 		}
 
-		reinterpret_cast<GetTickCount_t>(hooked_func)();
+		reinterpret_cast<GetTickCount_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -556,36 +520,31 @@ void kernelbase_detection()
 	// GetTickCount
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount");
-
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (static_cast<int>(result) != func_size)
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] GetTickCount\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] GetTickCount\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] GetTickCount\r\n");
 		}
 
-		reinterpret_cast<GetTickCount_t>(hooked_func)();
+		reinterpret_cast<GetTickCount_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -594,36 +553,31 @@ void kernelbase_detection()
 	// GetTickCount64
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "GetTickCount64");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount64"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetTickCount64");
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount64"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
-
-		// detect hook
-		if (static_cast<int>(result) != func_size)
+		// detect hook and restore bytes
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] GetTickCount64\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] GetTickCount64\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] GetTickCount64\r\n");
 		}
 
-		reinterpret_cast<GetTickCount64_t>(hooked_func)();
+		reinterpret_cast<GetTickCount64_t>(hooked_func_adress)();
 	}
 	catch (...)
 	{
@@ -632,36 +586,31 @@ void kernelbase_detection()
 	// OutputDebugStringA
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "OutputDebugStringA");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "OutputDebugStringA"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA");
-
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (static_cast<int>(result) != func_size)
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] OutputDebugStringA\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] OutputDebugStringA\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] OutputDebugStringA\r\n");
 		}
 
-		reinterpret_cast<OutputDebugStringA_t>(hooked_func)("");
+		reinterpret_cast<OutputDebugStringA_t>(hooked_func_adress)("");
 	}
 	catch (...)
 	{
@@ -670,36 +619,32 @@ void kernelbase_detection()
 	// GetLocalTime
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "GetLocalTime");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetLocalTime"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetLocalTime");
-
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetLocalTime"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (static_cast<int>(result) != func_size)
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] GetLocalTime\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] GetLocalTime\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
-			log("[OK] GetLocalTime\r\n");
+			log("[OK] OutputDebugStringA\r\n");
 		}
+
 		SYSTEMTIME sm;
-		reinterpret_cast<GetLocalTime_t>(hooked_func)(&sm);
+		reinterpret_cast<GetLocalTime_t>(hooked_func_adress)(&sm);
 	}
 	catch (...)
 	{
@@ -708,36 +653,32 @@ void kernelbase_detection()
 	// GetSystemTime
 	try
 	{
-		const auto hooked_func = GetProcedureAddress(kernelbase, "GetSystemTime");
+		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetSystemTime"), 1);
+		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-		const auto original_func = GetProcedureAddress(kernelbase_mapped, "GetSystemTime");
-
-		const auto func_size = 0x18;
-
-		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetSystemTime"), 1);
+		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
 
 		// detect hook and restore bytes
-		if (static_cast<int>(result) != func_size)
+		if (crc_original != crc_hooked)
 		{
+			log("[DETECTED] GetSystemTime\r\n");
 			DWORD oldprotect = 0;
-			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-			RtlCopyMemory(hooked_func, original_func, func_size);
+			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-			result = RtlCompareMemory(hooked_func, original_func, func_size);
-			if (static_cast<int>(result) == func_size)
-			{
-				log("[DETECTED] GetSystemTime\r\n");
-
-				VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-			}
+			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
 		{
 			log("[OK] GetSystemTime\r\n");
 		}
+
 		SYSTEMTIME sm;
-		reinterpret_cast<GetSystemTime_t>(hooked_func)(&sm);
+		reinterpret_cast<GetSystemTime_t>(hooked_func_adress)(&sm);
 	}
 	catch (...)
 	{
@@ -775,33 +716,31 @@ void user32_detection()
 		// BlockInput
 		try
 		{
-			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserBlockInput");
-			auto hooked_func = GetProcedureAddress(win32u, "NtUserBlockInput");
+			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBlockInput"), 1);
+			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBlockInput"), 1);
+			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+
 			// detect hook and restore bytes
-			if (result != func_size)
+			if (crc_original != crc_hooked)
 			{
 				log("[DETECTED] NtUserBlockInput\r\n");
 				DWORD oldprotect = 0;
-				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-				RtlCopyMemory(hooked_func, original_func, func_size);
+				RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-				result = RtlCompareMemory(hooked_func, original_func, func_size);
-				if (result == func_size)
-				{
-					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-				}
+				VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 			}
 			else
 			{
 				log("[OK] NtUserBlockInput\r\n");
 			}
 
-			reinterpret_cast<NtUserBlockInput_t>(hooked_func)(false);
+			reinterpret_cast<NtUserBlockInput_t>(hooked_func_adress)(false);
 		}
 		catch (...)
 		{
@@ -810,33 +749,31 @@ void user32_detection()
 		// NtUserQueryWindow
 		try
 		{
-			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserQueryWindow");
-			auto hooked_func = GetProcedureAddress(win32u, "NtUserQueryWindow");
+			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserQueryWindow"), 1);
+			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserQueryWindow"), 1);
+			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+
 			// detect hook and restore bytes
-			if (result != func_size)
+			if (crc_original != crc_hooked)
 			{
 				log("[DETECTED] NtUserQueryWindow\r\n");
 				DWORD oldprotect = 0;
-				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-				RtlCopyMemory(hooked_func, original_func, func_size);
+				RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-				result = RtlCompareMemory(hooked_func, original_func, func_size);
-				if (result == func_size)
-				{
-					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-				}
+				VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 			}
 			else
 			{
 				log("[OK] NtUserQueryWindow\r\n");
 			}
 			HWND   a = {};
-			reinterpret_cast<NtUserQueryWindow_t>(hooked_func)(a, WindowProcess);
+			reinterpret_cast<NtUserQueryWindow_t>(hooked_func_adress)(a, WindowProcess);
 		}
 		catch (...)
 		{
@@ -845,26 +782,24 @@ void user32_detection()
 		// NtUserFindWindowEx
 		try
 		{
-			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserFindWindowEx");
-			auto hooked_func = GetProcedureAddress(win32u, "NtUserFindWindowEx");
+			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserFindWindowEx"), 1);
+			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserFindWindowEx"), 1);
+			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+
 			// detect hook and restore bytes
-			if (result != func_size)
+			if (crc_original != crc_hooked)
 			{
 				log("[DETECTED] NtUserFindWindowEx\r\n");
 				DWORD oldprotect = 0;
-				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-				RtlCopyMemory(hooked_func, original_func, func_size);
+				RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-				result = RtlCompareMemory(hooked_func, original_func, func_size);
-				if (result == func_size)
-				{
-					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-				}
+				VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 			}
 			else
 			{
@@ -872,7 +807,7 @@ void user32_detection()
 			}
 			HWND a = {};
 			HWND b = {};
-			reinterpret_cast<NtUserFindWindowEx_t>(hooked_func)(a,b,(PUNICODE_STRING)"",(PUNICODE_STRING)"",0);
+			reinterpret_cast<NtUserFindWindowEx_t>(hooked_func_adress)(a,b,(PUNICODE_STRING)"",(PUNICODE_STRING)"",0);
 		}
 		catch (...)
 		{
@@ -881,26 +816,24 @@ void user32_detection()
 		// NtUserBuildHwndList
 		try
 		{
-			const auto original_func = GetProcedureAddress(win32u_mapped, "NtUserBuildHwndList");
-			auto hooked_func = GetProcedureAddress(win32u, "NtUserBuildHwndList");
+			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBuildHwndList"), 1);
+			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&win32u, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBuildHwndList"), 1);
+			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+
 			// detect hook and restore bytes
-			if (result != func_size)
+			if (crc_original != crc_hooked)
 			{
 				log("[DETECTED] NtUserBuildHwndList\r\n");
 				DWORD oldprotect = 0;
-				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-				RtlCopyMemory(hooked_func, original_func, func_size);
+				RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-				result = RtlCompareMemory(hooked_func, original_func, func_size);
-				if (result == func_size)
-				{
-					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-				}
+				VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 			}
 			else
 			{
@@ -911,7 +844,7 @@ void user32_detection()
 			HWND *c={};
 			UINT  d;
 			UINT  f=0;
-			reinterpret_cast<NtUserBuildHwndList_t>(hooked_func)(a,b,false,0,f,c,&d);
+			reinterpret_cast<NtUserBuildHwndList_t>(hooked_func_adress)(a,b,false,0,f,c,&d);
 		}
 		catch (...)
 		{
@@ -928,33 +861,30 @@ void user32_detection()
 		// BlockInput
 		try
 		{
-			auto hooked_func = GetProcedureAddress(user_32, "BlockInput");
-			const auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&user_32, nullptr);
-			const auto func_size = func_data->EndAddress - func_data->BeginAddress;
-			const auto original_func = GetProcedureAddress(user32_mapped, "BlockInput");
+			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(user_32, "BlockInput"), 1);
+			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
+			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
 
-			auto result = RtlCompareMemory(hooked_func, original_func, func_size);
+			auto original_func_adress = ResolveJmp(GetProcedureAddress(user32_mapped, "BlockInput"), 1);
+			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
+			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+
 			// detect hook and restore bytes
-			if (result != func_size)
+			if (crc_original != crc_hooked)
 			{
 				log("[DETECTED] BlockInput\r\n");
 				DWORD oldprotect = 0;
-				VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-				RtlCopyMemory(hooked_func, original_func, func_size);
+				RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
 
-				result = RtlCompareMemory(hooked_func, original_func, func_size);
-				if (result == func_size)
-				{
-					VirtualProtect(hooked_func, func_size, oldprotect, &oldprotect);
-				}
+				VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 			}
 			else
 			{
 				log("[OK] BlockInput\r\n");
 			}
-
-			reinterpret_cast<BlockInput_t>(hooked_func)(false);
+			reinterpret_cast<BlockInput_t>(hooked_func_adress)(false);
 		}
 		catch (...)
 		{
