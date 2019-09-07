@@ -7,21 +7,19 @@
 #include "utils/crc32.h"
 #include "utils/LengthDisasm.h"
 #include <vector>
-#include <assert.h>
 
 void* ResolveJmp(void* Address, uint8_t Is64Bit)
 {
-	TLengthDisasm Data = { 0 };
+	TLengthDisasm Data = {0};
 
-	uint8_t Size = 0;
-	uint8_t *Offset = (uint8_t*)Address;
+	//const auto Offset = static_cast<uint8_t*>(Address);
 
-	Size = LengthDisasm(Offset, Is64Bit, &Data);
+	//uint8_t Size = LengthDisasm(Offset, Is64Bit, &Data);
 
-	if ((Data.Opcode[0] == 0xE9) && (Data.Length == 5) && (Data.OpcodeSize == 1))
+	if (Data.Opcode[0] == 0xE9 && Data.Length == 5 && Data.OpcodeSize == 1)
 	{
-		uint32_t delta = *(uint32_t*)((size_t)Address + Data.OpcodeSize);
-		return ResolveJmp((void*)((size_t)Address + delta + Data.Length), Is64Bit);
+		const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(Address) + Data.OpcodeSize);
+		return ResolveJmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(Address) + delta + Data.Length), Is64Bit);
 	}
 
 	return Address;
@@ -37,12 +35,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtYieldExecution"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtYieldExecution"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -52,7 +50,7 @@ void ntdll_detection()
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
 			RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
-		
+
 			VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
 		}
 		else
@@ -70,12 +68,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetInformationThread"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetInformationThread"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -103,12 +101,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetInformationProcess"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetInformationProcess"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -136,12 +134,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQuerySystemInformation"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQuerySystemInformation"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -169,12 +167,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryInformationProcess"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryInformationProcess"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -202,12 +200,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryObject"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryObject"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -235,12 +233,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtCreateThreadEx"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtCreateThreadEx"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -268,12 +266,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetDebugFilterState"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetDebugFilterState"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -301,12 +299,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtClose"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtClose"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -334,12 +332,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtQueryPerformanceCounter"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtQueryPerformanceCounter"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -367,12 +365,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtGetContextThread"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtGetContextThread"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -400,12 +398,12 @@ void ntdll_detection()
 	try
 	{
 		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(ntdll, "NtSetContextThread"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
 		auto original_func_adress = ResolveJmp(GetProcedureAddress(ntdll_mapped, "NtSetContextThread"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -436,18 +434,18 @@ void ntdll_detection()
 		auto hooked_func = GetProcedureAddress(ntdll, "NtQuerySystemTime");
 		if (*static_cast<PUCHAR>(hooked_func) == 0xE9) // jmp rel32
 		{
-			LONG relativeOffset = *(PLONG)((ULONG_PTR)hooked_func + 1);
-			hooked_func = (NtQuerySystemTime_t)((ULONG_PTR)hooked_func + relativeOffset + 5);
+			auto relativeOffset = *reinterpret_cast<PLONG>(reinterpret_cast<ULONG_PTR>(hooked_func) + 1);
+			hooked_func = reinterpret_cast<NtQuerySystemTime_t>(reinterpret_cast<ULONG_PTR>(hooked_func) + relativeOffset + 5);
 		}
 		auto original_func = GetProcedureAddress(ntdll_mapped, "NtQuerySystemTime");
 
 		if (*static_cast<PUCHAR>(original_func) == 0xE9) // jmp rel32
 		{
-			LONG relativeOffset = *(PLONG)((ULONG_PTR)original_func + 1);
-			original_func = (NtQuerySystemTime_t)((ULONG_PTR)original_func + relativeOffset + 5);
+			auto relativeOffset = *reinterpret_cast<PLONG>(reinterpret_cast<ULONG_PTR>(original_func) + 1);
+			original_func = reinterpret_cast<NtQuerySystemTime_t>(reinterpret_cast<ULONG_PTR>(original_func) + relativeOffset + 5);
 		}
 
-		auto func_data = RtlLookupFunctionEntry((DWORD64)hooked_func, (DWORD64*)&ntdll, nullptr);
+		auto func_data = RtlLookupFunctionEntry(reinterpret_cast<DWORD64>(hooked_func), reinterpret_cast<DWORD64*>(&ntdll), nullptr);
 		auto func_size = func_data->EndAddress - func_data->BeginAddress;
 
 		auto result = RtlCompareMemory(hooked_func, original_func, func_size);
@@ -519,13 +517,13 @@ void kernelbase_detection()
 	// GetTickCount
 	try
 	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount"), 1);
+		const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		const auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount"), 1);
+		const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -552,13 +550,13 @@ void kernelbase_detection()
 	// GetTickCount64
 	try
 	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount64"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetTickCount64"), 1);
+		const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount64"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		const auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetTickCount64"), 1);
+		const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -585,13 +583,13 @@ void kernelbase_detection()
 	// OutputDebugStringA
 	try
 	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "OutputDebugStringA"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "OutputDebugStringA"), 1);
+		const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		const auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "OutputDebugStringA"), 1);
+		const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -618,13 +616,13 @@ void kernelbase_detection()
 	// GetLocalTime
 	try
 	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetLocalTime"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetLocalTime"), 1);
+		const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetLocalTime"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		const auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetLocalTime"), 1);
+		const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -652,13 +650,13 @@ void kernelbase_detection()
 	// GetSystemTime
 	try
 	{
-		auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetSystemTime"), 1);
-		size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-		unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+		const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(kernelbase, "GetSystemTime"), 1);
+		const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+		const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-		auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetSystemTime"), 1);
-		size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-		unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+		const auto original_func_adress = ResolveJmp(GetProcedureAddress(kernelbase_mapped, "GetSystemTime"), 1);
+		const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+		const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
@@ -692,7 +690,7 @@ void user32_detection()
 #else
 	regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\"; // TODO: support 32bit
 #endif
-	std::wstring regValue(L"CurrentBuildNumber");
+	const std::wstring regValue(L"CurrentBuildNumber");
 	std::wstring CurrentBuildNumber;
 	try
 	{
@@ -708,20 +706,20 @@ void user32_detection()
 		// win32u.dll
 		LoadLibrary(L"user32.dll");
 
-		auto win32u = GetModuleBaseAddress("win32u.dll");
+		const auto win32u = GetModuleBaseAddress("win32u.dll");
 		PVOID win32u_mapped = nullptr;
 		MapNativeModule("win32u.dll", &win32u_mapped);
-		
+
 		// BlockInput
 		try
 		{
-			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBlockInput"), 1);
-			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+			const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBlockInput"), 1);
+			const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+			const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBlockInput"), 1);
-			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+			const auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBlockInput"), 1);
+			const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+			const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
@@ -748,13 +746,13 @@ void user32_detection()
 		// NtUserQueryWindow
 		try
 		{
-			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserQueryWindow"), 1);
-			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+			const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserQueryWindow"), 1);
+			const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+			const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserQueryWindow"), 1);
-			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+			const auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserQueryWindow"), 1);
+			const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+			const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
@@ -771,7 +769,7 @@ void user32_detection()
 			{
 				log("[OK] NtUserQueryWindow\r\n");
 			}
-			HWND   a = {};
+			HWND a = {};
 			reinterpret_cast<NtUserQueryWindow_t>(hooked_func_adress)(a, WindowProcess);
 		}
 		catch (...)
@@ -781,13 +779,13 @@ void user32_detection()
 		// NtUserFindWindowEx
 		try
 		{
-			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserFindWindowEx"), 1);
-			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+			const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserFindWindowEx"), 1);
+			const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+			const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserFindWindowEx"), 1);
-			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+			const auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserFindWindowEx"), 1);
+			const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+			const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
@@ -806,7 +804,8 @@ void user32_detection()
 			}
 			HWND a = {};
 			HWND b = {};
-			reinterpret_cast<NtUserFindWindowEx_t>(hooked_func_adress)(a,b,(PUNICODE_STRING)"",(PUNICODE_STRING)"",0);
+			reinterpret_cast<NtUserFindWindowEx_t>(hooked_func_adress)(a, b, (PUNICODE_STRING)"", (PUNICODE_STRING)"",
+			                                                           0);
 		}
 		catch (...)
 		{
@@ -815,13 +814,13 @@ void user32_detection()
 		// NtUserBuildHwndList
 		try
 		{
-			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBuildHwndList"), 1);
-			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+			const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(win32u, "NtUserBuildHwndList"), 1);
+			const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+			const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-			auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBuildHwndList"), 1);
-			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+			const auto original_func_adress = ResolveJmp(GetProcedureAddress(win32u_mapped, "NtUserBuildHwndList"), 1);
+			const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+			const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
@@ -840,10 +839,10 @@ void user32_detection()
 			}
 			HDESK a = {};
 			HWND b = {};
-			HWND *c={};
-			UINT  d;
-			UINT  f=0;
-			reinterpret_cast<NtUserBuildHwndList_t>(hooked_func_adress)(a,b,false,0,f,c,&d);
+			HWND* c = {};
+			UINT d;
+			const UINT f = 0;
+			reinterpret_cast<NtUserBuildHwndList_t>(hooked_func_adress)(a, b, false, 0, f, c, &d);
 		}
 		catch (...)
 		{
@@ -853,20 +852,20 @@ void user32_detection()
 	{
 		LoadLibraryA("user32.dll");
 
-		auto user_32 = GetModuleBaseAddress(L"user32.dll");
+		const auto user_32 = GetModuleBaseAddress(L"user32.dll");
 		PVOID user32_mapped = nullptr;
 		MapNativeModule("user32.dll", &user32_mapped);
 
 		// BlockInput
 		try
 		{
-			auto hooked_func_adress = ResolveJmp(GetProcedureAddress(user_32, "BlockInput"), 1);
-			size_t hooked_func_size = (size_t)GetSizeOfProc(hooked_func_adress, 1);
-			unsigned int crc_hooked = crc32(hooked_func_adress, (unsigned int)hooked_func_size);
+			const auto hooked_func_adress = ResolveJmp(GetProcedureAddress(user_32, "BlockInput"), 1);
+			const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+			const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-			auto original_func_adress = ResolveJmp(GetProcedureAddress(user32_mapped, "BlockInput"), 1);
-			size_t original_func_size = (size_t)GetSizeOfProc(original_func_adress, 1);
-			unsigned int crc_original = crc32(original_func_adress, (unsigned int)original_func_size);
+			const auto original_func_adress = ResolveJmp(GetProcedureAddress(user32_mapped, "BlockInput"), 1);
+			const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+			const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
