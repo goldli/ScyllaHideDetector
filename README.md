@@ -36,9 +36,6 @@ Detection
 
 ![Debugger](detect.png)
 
-Restore bytes (after execution program)
-
-![Restore bytes](restorebytes.png)
 
 ## Thanks
 hiddy (inject.ws russian re forum)

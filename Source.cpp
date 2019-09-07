@@ -45,7 +45,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtYieldExecution\r\n");
+			log("[DETECTED/RESTORED] NtYieldExecution\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -78,7 +78,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtSetInformationThread\r\n");
+			log("[DETECTED/RESTORED] NtSetInformationThread\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -111,7 +111,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtSetInformationProcess\r\n");
+			log("[DETECTED/RESTORED] NtSetInformationProcess\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -144,7 +144,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtQuerySystemInformation\r\n");
+			log("[DETECTED/RESTORED] NtQuerySystemInformation\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -177,7 +177,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtQueryInformationProcess\r\n");
+			log("[DETECTED/RESTORED] NtQueryInformationProcess\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -210,7 +210,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtQueryObject\r\n");
+			log("[DETECTED/RESTORED] NtQueryObject\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -243,7 +243,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtCreateThreadEx\r\n");
+			log("[DETECTED/RESTORED] NtCreateThreadEx\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -276,7 +276,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtSetDebugFilterState\r\n");
+			log("[DETECTED/RESTORED] NtSetDebugFilterState\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -309,7 +309,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtClose\r\n");
+			log("[DETECTED/RESTORED] NtClose\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -342,7 +342,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtQueryPerformanceCounter\r\n");
+			log("[DETECTED/RESTORED] NtQueryPerformanceCounter\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -375,7 +375,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtGetContextThread\r\n");
+			log("[DETECTED/RESTORED] NtGetContextThread\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -408,7 +408,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] NtSetContextThread\r\n");
+			log("[DETECTED/RESTORED] NtSetContextThread\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -453,7 +453,7 @@ void ntdll_detection()
 		// detect hook and restore bytes
 		if (result != func_size)
 		{
-			log("[DETECTED] NtQuerySystemTime\r\n");
+			log("[DETECTED/RESTORED] NtQuerySystemTime\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func, func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -497,7 +497,7 @@ void kernelbase_detection()
 	//	// detect hook and restore bytes
 	//	if (crc_original != crc_hooked)
 	//	{
-	//		log("[DETECTED] CheckRemoteDebuggerPresent\r\n");
+	//		log("[DETECTED/RESTORED] CheckRemoteDebuggerPresent\r\n");
 	//		DWORD oldprotect = 0;
 	//		VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -528,7 +528,7 @@ void kernelbase_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] GetTickCount\r\n");
+			log("[DETECTED/RESTORED] GetTickCount\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -561,7 +561,7 @@ void kernelbase_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] GetTickCount64\r\n");
+			log("[DETECTED/RESTORED] GetTickCount64\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -594,7 +594,7 @@ void kernelbase_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] OutputDebugStringA\r\n");
+			log("[DETECTED/RESTORED] OutputDebugStringA\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -627,7 +627,7 @@ void kernelbase_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] GetLocalTime\r\n");
+			log("[DETECTED/RESTORED] GetLocalTime\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -661,7 +661,7 @@ void kernelbase_detection()
 		// detect hook and restore bytes
 		if (crc_original != crc_hooked)
 		{
-			log("[DETECTED] GetSystemTime\r\n");
+			log("[DETECTED/RESTORED] GetSystemTime\r\n");
 			DWORD oldprotect = 0;
 			VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -724,7 +724,7 @@ void user32_detection()
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
 			{
-				log("[DETECTED] NtUserBlockInput\r\n");
+				log("[DETECTED/RESTORED] NtUserBlockInput\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -757,7 +757,7 @@ void user32_detection()
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
 			{
-				log("[DETECTED] NtUserQueryWindow\r\n");
+				log("[DETECTED/RESTORED] NtUserQueryWindow\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -790,7 +790,7 @@ void user32_detection()
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
 			{
-				log("[DETECTED] NtUserFindWindowEx\r\n");
+				log("[DETECTED/RESTORED] NtUserFindWindowEx\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -825,7 +825,7 @@ void user32_detection()
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
 			{
-				log("[DETECTED] NtUserBuildHwndList\r\n");
+				log("[DETECTED/RESTORED] NtUserBuildHwndList\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -870,7 +870,7 @@ void user32_detection()
 			// detect hook and restore bytes
 			if (crc_original != crc_hooked)
 			{
-				log("[DETECTED] BlockInput\r\n");
+				log("[DETECTED/RESTORED] BlockInput\r\n");
 				DWORD oldprotect = 0;
 				VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
