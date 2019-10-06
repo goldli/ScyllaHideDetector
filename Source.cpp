@@ -107,7 +107,7 @@ void user32_restore(const char* fn)
   std::wstring CurrentBuildNumber;
   try
   {
-    CurrentBuildNumber = GetStringValueFromHKLM(regSubKey, regValue);
+    CurrentBuildNumber = get_string_value_from_hklm(regSubKey, regValue);
   }
   catch (std::exception& e)
   {
