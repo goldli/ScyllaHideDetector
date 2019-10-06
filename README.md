@@ -2,32 +2,7 @@
 Allows you to find the use of ScyllaHide, if your program will debug and *restore bytes*.
 
 ## TODO
-- [x] win32u.dll
-- [ ] support x86 
-
-## Done
-
-- [x] NtSetInformationThread
-- [x] NtSetInformationProcess
-- [x] NtQuerySystemInformation
-- [x] NtQueryInformationProcess
-- [x] NtQueryObject
-- [x] NtYieldExecution
-- [x] NtCreateThreadEx
-- [x] NtSetDebugFilterState
-- [x] NtClose
-- [x] NtQueryPerformanceCounter
-- [x] NtGetContextThread
-- [x] NtQuerySystemTime
-- [x] GetTickCount
-- [x] GetTickCount64
-- [x] OutputDebugStringA
-- [x] GetLocalTime
-- [x] GetSystemTime
-- [x] BlockInput/NtUserBlockInput
-- [x] NtUserQueryWindow
-- [x] NtUserFindWindowEx
-- [x] NtUserBuildHwndList
+- [ ] support x86
 
 ## Screenshots
 ![Normal](screen.png)
