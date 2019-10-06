@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <iostream>
+#define AHOOK_LOG
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"
@@ -38,7 +39,10 @@ void ntdll_restore(const char* fn)
   // detect hook and restore bytes
   if (crc_original != crc_hooked)
   {
+#ifndef AHOOK_LOG
     log("[Detect] " + (std::string)fn + "\r\n");
+#endif
+
     DWORD oldprotect = 0;
     VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -48,7 +52,9 @@ void ntdll_restore(const char* fn)
   }
   else
   {
+#ifndef AHOOK_LOG
     log("[Ok] " + (std::string)fn + "\r\n");
+#endif
   }
 }
 
@@ -69,7 +75,10 @@ void kernelbase_restore(const char* fn)
   // detect hook and restore bytes
   if (crc_original != crc_hooked)
   {
+#ifndef AHOOK_LOG
     log("[Detect] " + (std::string)fn + "\r\n");
+#endif
+
     DWORD oldprotect = 0;
     VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -79,7 +88,9 @@ void kernelbase_restore(const char* fn)
   }
   else
   {
+#ifndef AHOOK_LOG
     log("[Ok] " + (std::string)fn + "\r\n");
+#endif
   }
 }
 
@@ -123,7 +134,10 @@ void user32_restore(const char* fn)
     // detect hook and restore bytes
     if (crc_original != crc_hooked)
     {
+#ifndef AHOOK_LOG
       log("[Detect] " + (std::string)fn + "\r\n");
+#endif
+
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -133,7 +147,9 @@ void user32_restore(const char* fn)
     }
     else
     {
+#ifndef AHOOK_LOG
       log("[Ok] " + (std::string)fn + "\r\n");
+#endif
     }
   }
   else
@@ -155,7 +171,10 @@ void user32_restore(const char* fn)
     // detect hook and restore bytes
     if (crc_original != crc_hooked)
     {
+#ifndef AHOOK_LOG
       log("[Detect] " + (std::string)fn + "\r\n");
+#endif
+
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
@@ -165,7 +184,9 @@ void user32_restore(const char* fn)
     }
     else
     {
+#ifndef AHOOK_LOG
       log("[Ok] " + (std::string)fn + "\r\n");
+#endif
     }
   }
 }

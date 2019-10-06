@@ -12,6 +12,7 @@ void log(First&& message, Rest&& ...rest)
   log(std::forward<Rest>(rest)...);
 }
 
+
 template <const hash_t::value_type ModuleHash>
 
 inline PVOID _GetModuleHandle(void) noexcept
