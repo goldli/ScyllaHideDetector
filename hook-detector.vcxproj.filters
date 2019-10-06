@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="refactor">
+      <UniqueIdentifier>{ea3a989a-b352-4405-8d05-8adfadbc2748}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\Helpers.h">
@@ -29,6 +32,12 @@
     </ClInclude>
     <ClInclude Include="utils\LengthDisasm.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\base64.h">
+      <Filter>refactor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\xxtea.h">
+      <Filter>refactor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
