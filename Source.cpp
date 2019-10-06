@@ -2,6 +2,7 @@
 #include <winternl.h>
 #include <iostream>
 #define AHOOK_LOG
+#define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
 #include "utils/xorstr.hpp"
 #include "utils/Native.hpp"
 #include "utils/Hash.hpp"
@@ -10,7 +11,7 @@
 #include "utils/LengthDisasm.hpp"
 #include <vector>
 
-void* resolve_jmp(void* address, const uint8_t is64_bit)
+FORCEINLINE void* resolve_jmp(void* address, const uint8_t is64_bit)
 {
   TLengthDisasm data = {0};
 

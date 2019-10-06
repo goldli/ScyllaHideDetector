@@ -1,13 +1,14 @@
 #pragma once
 #include <string>
+#define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
 #include "xorstr.hpp"
 
-inline void log()
+FORCEINLINE void log()
 {
 }
 
 template <typename First, typename ...Rest>
-void log(First&& message, Rest&& ...rest)
+FORCEINLINE void log(First&& message, Rest&& ...rest)
 {
   std::cout << std::forward<First>(message);
   log(std::forward<Rest>(rest)...);
@@ -15,7 +16,7 @@ void log(First&& message, Rest&& ...rest)
 
 
 template <const hash_t::value_type ModuleHash>
-PVOID get_module_handle() noexcept
+FORCEINLINE PVOID get_module_handle() noexcept
 {
   const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
 
@@ -35,7 +36,7 @@ PVOID get_module_handle() noexcept
   return nullptr;
 }
 
-inline PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
+FORCEINLINE PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -80,7 +81,7 @@ inline PVOID get_proc_address(const PVOID module_base_address, const hash_t::val
 }
 
 template <const hash_t::value_type FunctionHash>
-PVOID _GetProcAddress(const PVOID module_base_address) noexcept
+FORCEINLINE PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -125,7 +126,7 @@ PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 }
 
 template <hash_t::value_type ModuleHash>
-NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
+FORCEINLINE NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 {
   auto status = STATUS_NOT_SUPPORTED;
   HANDLE section_handle = nullptr;
@@ -181,7 +182,7 @@ NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
   return status;
 }
 
-inline std::wstring get_string_value_from_hklm(const std::wstring& reg_sub_key, const std::wstring& reg_value)
+FORCEINLINE std::wstring get_string_value_from_hklm(const std::wstring& reg_sub_key, const std::wstring& reg_value)
 {
   size_t bufferSize = 0xFFF; // If too small, will be resized down below.
   std::wstring valueBuf; // Contiguous buffer since C++11.

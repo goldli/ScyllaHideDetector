@@ -75,7 +75,7 @@ static const unsigned int crc_c[256] = {
 };
 
 
-inline unsigned int crc32(const void* buffer, unsigned int len)
+FORCEINLINE unsigned int crc32(const void* buffer, unsigned int len)
 {
   unsigned int crc32 = ~0L;
 
