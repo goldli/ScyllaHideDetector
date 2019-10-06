@@ -42,7 +42,7 @@ struct hash_t
 template <class CharT = char>
 FORCEINLINE constexpr hash_t::value_type khash(const CharT* str, hash_t::value_type value = hash_t::offset) noexcept
 {
-  return (*str ? khash(str + 1, hash_t::single(value, *str)) : value);
+  return (*str ? khash(str + 1, hash_t::single(value, static_cast<char>(*str))) : value);
 }
 
 template <class CharT = char>

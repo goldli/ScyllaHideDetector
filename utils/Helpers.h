@@ -83,19 +83,15 @@ template <const hash_t::value_type FunctionHash>
 PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
-  PIMAGE_NT_HEADERS32 nt32 = nullptr;
-  PIMAGE_NT_HEADERS64 nt64 = nullptr;
-  PIMAGE_EXPORT_DIRECTORY export_directory = nullptr;
-
-  LPWORD ordinal_table = nullptr;
-  LPDWORD name_table = nullptr;
-  LPDWORD function_table = nullptr;
+  PIMAGE_EXPORT_DIRECTORY export_directory;
 
   if (dos_header->e_magic != IMAGE_DOS_SIGNATURE)
     return nullptr;
 
-  nt32 = reinterpret_cast<PIMAGE_NT_HEADERS32>(static_cast<LPBYTE>(module_base_address) + dos_header->e_lfanew);
-  nt64 = reinterpret_cast<PIMAGE_NT_HEADERS64>(static_cast<LPBYTE>(module_base_address) + dos_header->e_lfanew);
+  auto nt32 = reinterpret_cast<PIMAGE_NT_HEADERS32>(static_cast<LPBYTE>(module_base_address) + dos_header
+    ->e_lfanew);
+  auto nt64 = reinterpret_cast<PIMAGE_NT_HEADERS64>(static_cast<LPBYTE>(module_base_address) + dos_header
+    ->e_lfanew);
 
   if (nt32->Signature != IMAGE_NT_SIGNATURE)
     return nullptr;
@@ -111,10 +107,11 @@ PVOID _GetProcAddress(const PVOID module_base_address) noexcept
       nt64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
   }
 
-  function_table = reinterpret_cast<LPDWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->
+  const auto function_table = reinterpret_cast<LPDWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->
     AddressOfFunctions);
-  name_table = reinterpret_cast<LPDWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->AddressOfNames);
-  ordinal_table = reinterpret_cast<LPWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->
+  const auto name_table = reinterpret_cast<LPDWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->
+    AddressOfNames);
+  const auto ordinal_table = reinterpret_cast<LPWORD>(static_cast<LPBYTE>(module_base_address) + export_directory->
     AddressOfNameOrdinals);
 
   for (SIZE_T i = 0; i < export_directory->NumberOfNames; ++i)
@@ -184,7 +181,7 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
   return status;
 }
 
-std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue)
+inline std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue)
 {
   size_t bufferSize = 0xFFF; // If too small, will be resized down below.
   std::wstring valueBuf; // Contiguous buffer since C++11.
