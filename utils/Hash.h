@@ -25,48 +25,48 @@ struct hash_t
 
 #define TOLOWER(c) (c >= 'A' && c <= 'Z' ? (c | (1 << 5)) : c)
 
-	using value_type = unsigned long;
-	constexpr static value_type offset = HASH_OFFSET;
-	constexpr static value_type prime = HASH_PRIME;
-	constexpr static unsigned long long prime64 = prime;
+  using value_type = unsigned long;
+  constexpr static value_type offset = HASH_OFFSET;
+  constexpr static value_type prime = HASH_PRIME;
+  constexpr static unsigned long long prime64 = prime;
 
-	FORCEINLINE constexpr static value_type single(value_type value,
-	                                               char c) noexcept
-	{
-		return static_cast<hash_t::value_type>(
-			(value ^ TOLOWER(c)) *
-			static_cast<unsigned long long>(prime));
-	}
+  FORCEINLINE constexpr static value_type single(value_type value,
+                                                 char c) noexcept
+  {
+    return static_cast<hash_t::value_type>(
+      (value ^ TOLOWER(c)) *
+      static_cast<unsigned long long>(prime));
+  }
 };
 
 template <class CharT = char>
 FORCEINLINE constexpr hash_t::value_type khash(const CharT* str, hash_t::value_type value = hash_t::offset) noexcept
 {
-	return (*str ? khash(str + 1, hash_t::single(value, *str)) : value);
+  return (*str ? khash(str + 1, hash_t::single(value, *str)) : value);
 }
 
 template <class CharT = char>
 FORCEINLINE hash_t::value_type GetHash(const CharT* str) noexcept
 {
-	hash_t::value_type value = hash_t::offset;
+  hash_t::value_type value = hash_t::offset;
 
-	for (;;)
-	{
-		auto c = *str++;
-		if (!c)
-			return value;
-		value = hash_t::single(value, c);
-	}
+  for (;;)
+  {
+    auto c = *str++;
+    if (!c)
+      return value;
+    value = hash_t::single(value, c);
+  }
 }
 
 FORCEINLINE hash_t::value_type GetHash(
-	const UNICODE_STRING& str) noexcept
+  const UNICODE_STRING& str) noexcept
 {
-	auto first = str.Buffer;
-	const auto last = first + str.Length / sizeof(wchar_t);
-	auto value = hash_t::offset;
-	for (; first != last; ++first)
-		value = hash_t::single(value, static_cast<char>(*first));
+  auto first = str.Buffer;
+  const auto last = first + str.Length / sizeof(wchar_t);
+  auto value = hash_t::offset;
+  for (; first != last; ++first)
+    value = hash_t::single(value, static_cast<char>(*first));
 
-	return value;
+  return value;
 }
