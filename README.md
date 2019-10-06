@@ -2,7 +2,7 @@
 Allows you to find the use of ScyllaHide, if your program will debug and *restore bytes*.
 
 ## TODO
-- [ ] win32u.dll
+- [x] win32u.dll
 - [ ] support x86 
 
 ## Done
