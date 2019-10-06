@@ -1,8 +1,9 @@
 # ScyllaHide Detector V2
 Allows you to find the use of ScyllaHide, if your program will debug and *restore bytes*.
 
+Check `hide` branch if u need hidden code usage.
+
 ## TODO
-- [x] win32u.dll
 - [ ] support x86 
 
 ## Done
