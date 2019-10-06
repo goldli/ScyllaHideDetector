@@ -14,21 +14,20 @@ void log(First&& message, Rest&& ...rest)
 
 
 template <const hash_t::value_type ModuleHash>
-
-PVOID _GetModuleHandle() noexcept
+PVOID get_module_handle() noexcept
 {
-  const auto pPeb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
+  const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
 
-  if (pPeb)
+  if (p_peb)
   {
-    for (auto pListEntry = pPeb->Ldr->InLoadOrderModuleList.Flink;
-         pListEntry != &pPeb->Ldr->InLoadOrderModuleList;
-         pListEntry = pListEntry->Flink)
+    for (auto p_list_entry = p_peb->Ldr->InLoadOrderModuleList.Flink;
+         p_list_entry != &p_peb->Ldr->InLoadOrderModuleList;
+         p_list_entry = p_list_entry->Flink)
     {
-      const auto pEntry = CONTAINING_RECORD(pListEntry, nt::LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+      const auto p_entry = CONTAINING_RECORD(p_list_entry, nt::LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
 
-      if (ModuleHash == NULL || GetHash(pEntry->BaseDllName) == ModuleHash)
-        return pEntry->DllBase;
+      if (ModuleHash == NULL || get_hash(p_entry->BaseDllName) == ModuleHash)
+        return p_entry->DllBase;
     }
   }
 
@@ -72,7 +71,7 @@ inline PVOID get_proc_address(const PVOID module_base_address, const hash_t::val
   for (SIZE_T i = 0; i < export_directory->NumberOfNames; ++i)
   {
     const auto function_name = reinterpret_cast<PCCH>(module_base_address) + static_cast<DWORD_PTR>(name_table[i]);
-    if (GetHash(function_name) == FunctionHash)
+    if (get_hash(function_name) == FunctionHash)
       return reinterpret_cast<LPVOID>(static_cast<LPBYTE>(module_base_address) + function_table[ordinal_table[i]]);
   }
 
@@ -117,7 +116,7 @@ PVOID _GetProcAddress(const PVOID module_base_address) noexcept
   for (SIZE_T i = 0; i < export_directory->NumberOfNames; ++i)
   {
     const auto function_name = reinterpret_cast<PCCH>(module_base_address) + static_cast<DWORD_PTR>(name_table[i]);
-    if (GetHash(function_name) == FunctionHash)
+    if (get_hash(function_name) == FunctionHash)
       return reinterpret_cast<LPVOID>(static_cast<LPBYTE>(module_base_address) + function_table[ordinal_table[i]]);
   }
 
@@ -156,13 +155,13 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 
   InitializeObjectAttributes(&objAttrib, &usSectionName, OBJ_CASE_INSENSITIVE, NULL, NULL);
 
-  status = NtFunctionCall(NtOpenSection)(&sectionHandle, SECTION_MAP_READ, &objAttrib);
+  status = NT_FUNCTION_CALL(NtOpenSection)(&sectionHandle, SECTION_MAP_READ, &objAttrib);
   if (!NT_SUCCESS(status))
   {
     return status;
   }
 
-  status = NtFunctionCall(NtMapViewOfSection)(sectionHandle, NtCurrentProcess(), BaseAddress, NULL, NULL, nullptr,
+  status = NT_FUNCTION_CALL(NtMapViewOfSection)(sectionHandle, NT_CURRENT_PROCESS(), BaseAddress, NULL, NULL, nullptr,
                                               &viewSize, nt::SECTION_INHERIT::ViewShare, NULL, PAGE_READONLY);
   if (!NT_SUCCESS(status))
   {
@@ -181,7 +180,7 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
   return status;
 }
 
-inline std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const std::wstring& regValue)
+inline std::wstring get_string_value_from_hklm(const std::wstring& reg_sub_key, const std::wstring& reg_value)
 {
   size_t bufferSize = 0xFFF; // If too small, will be resized down below.
   std::wstring valueBuf; // Contiguous buffer since C++11.
@@ -189,8 +188,8 @@ inline std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const 
   auto cbData = static_cast<DWORD>(bufferSize);
   auto rc = RegGetValueW(
     HKEY_LOCAL_MACHINE,
-    regSubKey.c_str(),
-    regValue.c_str(),
+    reg_sub_key.c_str(),
+    reg_value.c_str(),
     RRF_RT_REG_SZ,
     nullptr,
     static_cast<void*>(&valueBuf.at(0)),
@@ -212,8 +211,8 @@ inline std::wstring GetStringValueFromHKLM(const std::wstring& regSubKey, const 
     valueBuf.resize(bufferSize);
     rc = RegGetValueW(
       HKEY_LOCAL_MACHINE,
-      regSubKey.c_str(),
-      regValue.c_str(),
+      reg_sub_key.c_str(),
+      reg_value.c_str(),
       RRF_RT_REG_SZ,
       nullptr,
       static_cast<void*>(&valueBuf.at(0)),

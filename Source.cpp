@@ -24,9 +24,9 @@ void* ResolveJmp(void* Address, uint8_t Is64Bit)
 
 void ntdll_restore(const char* fn)
 {
-  const auto ntdll = GetModuleBaseAddress(L"ntdll.dll");
+  const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
   PVOID ntdll_mapped = nullptr;
-  MapNativeModule("ntdll.dll", &ntdll_mapped);
+  MAP_NATIVE_MODULE("ntdll.dll", &ntdll_mapped);
 
   const auto hooked_func_adress = ResolveJmp(get_proc_address(ntdll,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
@@ -60,9 +60,9 @@ void ntdll_restore(const char* fn)
 
 void kernelbase_restore(const char* fn)
 {
-  const auto kernelbase = GetModuleBaseAddress("kernelbase.dll");
+  const auto kernelbase = GET_MODULE_BASE_ADDRESS("kernelbase.dll");
   PVOID kernelbase_mapped = nullptr;
-  MapNativeModule("kernelbase.dll", &kernelbase_mapped);
+  MAP_NATIVE_MODULE("kernelbase.dll", &kernelbase_mapped);
 
   const auto hooked_func_adress = ResolveJmp(get_proc_address(kernelbase,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
@@ -119,9 +119,9 @@ void user32_restore(const char* fn)
     HINSTANCE hModule=nullptr;
     hModule=LoadLibrary(L"user32.dll");
 
-    const auto win32u = GetModuleBaseAddress("win32u.dll");
+    const auto win32u = GET_MODULE_BASE_ADDRESS("win32u.dll");
     PVOID win32u_mapped = nullptr;
-    MapNativeModule("win32u.dll", &win32u_mapped);
+    MAP_NATIVE_MODULE("win32u.dll", &win32u_mapped);
 
     const auto hooked_func_adress = ResolveJmp(get_proc_address(win32u,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
@@ -159,9 +159,9 @@ void user32_restore(const char* fn)
     HINSTANCE hModule=nullptr;
     hModule=LoadLibraryA("user32.dll");
 
-    const auto user_32 = GetModuleBaseAddress(L"user32.dll");
+    const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;
-    MapNativeModule("user32.dll", &user32_mapped);
+    MAP_NATIVE_MODULE("user32.dll", &user32_mapped);
 
     const auto hooked_func_adress = ResolveJmp(get_proc_address(user_32,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));

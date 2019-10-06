@@ -46,9 +46,9 @@ FORCEINLINE constexpr hash_t::value_type khash(const CharT* str, hash_t::value_t
 }
 
 template <class CharT = char>
-FORCEINLINE hash_t::value_type GetHash(const CharT* str) noexcept
+FORCEINLINE hash_t::value_type get_hash(const CharT* str) noexcept
 {
-  hash_t::value_type value = hash_t::offset;
+  auto value = hash_t::offset;
 
   for (;;)
   {
@@ -59,7 +59,7 @@ FORCEINLINE hash_t::value_type GetHash(const CharT* str) noexcept
   }
 }
 
-FORCEINLINE hash_t::value_type GetHash(
+FORCEINLINE hash_t::value_type get_hash(
   const UNICODE_STRING& str) noexcept
 {
   auto first = str.Buffer;

@@ -2,14 +2,14 @@
 
 #define STATUS_NOT_SUPPORTED ((NTSTATUS)0xC00000BB)
 
-#define NtCurrentProcess() ((HANDLE)-1)
-#define NtCurrentThread()  ((HANDLE)-2)
+#define NT_CURRENT_PROCESS() ((HANDLE)-1)
+#define NT_CURRENT_THREAD()  ((HANDLE)-2)
 
-#define GetModuleBaseAddress(ModuleName)                     _GetModuleHandle<HASHSTR(ModuleName)>()
-#define GetProcedureAddress(ModuleBaseAddress, FunctionName) _GetProcAddress<HASHSTR(FunctionName)>(ModuleBaseAddress)
-#define NtFunctionCall(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GetProcedureAddress(GetModuleBaseAddress("ntdll.dll"),  #FunctionName))
-#define WinFunctionCall(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GetProcedureAddress(GetModuleBaseAddress("win32u.dll"), #FunctionName))
-#define MapNativeModule(ModuleName, ModuleBaseAddress)       RemapNtModule<HASHSTR(ModuleName)>(ModuleBaseAddress)
+#define GET_MODULE_BASE_ADDRESS(ModuleName)                     get_module_handle<HASHSTR(ModuleName)>()
+#define GET_PROCEDURE_ADDRESS(ModuleBaseAddress, FunctionName) _GetProcAddress<HASHSTR(FunctionName)>(ModuleBaseAddress)
+#define NT_FUNCTION_CALL(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("ntdll.dll"),  #FunctionName))
+#define WIN_FUNCTION_CALL(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("win32u.dll"), #FunctionName))
+#define MAP_NATIVE_MODULE(ModuleName, ModuleBaseAddress)       RemapNtModule<HASHSTR(ModuleName)>(ModuleBaseAddress)
 
 #ifdef DEBUG
 #define print(format, ...) printf("[" __FUNCTION__ "] " format "\n", __VA_ARGS__)
