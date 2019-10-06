@@ -124,53 +124,53 @@ PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 }
 
 template <hash_t::value_type ModuleHash>
-NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
+NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 {
   auto status = STATUS_NOT_SUPPORTED;
-  HANDLE sectionHandle = nullptr;
-  SIZE_T viewSize = NULL;
-  UNICODE_STRING usSectionName{};
-  OBJECT_ATTRIBUTES objAttrib{};
+  HANDLE section_handle = nullptr;
+  SIZE_T view_size = NULL;
+  UNICODE_STRING us_section_name{};
+  OBJECT_ATTRIBUTES obj_attrib;
 
   switch (ModuleHash)
   {
   case HASHSTR("kernel32.dll"):
-    RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernel32.dll");
+    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\kernel32.dll");
     break;
   case HASHSTR("kernelbase.dll"):
-    RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernelbase.dll");
+    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\kernelbase.dll");
     break;
   case HASHSTR("ntdll.dll"):
-    RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\ntdll.dll");
+    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\ntdll.dll");
     break;
   case HASHSTR("win32u.dll"):
-    RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\win32u.dll");
+    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\win32u.dll");
     break;
   case HASHSTR("user32.dll"):
-    RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\user32.dll");
+    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\user32.dll");
     break;
   default:
     return status;
   }
 
-  InitializeObjectAttributes(&objAttrib, &usSectionName, OBJ_CASE_INSENSITIVE, NULL, NULL);
+  InitializeObjectAttributes(&obj_attrib, &us_section_name, OBJ_CASE_INSENSITIVE, NULL, NULL);
 
-  status = NT_FUNCTION_CALL(NtOpenSection)(&sectionHandle, SECTION_MAP_READ, &objAttrib);
+  status = NT_FUNCTION_CALL(NtOpenSection)(&section_handle, SECTION_MAP_READ, &obj_attrib);
   if (!NT_SUCCESS(status))
   {
     return status;
   }
 
-  status = NT_FUNCTION_CALL(NtMapViewOfSection)(sectionHandle, NT_CURRENT_PROCESS(), BaseAddress, NULL, NULL, nullptr,
-                                              &viewSize, nt::SECTION_INHERIT::ViewShare, NULL, PAGE_READONLY);
+  status = NT_FUNCTION_CALL(NtMapViewOfSection)(section_handle, NT_CURRENT_PROCESS(), BaseAddress, NULL, NULL, nullptr,
+                                              &view_size, nt::SECTION_INHERIT::ViewShare, NULL, PAGE_READONLY);
   if (!NT_SUCCESS(status))
   {
     return status;
   }
 
-  if (sectionHandle)
+  if (section_handle)
   {
-    status = NtClose(sectionHandle);
+    status = NtClose(section_handle);
     if (!NT_SUCCESS(status))
     {
       return status;

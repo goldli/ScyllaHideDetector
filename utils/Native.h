@@ -9,7 +9,7 @@
 #define GET_PROCEDURE_ADDRESS(ModuleBaseAddress, FunctionName) _GetProcAddress<HASHSTR(FunctionName)>(ModuleBaseAddress)
 #define NT_FUNCTION_CALL(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("ntdll.dll"),  #FunctionName))
 #define WIN_FUNCTION_CALL(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("win32u.dll"), #FunctionName))
-#define MAP_NATIVE_MODULE(ModuleName, ModuleBaseAddress)       RemapNtModule<HASHSTR(ModuleName)>(ModuleBaseAddress)
+#define MAP_NATIVE_MODULE(ModuleName, ModuleBaseAddress)       remap_nt_module<HASHSTR(ModuleName)>(ModuleBaseAddress)
 
 #ifdef DEBUG
 #define print(format, ...) printf("[" __FUNCTION__ "] " format "\n", __VA_ARGS__)

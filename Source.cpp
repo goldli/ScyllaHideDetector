@@ -22,17 +22,17 @@ void* resolve_jmp(void* address, const uint8_t is64_bit)
   return address;
 }
 
-void ntdll_restore(const char* fn)
+void ntdll_restore(const char* func_name)
 {
   const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
   PVOID ntdll_mapped = nullptr;
   MAP_NATIVE_MODULE("ntdll.dll", &ntdll_mapped);
 
-  const auto hooked_func_adress = resolve_jmp(get_proc_address(ntdll,HASHSTR(fn)), 1);
+  const auto hooked_func_adress = resolve_jmp(get_proc_address(ntdll,HASHSTR(func_name)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = resolve_jmp(get_proc_address(ntdll_mapped,HASHSTR(fn)), 1);
+  const auto original_func_adress = resolve_jmp(get_proc_address(ntdll_mapped,HASHSTR(func_name)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -40,7 +40,7 @@ void ntdll_restore(const char* fn)
   if (crc_original != crc_hooked)
   {
 #ifndef AHOOK_LOG
-    log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
+    log("[Detect] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
 
     DWORD oldprotect = 0;
@@ -51,22 +51,22 @@ void ntdll_restore(const char* fn)
   else
   {
 #ifndef AHOOK_LOG
-    log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
+    log("[Ok] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
   }
 }
 
-void kernelbase_restore(const char* fn)
+void kernelbase_restore(const char* func_name)
 {
   const auto kernelbase = GET_MODULE_BASE_ADDRESS("kernelbase.dll");
   PVOID kernelbase_mapped = nullptr;
   MAP_NATIVE_MODULE("kernelbase.dll", &kernelbase_mapped);
 
-  const auto hooked_func_adress = resolve_jmp(get_proc_address(kernelbase,HASHSTR(fn)), 1);
+  const auto hooked_func_adress = resolve_jmp(get_proc_address(kernelbase,HASHSTR(func_name)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = resolve_jmp(get_proc_address(kernelbase_mapped,HASHSTR(fn)), 1);
+  const auto original_func_adress = resolve_jmp(get_proc_address(kernelbase_mapped,HASHSTR(func_name)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -74,7 +74,7 @@ void kernelbase_restore(const char* fn)
   if (crc_original != crc_hooked)
   {
 #ifndef AHOOK_LOG
-    log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
+    log("[Detect] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
 
     DWORD oldprotect = 0;
@@ -85,12 +85,12 @@ void kernelbase_restore(const char* fn)
   else
   {
 #ifndef AHOOK_LOG
-    log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
+    log("[Ok] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
   }
 }
 
-void user32_restore(const char* fn)
+void user32_restore(const char* func_name)
 {
   // TODO: another method for detect build
   std::wstring regSubKey;
@@ -118,11 +118,11 @@ void user32_restore(const char* fn)
     PVOID win32_u_mapped = nullptr;
     MAP_NATIVE_MODULE("win32u.dll", &win32_u_mapped);
 
-    const auto hooked_func_adress = resolve_jmp(get_proc_address(win32_u,HASHSTR(fn)), 1);
+    const auto hooked_func_adress = resolve_jmp(get_proc_address(win32_u,HASHSTR(func_name)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = resolve_jmp(get_proc_address(win32_u_mapped,HASHSTR(fn)), 1);
+    const auto original_func_adress = resolve_jmp(get_proc_address(win32_u_mapped,HASHSTR(func_name)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -130,7 +130,7 @@ void user32_restore(const char* fn)
     if (crc_original != crc_hooked)
     {
 #ifndef AHOOK_LOG
-      log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
+      log("[Detect] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
 
       DWORD oldprotect = 0;
@@ -141,7 +141,7 @@ void user32_restore(const char* fn)
     else
     {
 #ifndef AHOOK_LOG
-      log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
+      log("[Ok] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
     }
 
@@ -155,11 +155,11 @@ void user32_restore(const char* fn)
     PVOID user32_mapped = nullptr;
     MAP_NATIVE_MODULE("user32.dll", &user32_mapped);
 
-    const auto hooked_func_adress = resolve_jmp(get_proc_address(user_32,HASHSTR(fn)), 1);
+    const auto hooked_func_adress = resolve_jmp(get_proc_address(user_32,HASHSTR(func_name)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = resolve_jmp(get_proc_address(user32_mapped,HASHSTR(fn)), 1);
+    const auto original_func_adress = resolve_jmp(get_proc_address(user32_mapped,HASHSTR(func_name)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -167,7 +167,7 @@ void user32_restore(const char* fn)
     if (crc_original != crc_hooked)
     {
 #ifndef AHOOK_LOG
-      log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
+      log("[Detect] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
 
       DWORD oldprotect = 0;
@@ -178,7 +178,7 @@ void user32_restore(const char* fn)
     else
     {
 #ifndef AHOOK_LOG
-      log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
+      log("[Ok] " + static_cast<std::string>(func_name) + "\r\n");
 #endif
     }
 
