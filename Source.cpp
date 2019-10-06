@@ -7,8 +7,6 @@
 #include "utils/Helpers.h"
 #include "utils/crc32.h"
 #include "utils/LengthDisasm.h"
-#include "utils/base64.h"
-#include "utils/xxtea.h"
 #include <vector>
 
 void* resolve_jmp(void* address, const uint8_t is64_bit)

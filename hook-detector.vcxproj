@@ -147,13 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="utils\base64.h" />
     <ClInclude Include="utils\crc32.h" />
     <ClInclude Include="utils\Hash.h" />
     <ClInclude Include="utils\LengthDisasm.h" />
     <ClInclude Include="utils\Native.h" />
     <ClInclude Include="utils\Helpers.h" />
-    <ClInclude Include="utils\xxtea.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
