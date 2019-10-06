@@ -45,9 +45,7 @@ void ntdll_restore(const char* fn)
 
     DWORD oldprotect = 0;
     VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
-
     memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-
     VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
   }
   else
@@ -137,9 +135,7 @@ void user32_restore(const char* fn)
 
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
-
       memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-
       VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
     else
@@ -176,9 +172,7 @@ void user32_restore(const char* fn)
 
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
-
       memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-
       VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
     else
