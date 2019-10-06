@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "xorstr.hpp"
 
 inline void log()
 {
@@ -135,19 +136,19 @@ NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
   switch (ModuleHash)
   {
   case HASHSTR("kernel32.dll"):
-    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\kernel32.dll");
+    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernel32.dll"));
     break;
   case HASHSTR("kernelbase.dll"):
-    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\kernelbase.dll");
+    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernelbase.dll"));
     break;
   case HASHSTR("ntdll.dll"):
-    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\ntdll.dll");
+    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\ntdll.dll"));
     break;
   case HASHSTR("win32u.dll"):
-    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\win32u.dll");
+    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\win32u.dll"));
     break;
   case HASHSTR("user32.dll"):
-    RtlInitUnicodeString(&us_section_name, L"\\KnownDlls\\user32.dll");
+    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\user32.dll"));
     break;
   default:
     return status;

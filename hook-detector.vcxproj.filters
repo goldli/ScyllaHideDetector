@@ -15,19 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="utils\Helpers.h">
+    <ClInclude Include="utils\crc32.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\Hash.h">
+    <ClInclude Include="utils\Hash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\Native.h">
+    <ClInclude Include="utils\Helpers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\crc32.h">
+    <ClInclude Include="utils\LengthDisasm.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\LengthDisasm.h">
+    <ClInclude Include="utils\Native.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\xorstr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -94,7 +94,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -147,11 +147,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="utils\crc32.h" />
-    <ClInclude Include="utils\Hash.h" />
-    <ClInclude Include="utils\LengthDisasm.h" />
-    <ClInclude Include="utils\Native.h" />
-    <ClInclude Include="utils\Helpers.h" />
+    <ClInclude Include="utils\crc32.hpp" />
+    <ClInclude Include="utils\Hash.hpp" />
+    <ClInclude Include="utils\LengthDisasm.hpp" />
+    <ClInclude Include="utils\Native.hpp" />
+    <ClInclude Include="utils\Helpers.hpp" />
+    <ClInclude Include="utils\xorstr.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />

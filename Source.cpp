@@ -2,11 +2,12 @@
 #include <winternl.h>
 #include <iostream>
 #define AHOOK_LOG
-#include "utils/Native.h"
-#include "utils/Hash.h"
-#include "utils/Helpers.h"
-#include "utils/crc32.h"
-#include "utils/LengthDisasm.h"
+#include "utils/xorstr.hpp"
+#include "utils/Native.hpp"
+#include "utils/Hash.hpp"
+#include "utils/Helpers.hpp"
+#include "utils/crc32.hpp"
+#include "utils/LengthDisasm.hpp"
 #include <vector>
 
 void* resolve_jmp(void* address, const uint8_t is64_bit)
@@ -95,11 +96,11 @@ void user32_restore(const char* func_name)
   // TODO: another method for detect build
   std::wstring regSubKey;
 #ifdef _WIN64
-  regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
+  regSubKey = xorstr_(L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\");
 #else
     regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
 #endif
-  const std::wstring regValue(L"CurrentBuildNumber");
+  const std::wstring regValue(xorstr_(L"CurrentBuildNumber"));
   std::wstring CurrentBuildNumber;
   try
   {
@@ -112,7 +113,7 @@ void user32_restore(const char* func_name)
 
   if (std::stoi(CurrentBuildNumber) >= 14393)
   {
-    const auto h_module = LoadLibraryW(L"user32.dll");
+    const auto h_module = LoadLibraryW(xorstr_(L"user32.dll"));
 
     const auto win32_u = GET_MODULE_BASE_ADDRESS("win32u.dll");
     PVOID win32_u_mapped = nullptr;
@@ -149,7 +150,7 @@ void user32_restore(const char* func_name)
   }
   else
   {
-    const auto h_module = LoadLibraryW(L"user32.dll");
+    const auto h_module = LoadLibraryW(xorstr_(L"user32.dll"));
 
     const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;
@@ -188,38 +189,38 @@ void user32_restore(const char* func_name)
 
 int main()
 {
-  ntdll_restore("NtYieldExecution");
-  ntdll_restore("NtSetInformationThread");
-  ntdll_restore("NtSetInformationProcess");
-  ntdll_restore("NtQuerySystemInformation");
-  ntdll_restore("NtQueryInformationProcess");
-  ntdll_restore("NtQueryObject");
-  ntdll_restore("NtCreateThreadEx");
-  ntdll_restore("NtSetDebugFilterState");
-  ntdll_restore("NtClose");
-  ntdll_restore("NtQueryPerformanceCounter");
-  ntdll_restore("NtGetContextThread");
-  ntdll_restore("NtSetContextThread");
+  ntdll_restore(xorstr_("NtYieldExecution"));
+  ntdll_restore(xorstr_("NtSetInformationThread"));
+  ntdll_restore(xorstr_("NtSetInformationProcess"));
+  ntdll_restore(xorstr_("NtQuerySystemInformation"));
+  ntdll_restore(xorstr_("NtQueryInformationProcess"));
+  ntdll_restore(xorstr_("NtQueryObject"));
+  ntdll_restore(xorstr_("NtCreateThreadEx"));
+  ntdll_restore(xorstr_("NtSetDebugFilterState"));
+  ntdll_restore(xorstr_("NtClose"));
+  ntdll_restore(xorstr_("NtQueryPerformanceCounter"));
+  ntdll_restore(xorstr_("NtGetContextThread"));
+  ntdll_restore(xorstr_("NtSetContextThread"));
 
   //TODO: make this workable
   //ntdll_restore("NtQuerySystemTime");
 
-  kernelbase_restore("GetTickCount");
-  kernelbase_restore("GetTickCount64");
-  kernelbase_restore("OutputDebugStringA");
-  kernelbase_restore("GetLocalTime");
-  kernelbase_restore("GetSystemTime");
+  kernelbase_restore(xorstr_("GetTickCount"));
+  kernelbase_restore(xorstr_("GetTickCount64"));
+  kernelbase_restore(xorstr_("OutputDebugStringA"));
+  kernelbase_restore(xorstr_("GetLocalTime"));
+  kernelbase_restore(xorstr_("GetSystemTime"));
 
-  user32_restore("NtUserBlockInput");
-  user32_restore("NtUserQueryWindow");
-  user32_restore("NtUserFindWindowEx");
-  user32_restore("NtUserBuildHwndList");
+  user32_restore(xorstr_("NtUserBlockInput"));
+  user32_restore(xorstr_("NtUserQueryWindow"));
+  user32_restore(xorstr_("NtUserFindWindowEx"));
+  user32_restore(xorstr_("NtUserBuildHwndList"));
 
   // additional
-  user32_restore("BlockInput");
-  kernelbase_restore("CheckRemoteDebuggerPresent");
-  kernelbase_restore("OutputDebugString");
-  kernelbase_restore("OutputDebugStringW");
+  user32_restore(xorstr_("BlockInput"));
+  kernelbase_restore(xorstr_("CheckRemoteDebuggerPresent"));
+  kernelbase_restore(xorstr_("OutputDebugString"));
+  kernelbase_restore(xorstr_("OutputDebugStringW"));
 
   system("pause");
 
