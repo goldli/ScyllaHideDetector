@@ -112,7 +112,7 @@ void user32_restore(const char* func_name)
 
   if (std::stoi(CurrentBuildNumber) >= 14393)
   {
-    const auto h_module = LoadLibrary(L"user32.dll");
+    const auto h_module = LoadLibraryW(L"user32.dll");
 
     const auto win32_u = GET_MODULE_BASE_ADDRESS("win32u.dll");
     PVOID win32_u_mapped = nullptr;
@@ -149,7 +149,7 @@ void user32_restore(const char* func_name)
   }
   else
   {
-    const auto h_module = LoadLibraryA("user32.dll");
+    const auto h_module = LoadLibraryW(L"user32.dll");
 
     const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;
