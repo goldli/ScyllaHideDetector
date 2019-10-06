@@ -713,7 +713,7 @@ inline uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
 
   uint8_t OpFlag = 0;
 
-  uint8_t* Ip = (uint8_t*)Address;
+  uint8_t* Ip = static_cast<uint8_t*>(Address);
 
   while (FlagsTable[*Ip] & OP_PREFIX)
   {
@@ -747,7 +747,7 @@ inline uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
       Data->Flags |= F_INVALID;
       return 0;
     }
-    Data->Prefix[Data->PrefixesCount] = (TPrefixes)*Ip++;
+    Data->Prefix[Data->PrefixesCount] = static_cast<TPrefixes>(*Ip++);
     Data->PrefixesCount++;
     Data->Length++;
   }
@@ -948,7 +948,7 @@ uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
 
   uint8_t Size = 0;
   uint32_t Result = 0;
-  uint8_t* Offset = (uint8_t*)Address;
+  uint8_t* Offset = static_cast<uint8_t*>(Address);
 
   while (Size = LengthDisasm(Offset, Is64Bit, &Data))
   {
@@ -973,7 +973,7 @@ inline uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
   if (!Buffer || !Data)
     return 0;
 
-  uint8_t* pCode = (unsigned char*)Buffer;
+  uint8_t* pCode = static_cast<unsigned char*>(Buffer);
 
   if (Data->Flags & F_PREFIX)
   {

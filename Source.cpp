@@ -11,12 +11,12 @@
 
 void* ResolveJmp(void* Address, uint8_t Is64Bit)
 {
-  TLengthDisasm Data = {0};
+  TLengthDisasm data = {0};
 
-  if (Data.Opcode[0] == 0xE9 && Data.Length == 5 && Data.OpcodeSize == 1)
+  if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
   {
-    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(Address) + Data.OpcodeSize);
-    return ResolveJmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(Address) + delta + Data.Length), Is64Bit);
+    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(Address) + data.OpcodeSize);
+    return ResolveJmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(Address) + delta + data.Length), Is64Bit);
   }
 
   return Address;
@@ -24,23 +24,23 @@ void* ResolveJmp(void* Address, uint8_t Is64Bit)
 
 void ntdll_restore(const char* fn)
 {
-  auto ntdll = GetModuleBaseAddress(L"ntdll.dll");
+  const auto ntdll = GetModuleBaseAddress(L"ntdll.dll");
   PVOID ntdll_mapped = nullptr;
   MapNativeModule("ntdll.dll", &ntdll_mapped);
 
-  auto hooked_func_adress = ResolveJmp(_GetProcAddress2(ntdll,hashstr(fn)), 1);
-  auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
-  auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
+  const auto hooked_func_adress = ResolveJmp(_GetProcAddress2(ntdll,hashstr(fn)), 1);
+  const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+  const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  auto original_func_adress = ResolveJmp(_GetProcAddress2(ntdll_mapped,hashstr(fn)), 1);
-  auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
-  auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
+  const auto original_func_adress = ResolveJmp(_GetProcAddress2(ntdll_mapped,hashstr(fn)), 1);
+  const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+  const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
   // detect hook and restore bytes
   if (crc_original != crc_hooked)
   {
 #ifndef AHOOK_LOG
-    log("[Detect] " + (std::string)fn + "\r\n");
+    log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
 #endif
 
     DWORD oldprotect = 0;
@@ -53,7 +53,7 @@ void ntdll_restore(const char* fn)
   else
   {
 #ifndef AHOOK_LOG
-    log("[Ok] " + (std::string)fn + "\r\n");
+    log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
   }
 }
@@ -64,19 +64,19 @@ void kernelbase_restore(const char* fn)
   PVOID kernelbase_mapped = nullptr;
   MapNativeModule("kernelbase.dll", &kernelbase_mapped);
 
-  auto hooked_func_adress = ResolveJmp(_GetProcAddress2(kernelbase,hashstr(fn)), 1);
-  auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
-  auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
+  const auto hooked_func_adress = ResolveJmp(_GetProcAddress2(kernelbase,hashstr(fn)), 1);
+  const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+  const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  auto original_func_adress = ResolveJmp(_GetProcAddress2(kernelbase_mapped,hashstr(fn)), 1);
-  auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
-  auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
+  const auto original_func_adress = ResolveJmp(_GetProcAddress2(kernelbase_mapped,hashstr(fn)), 1);
+  const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+  const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
   // detect hook and restore bytes
   if (crc_original != crc_hooked)
   {
 #ifndef AHOOK_LOG
-    log("[Detect] " + (std::string)fn + "\r\n");
+    log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
 #endif
 
     DWORD oldprotect = 0;
@@ -89,7 +89,7 @@ void kernelbase_restore(const char* fn)
   else
   {
 #ifndef AHOOK_LOG
-    log("[Ok] " + (std::string)fn + "\r\n");
+    log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
   }
 }
@@ -123,19 +123,19 @@ void user32_restore(const char* fn)
     PVOID win32u_mapped = nullptr;
     MapNativeModule("win32u.dll", &win32u_mapped);
 
-    auto hooked_func_adress = ResolveJmp(_GetProcAddress2(win32u,hashstr(fn)), 1);
-    auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
-    auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
+    const auto hooked_func_adress = ResolveJmp(_GetProcAddress2(win32u,hashstr(fn)), 1);
+    const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+    const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    auto original_func_adress = ResolveJmp(_GetProcAddress2(win32u_mapped,hashstr(fn)), 1);
-    auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
-    auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
+    const auto original_func_adress = ResolveJmp(_GetProcAddress2(win32u_mapped,hashstr(fn)), 1);
+    const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+    const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
     // detect hook and restore bytes
     if (crc_original != crc_hooked)
     {
 #ifndef AHOOK_LOG
-      log("[Detect] " + (std::string)fn + "\r\n");
+      log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
 #endif
 
       DWORD oldprotect = 0;
@@ -148,7 +148,7 @@ void user32_restore(const char* fn)
     else
     {
 #ifndef AHOOK_LOG
-      log("[Ok] " + (std::string)fn + "\r\n");
+      log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
     }
   }
@@ -160,19 +160,19 @@ void user32_restore(const char* fn)
     PVOID user32_mapped = nullptr;
     MapNativeModule("user32.dll", &user32_mapped);
 
-    auto hooked_func_adress = ResolveJmp(_GetProcAddress2(user_32,hashstr(fn)), 1);
-    auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
-    auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
+    const auto hooked_func_adress = ResolveJmp(_GetProcAddress2(user_32,hashstr(fn)), 1);
+    const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
+    const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    auto original_func_adress = ResolveJmp(_GetProcAddress2(user32_mapped,hashstr(fn)), 1);
-    auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
-    auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
+    const auto original_func_adress = ResolveJmp(_GetProcAddress2(user32_mapped,hashstr(fn)), 1);
+    const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
+    const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
     // detect hook and restore bytes
     if (crc_original != crc_hooked)
     {
 #ifndef AHOOK_LOG
-      log("[Detect] " + (std::string)fn + "\r\n");
+      log("[Detect] " + static_cast<std::string>(fn) + "\r\n");
 #endif
 
       DWORD oldprotect = 0;
@@ -185,7 +185,7 @@ void user32_restore(const char* fn)
     else
     {
 #ifndef AHOOK_LOG
-      log("[Ok] " + (std::string)fn + "\r\n");
+      log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
     }
   }

@@ -82,7 +82,7 @@ unsigned int crc32(const void* buffer, unsigned int len)
 
   for (i = 0; i < len; i++)
   {
-    CRC32C(crc32, ((const unsigned char *)buffer)[i]);
+    CRC32C(crc32, (static_cast<const unsigned char *>(buffer))[i]);
   }
   return ~crc32;
 }

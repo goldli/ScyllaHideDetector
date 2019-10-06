@@ -15,7 +15,7 @@ void log(First&& message, Rest&& ...rest)
 
 template <const hash_t::value_type ModuleHash>
 
-inline PVOID _GetModuleHandle(void) noexcept
+PVOID _GetModuleHandle() noexcept
 {
   const auto pPeb = (nt::PPEB)__readgsqword(0x60);
 
@@ -83,7 +83,7 @@ inline PVOID _GetProcAddress2(const PVOID ModuleBaseAddress, const hash_t::value
 }
 
 template <const hash_t::value_type FunctionHash>
-inline PVOID _GetProcAddress(const PVOID ModuleBaseAddress) noexcept
+PVOID _GetProcAddress(const PVOID ModuleBaseAddress) noexcept
 {
   const PIMAGE_DOS_HEADER dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ModuleBaseAddress);
   PIMAGE_NT_HEADERS32 nt32 = nullptr;
