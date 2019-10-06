@@ -35,7 +35,7 @@ PVOID _GetModuleHandle() noexcept
   return nullptr;
 }
 
-inline PVOID _GetProcAddress2(const PVOID ModuleBaseAddress, const hash_t::value_type FunctionHash) noexcept
+inline PVOID GetProcAddress_(const PVOID ModuleBaseAddress, const hash_t::value_type FunctionHash) noexcept
 {
   const PIMAGE_DOS_HEADER dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ModuleBaseAddress);
   PIMAGE_NT_HEADERS32 nt32 = nullptr;
@@ -83,7 +83,7 @@ inline PVOID _GetProcAddress2(const PVOID ModuleBaseAddress, const hash_t::value
 }
 
 template <const hash_t::value_type FunctionHash>
-PVOID _GetProcAddress(const PVOID ModuleBaseAddress) noexcept
+inline PVOID _GetProcAddress(const PVOID ModuleBaseAddress) noexcept
 {
   const PIMAGE_DOS_HEADER dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ModuleBaseAddress);
   PIMAGE_NT_HEADERS32 nt32 = nullptr;
