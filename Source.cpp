@@ -12,10 +12,6 @@ void* ResolveJmp(void* Address, uint8_t Is64Bit)
 {
 	TLengthDisasm Data = {0};
 
-	//const auto Offset = static_cast<uint8_t*>(Address);
-
-	//uint8_t Size = LengthDisasm(Offset, Is64Bit, &Data);
-
 	if (Data.Opcode[0] == 0xE9 && Data.Length == 5 && Data.OpcodeSize == 1)
 	{
 		const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(Address) + Data.OpcodeSize);
