@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <iostream>
-//#define AHOOK_LOG
+#define AHOOK_LOG
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"
@@ -9,17 +9,17 @@
 #include "utils/LengthDisasm.h"
 #include <vector>
 
-void* ResolveJmp(void* Address, uint8_t Is64Bit)
+void* resolve_jmp(void* address, const uint8_t is64_bit)
 {
   TLengthDisasm data = {0};
 
   if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
   {
-    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(Address) + data.OpcodeSize);
-    return ResolveJmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(Address) + delta + data.Length), Is64Bit);
+    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(address) + data.OpcodeSize);
+    return resolve_jmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(address) + delta + data.Length), is64_bit);
   }
 
-  return Address;
+  return address;
 }
 
 void ntdll_restore(const char* fn)
@@ -28,11 +28,11 @@ void ntdll_restore(const char* fn)
   PVOID ntdll_mapped = nullptr;
   MAP_NATIVE_MODULE("ntdll.dll", &ntdll_mapped);
 
-  const auto hooked_func_adress = ResolveJmp(get_proc_address(ntdll,HASHSTR(fn)), 1);
+  const auto hooked_func_adress = resolve_jmp(get_proc_address(ntdll,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = ResolveJmp(get_proc_address(ntdll_mapped,HASHSTR(fn)), 1);
+  const auto original_func_adress = resolve_jmp(get_proc_address(ntdll_mapped,HASHSTR(fn)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -46,7 +46,7 @@ void ntdll_restore(const char* fn)
     DWORD oldprotect = 0;
     VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-    RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
+    memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
 
     VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
   }
@@ -64,11 +64,11 @@ void kernelbase_restore(const char* fn)
   PVOID kernelbase_mapped = nullptr;
   MAP_NATIVE_MODULE("kernelbase.dll", &kernelbase_mapped);
 
-  const auto hooked_func_adress = ResolveJmp(get_proc_address(kernelbase,HASHSTR(fn)), 1);
+  const auto hooked_func_adress = resolve_jmp(get_proc_address(kernelbase,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = ResolveJmp(get_proc_address(kernelbase_mapped,HASHSTR(fn)), 1);
+  const auto original_func_adress = resolve_jmp(get_proc_address(kernelbase_mapped,HASHSTR(fn)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -81,9 +81,7 @@ void kernelbase_restore(const char* fn)
 
     DWORD oldprotect = 0;
     VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
-
-    RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
-
+    memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
     VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
   }
   else
@@ -116,18 +114,17 @@ void user32_restore(const char* fn)
 
   if (std::stoi(CurrentBuildNumber) >= 14393)
   {
-    HINSTANCE hModule=nullptr;
-    hModule=LoadLibrary(L"user32.dll");
+    const auto h_module = LoadLibrary(L"user32.dll");
 
-    const auto win32u = GET_MODULE_BASE_ADDRESS("win32u.dll");
-    PVOID win32u_mapped = nullptr;
-    MAP_NATIVE_MODULE("win32u.dll", &win32u_mapped);
+    const auto win32_u = GET_MODULE_BASE_ADDRESS("win32u.dll");
+    PVOID win32_u_mapped = nullptr;
+    MAP_NATIVE_MODULE("win32u.dll", &win32_u_mapped);
 
-    const auto hooked_func_adress = ResolveJmp(get_proc_address(win32u,HASHSTR(fn)), 1);
+    const auto hooked_func_adress = resolve_jmp(get_proc_address(win32_u,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = ResolveJmp(get_proc_address(win32u_mapped,HASHSTR(fn)), 1);
+    const auto original_func_adress = resolve_jmp(get_proc_address(win32_u_mapped,HASHSTR(fn)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -141,7 +138,7 @@ void user32_restore(const char* fn)
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-      RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
+      memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
 
       VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
@@ -152,22 +149,21 @@ void user32_restore(const char* fn)
 #endif
     }
 
-    FreeLibrary(hModule);
+    FreeLibrary(h_module);
   }
   else
   {
-    HINSTANCE hModule=nullptr;
-    hModule=LoadLibraryA("user32.dll");
+    const auto h_module = LoadLibraryA("user32.dll");
 
     const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;
     MAP_NATIVE_MODULE("user32.dll", &user32_mapped);
 
-    const auto hooked_func_adress = ResolveJmp(get_proc_address(user_32,HASHSTR(fn)), 1);
+    const auto hooked_func_adress = resolve_jmp(get_proc_address(user_32,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = ResolveJmp(get_proc_address(user32_mapped,HASHSTR(fn)), 1);
+    const auto original_func_adress = resolve_jmp(get_proc_address(user32_mapped,HASHSTR(fn)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -181,7 +177,7 @@ void user32_restore(const char* fn)
       DWORD oldprotect = 0;
       VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
 
-      RtlCopyMemory(hooked_func_adress, original_func_adress, hooked_func_size);
+      memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
 
       VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
@@ -192,7 +188,7 @@ void user32_restore(const char* fn)
 #endif
     }
 
-    FreeLibrary(hModule);
+    FreeLibrary(h_module);
   }
 }
 
