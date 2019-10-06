@@ -28,11 +28,11 @@ void ntdll_restore(const char* fn)
   PVOID ntdll_mapped = nullptr;
   MapNativeModule("ntdll.dll", &ntdll_mapped);
 
-  const auto hooked_func_adress = ResolveJmp(GetProcAddress_(ntdll,hashstr(fn)), 1);
+  const auto hooked_func_adress = ResolveJmp(GetProcAddress_(ntdll,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = ResolveJmp(GetProcAddress_(ntdll_mapped,hashstr(fn)), 1);
+  const auto original_func_adress = ResolveJmp(GetProcAddress_(ntdll_mapped,HASHSTR(fn)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -64,11 +64,11 @@ void kernelbase_restore(const char* fn)
   PVOID kernelbase_mapped = nullptr;
   MapNativeModule("kernelbase.dll", &kernelbase_mapped);
 
-  const auto hooked_func_adress = ResolveJmp(GetProcAddress_(kernelbase,hashstr(fn)), 1);
+  const auto hooked_func_adress = ResolveJmp(GetProcAddress_(kernelbase,HASHSTR(fn)), 1);
   const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
   const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-  const auto original_func_adress = ResolveJmp(GetProcAddress_(kernelbase_mapped,hashstr(fn)), 1);
+  const auto original_func_adress = ResolveJmp(GetProcAddress_(kernelbase_mapped,HASHSTR(fn)), 1);
   const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
   const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -116,18 +116,18 @@ void user32_restore(const char* fn)
 
   if (std::stoi(CurrentBuildNumber) >= 14393)
   {
-    // win32u.dll
-    LoadLibrary(L"user32.dll");
+    HINSTANCE hModule=nullptr;
+    hModule=LoadLibrary(L"user32.dll");
 
     const auto win32u = GetModuleBaseAddress("win32u.dll");
     PVOID win32u_mapped = nullptr;
     MapNativeModule("win32u.dll", &win32u_mapped);
 
-    const auto hooked_func_adress = ResolveJmp(GetProcAddress_(win32u,hashstr(fn)), 1);
+    const auto hooked_func_adress = ResolveJmp(GetProcAddress_(win32u,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = ResolveJmp(GetProcAddress_(win32u_mapped,hashstr(fn)), 1);
+    const auto original_func_adress = ResolveJmp(GetProcAddress_(win32u_mapped,HASHSTR(fn)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -151,20 +151,23 @@ void user32_restore(const char* fn)
       log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
     }
+
+    FreeLibrary(hModule);
   }
   else
   {
-    LoadLibraryA("user32.dll");
+    HINSTANCE hModule=nullptr;
+    hModule=LoadLibraryA("user32.dll");
 
     const auto user_32 = GetModuleBaseAddress(L"user32.dll");
     PVOID user32_mapped = nullptr;
     MapNativeModule("user32.dll", &user32_mapped);
 
-    const auto hooked_func_adress = ResolveJmp(GetProcAddress_(user_32,hashstr(fn)), 1);
+    const auto hooked_func_adress = ResolveJmp(GetProcAddress_(user_32,HASHSTR(fn)), 1);
     const auto hooked_func_size = static_cast<size_t>(GetSizeOfProc(hooked_func_adress, 1));
     const auto crc_hooked = crc32(hooked_func_adress, static_cast<unsigned int>(hooked_func_size));
 
-    const auto original_func_adress = ResolveJmp(GetProcAddress_(user32_mapped,hashstr(fn)), 1);
+    const auto original_func_adress = ResolveJmp(GetProcAddress_(user32_mapped,HASHSTR(fn)), 1);
     const auto original_func_size = static_cast<size_t>(GetSizeOfProc(original_func_adress, 1));
     const auto crc_original = crc32(original_func_adress, static_cast<unsigned int>(original_func_size));
 
@@ -188,6 +191,8 @@ void user32_restore(const char* fn)
       log("[Ok] " + static_cast<std::string>(fn) + "\r\n");
 #endif
     }
+
+    FreeLibrary(hModule);
   }
 }
 

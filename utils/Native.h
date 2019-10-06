@@ -5,11 +5,11 @@
 #define NtCurrentProcess() ((HANDLE)-1)
 #define NtCurrentThread()  ((HANDLE)-2)
 
-#define GetModuleBaseAddress(ModuleName)                     _GetModuleHandle<hashstr(ModuleName)>()
-#define GetProcedureAddress(ModuleBaseAddress, FunctionName) _GetProcAddress<hashstr(FunctionName)>(ModuleBaseAddress)
+#define GetModuleBaseAddress(ModuleName)                     _GetModuleHandle<HASHSTR(ModuleName)>()
+#define GetProcedureAddress(ModuleBaseAddress, FunctionName) _GetProcAddress<HASHSTR(FunctionName)>(ModuleBaseAddress)
 #define NtFunctionCall(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GetProcedureAddress(GetModuleBaseAddress("ntdll.dll"),  #FunctionName))
 #define WinFunctionCall(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GetProcedureAddress(GetModuleBaseAddress("win32u.dll"), #FunctionName))
-#define MapNativeModule(ModuleName, ModuleBaseAddress)       RemapNtModule<hashstr(ModuleName)>(ModuleBaseAddress)
+#define MapNativeModule(ModuleName, ModuleBaseAddress)       RemapNtModule<HASHSTR(ModuleName)>(ModuleBaseAddress)
 
 #ifdef DEBUG
 #define print(format, ...) printf("[" __FUNCTION__ "] " format "\n", __VA_ARGS__)

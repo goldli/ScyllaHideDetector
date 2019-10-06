@@ -141,19 +141,19 @@ NTSTATUS RemapNtModule(PVOID* BaseAddress) noexcept
 
   switch (ModuleHash)
   {
-  case hashstr("kernel32.dll"):
+  case HASHSTR("kernel32.dll"):
     RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernel32.dll");
     break;
-  case hashstr("kernelbase.dll"):
+  case HASHSTR("kernelbase.dll"):
     RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\kernelbase.dll");
     break;
-  case hashstr("ntdll.dll"):
+  case HASHSTR("ntdll.dll"):
     RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\ntdll.dll");
     break;
-  case hashstr("win32u.dll"):
+  case HASHSTR("win32u.dll"):
     RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\win32u.dll");
     break;
-  case hashstr("user32.dll"):
+  case HASHSTR("user32.dll"):
     RtlInitUnicodeString(&usSectionName, L"\\KnownDlls\\user32.dll");
     break;
   default:

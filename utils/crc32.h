@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define CRC32C(c,d) (c=(c>>8)^crc_c[(c^(d))&0xFF])
+#define CRC32_C(c,d) ((c)=((c)>>8)^crc_c[((c)^(d))&0xFF])
 
 static const unsigned int crc_c[256] = {
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
@@ -75,14 +75,13 @@ static const unsigned int crc_c[256] = {
 };
 
 
-unsigned int crc32(const void* buffer, unsigned int len)
+inline unsigned int crc32(const void* buffer, unsigned int len)
 {
-  unsigned int i;
   unsigned int crc32 = ~0L;
 
-  for (i = 0; i < len; i++)
+  for (unsigned int i = 0; i < len; i++)
   {
-    CRC32C(crc32, (static_cast<const unsigned char *>(buffer))[i]);
+    CRC32_C(crc32, (static_cast<const unsigned char *>(buffer))[i]);
   }
   return ~crc32;
 }

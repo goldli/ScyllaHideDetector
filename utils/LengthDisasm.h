@@ -950,7 +950,7 @@ uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
   uint32_t Result = 0;
   uint8_t* Offset = static_cast<uint8_t*>(Address);
 
-  while (Size = LengthDisasm(Offset, Is64Bit, &Data))
+  while ((Size = LengthDisasm(Offset, Is64Bit, &Data)))
   {
     Result += Size;
 

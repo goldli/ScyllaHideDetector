@@ -15,7 +15,7 @@
  */
 
 #pragma once
-#define hashstr(name) khash(name)
+#define HASHSTR(name) khash(name)
 
 // hashing stuff
 struct hash_t
@@ -23,7 +23,7 @@ struct hash_t
 #define HASH_PRIME 16777619
 #define HASH_OFFSET 2166136261
 
-#define TOLOWER(c) (c >= 'A' && c <= 'Z' ? (c | (1 << 5)) : c)
+#define TOLOWER(c) ((c) >= 'A' && (c) <= 'Z' ? ((c) | (1 << 5)) : (c))
 
   using value_type = unsigned long;
   constexpr static value_type offset = HASH_OFFSET;
