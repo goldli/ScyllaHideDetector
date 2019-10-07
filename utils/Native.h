@@ -1,4 +1,5 @@
 #pragma once
+#include <winnt.h>
 
 #define STATUS_NOT_SUPPORTED ((NTSTATUS)0xC00000BB)
 
@@ -57,11 +58,11 @@ namespace nt::fn
     PLDR_DATA_TABLE_ENTRY* Module
   );
 
-  using _RtlLookupFunctionEntry = PRUNTIME_FUNCTION(NTAPI*)(
-    DWORD64 ControlPc,
-    PDWORD64 ImageBase,
-    PUNWIND_HISTORY_TABLE HistoryTable
-  );
+  //using _RtlLookupFunctionEntry = PRUNTIME_FUNCTION(NTAPI*)(
+  //  DWORD64 ControlPc,
+  //  PDWORD64 ImageBase,
+  //  PUNWIND_HISTORY_TABLE HistoryTable
+  //);
 }
 
 namespace nt

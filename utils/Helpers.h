@@ -1,5 +1,12 @@
 #pragma once
 #include <string>
+#if _WIN32 || _WIN64
+#if _WIN64
+#define ENV64BIT
+#else
+#define ENV32BIT
+#endif
+#endif
 
 inline void log()
 {
@@ -16,8 +23,12 @@ void log(First&& message, Rest&& ...rest)
 template <const hash_t::value_type ModuleHash>
 PVOID get_module_handle() noexcept
 {
+#if defined (ENV64BIT)
   const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
+#elif defined(ENV32BIT)
+  const auto p_peb = reinterpret_cast<nt::PPEB>(__readfsdword(0x30));
 
+#endif
   if (p_peb)
   {
     for (auto p_list_entry = p_peb->Ldr->InLoadOrderModuleList.Flink;

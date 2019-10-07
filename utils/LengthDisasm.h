@@ -19,6 +19,7 @@
 #define _H_LDASM_
 
 #include <stdint.h>
+#include <intrin.h>
 
 #define OP_NONE             0x00
 #define OP_DATA_I8          0x01

@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <iostream>
-#define AHOOK_LOG
+//#define AHOOK_LOG
 #include "utils/Native.h"
 #include "utils/Hash.h"
 #include "utils/Helpers.h"
