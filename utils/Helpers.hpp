@@ -193,7 +193,7 @@ FORCEINLINE int getSysOpType()
 
 	const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
 
-	*(PVOID*)&RtlGetVersion = get_proc_address(ntdll, HASHSTR("RtlGetVersion"));
+	*(PVOID*)&RtlGetVersion = get_proc_address(ntdll, HASHSTR(xorstr_("RtlGetVersion")));
 
 	if (NULL != RtlGetVersion)
 	{

@@ -25,7 +25,7 @@ HANDLE hash_CreateFileA(
 	                                              LPSECURITY_ATTRIBUTES,
 	                                              DWORD,
 	                                              DWORD,
-	                                              HANDLE)>(get_api(_hash, "kernel32.dll", strlen("CreateFileA"),
+	                                              HANDLE)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateFileA"),
 	                                                               STRONG_SEED));
 
 	return temp_CreateFile(file_name, access, share_mode, security, creation_disposition, flags, template_file);
@@ -36,12 +36,14 @@ BOOL hash_VirtualProtect(LPVOID lpAddress,
                          DWORD flNewProtect,
                          PDWORD lpflOldProtect)
 {
-	const auto _hash = t1ha0("VirtualProtect", strlen("VirtualProtect"), STRONG_SEED);
+	const char* func = xorstr_("VirtualProtect");
+
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
 
 	temp_VirtualProtect = static_cast<BOOL(WINAPI*)(LPVOID,
 	                                                SIZE_T,
 	                                                DWORD,
-	                                                PDWORD)>(get_api(_hash, "kernel32.dll", strlen("VirtualProtect"),
+	                                                PDWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen(func),
 	                                                                 STRONG_SEED));
 
 	return temp_VirtualProtect(lpAddress, dwSize, flNewProtect, lpflOldProtect);
@@ -57,7 +59,7 @@ LPVOID hash_VirtualAlloc(LPVOID lpAddress,
 	temp_VirtualAlloc = static_cast<LPVOID(WINAPI*)(LPVOID,
 	                                                SIZE_T,
 	                                                DWORD,
-	                                                DWORD)>(get_api(_hash, "kernel32.dll", strlen("VirtualAlloc"),
+	                                                DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("VirtualAlloc"),
 	                                                                STRONG_SEED));
 
 	return temp_VirtualAlloc(lpAddress, dwSize, flAllocationType, flProtect);
@@ -72,7 +74,7 @@ BOOL hash_VirtualFree(LPVOID lpAddress,
 
 	temp_VirtualFree = static_cast<BOOL(WINAPI*)(LPVOID,
 	                                             SIZE_T,
-	                                             DWORD)>(get_api(_hash, "kernel32.dll", strlen("VirtualFree"),
+	                                             DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("VirtualFree"),
 	                                                             STRONG_SEED));
 
 	return temp_VirtualFree(lpAddress, dwSize, dwFreeType);
@@ -87,7 +89,7 @@ LPVOID hash_VirtualAllocEx(HANDLE hProcess,
 	const auto _hash = t1ha0("VirtualAllocEx", strlen("VirtualAllocEx"), STRONG_SEED);
 
 	temp_VirtualAllocEx = static_cast<LPVOID(WINAPI*)(HANDLE, LPVOID, SIZE_T, DWORD, DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("VirtualAllocEx"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("VirtualAllocEx"), STRONG_SEED));
 
 	return temp_VirtualAllocEx(hProcess, lpAddress, dwSize, flAllocationType, flProtect);
 }
@@ -102,7 +104,7 @@ BOOL hash_VirtualFreeEx(HANDLE hProcess,
 	temp_VirtualFreeEx = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                               LPVOID,
 	                                               SIZE_T,
-	                                               DWORD)>(get_api(_hash, "kernel32.dll", strlen("VirtualFreeEx"),
+	                                               DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("VirtualFreeEx"),
 	                                                               STRONG_SEED));
 
 	return temp_VirtualFreeEx(hProcess,
@@ -119,7 +121,7 @@ DWORD hash_QueryDosDeviceW(LPCWSTR lpDeviceName,
 
 	temp_QueryDosDeviceW = static_cast<DWORD(WINAPI*)(LPCWSTR,
 	                                                  LPWSTR,
-	                                                  DWORD)>(get_api(_hash, "kernel32.dll", strlen("QueryDosDeviceW"),
+	                                                  DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("QueryDosDeviceW"),
 	                                                                  STRONG_SEED));
 
 	return temp_QueryDosDeviceW(lpDeviceName,
@@ -138,7 +140,7 @@ BOOL hash_GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName,
 	                                                     PULARGE_INTEGER,
 	                                                     PULARGE_INTEGER,
 	                                                     PULARGE_INTEGER)>(get_api(
-		_hash, "kernel32.dll", strlen("GetDiskFreeSpaceExW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetDiskFreeSpaceExW"), STRONG_SEED));
 
 	return temp_GetDiskFreeSpaceExW(lpDirectoryName,
 	                                lpFreeBytesAvailableToCaller,
@@ -148,9 +150,11 @@ BOOL hash_GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName,
 
 HMODULE hash_LoadLibraryW(LPCWSTR lpLibFileName)
 {
-	const auto _hash = t1ha0("LoadLibraryW", strlen("LoadLibraryW"), STRONG_SEED);
+	const char* func = xorstr_("LoadLibraryW");
 
-	temp_LoadLibraryW = static_cast<HMODULE(WINAPI*)(LPCWSTR)>(get_api(_hash, "kernel32.dll", strlen("LoadLibraryW"),
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
+
+	temp_LoadLibraryW = static_cast<HMODULE(WINAPI*)(LPCWSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen(func),
 	                                                                   STRONG_SEED));
 
 	return temp_LoadLibraryW(lpLibFileName);
@@ -165,7 +169,7 @@ BOOL hash_GetModuleHandleExW(DWORD dwFlags,
 	temp_GetModuleHandleExW = static_cast<BOOL(WINAPI*)(DWORD,
 	                                                    LPCWSTR,
 	                                                    HMODULE*)>(get_api(
-		_hash, "kernel32.dll", strlen("GetModuleHandleExW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetModuleHandleExW"), STRONG_SEED));
 
 	return temp_GetModuleHandleExW(dwFlags,
 	                               lpModuleName,
@@ -181,7 +185,7 @@ DWORD hash_GetModuleFileNameW(HMODULE hModule,
 	temp_GetModuleFileNameW = static_cast<DWORD(WINAPI*)(HMODULE,
 	                                                     LPWSTR,
 	                                                     DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("GetModuleFileNameW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetModuleFileNameW"), STRONG_SEED));
 
 	return temp_GetModuleFileNameW(hModule,
 	                               lpFilename,
@@ -193,7 +197,7 @@ HMODULE hash_GetModuleHandleA(LPCSTR lpModuleName)
 	const auto _hash = t1ha0("GetModuleHandleA", strlen("GetModuleHandleA"), STRONG_SEED);
 
 	temp_GetModuleHandleA = static_cast<HMODULE(WINAPI*)(LPCSTR)>(get_api(
-		_hash, "kernel32.dll", strlen("GetModuleHandleA"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetModuleHandleA"), STRONG_SEED));
 
 	return temp_GetModuleHandleA(lpModuleName);
 }
@@ -203,7 +207,7 @@ HMODULE hash_GetModuleHandleW(LPCWSTR lpModuleName)
 	const auto _hash = t1ha0("GetModuleHandleW", strlen("GetModuleHandleW"), STRONG_SEED);
 
 	temp_GetModuleHandleW = static_cast<HMODULE(WINAPI*)(LPCWSTR)>(get_api(
-		_hash, "kernel32.dll", strlen("GetModuleHandleW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetModuleHandleW"), STRONG_SEED));
 
 	return temp_GetModuleHandleW(lpModuleName);
 }
@@ -214,7 +218,7 @@ FARPROC hash_GetProcAddress(HMODULE hModule,
 	const auto _hash = t1ha0("GetProcAddress", strlen("GetProcAddress"), STRONG_SEED);
 
 	temp_GetProcAddress = static_cast<FARPROC(WINAPI*)(HMODULE,
-	                                                   LPCSTR)>(get_api(_hash, "kernel32.dll", strlen("GetProcAddress"),
+	                                                   LPCSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetProcAddress"),
 	                                                                    STRONG_SEED));
 
 	return temp_GetProcAddress(hModule,
@@ -226,7 +230,7 @@ HANDLE hash_GetStdHandle(_In_ DWORD nStdHandle)
 	const auto _hash = t1ha0("GetStdHandle", strlen("GetStdHandle"), STRONG_SEED);
 
 	temp_GetStdHandle = static_cast<HANDLE(WINAPI*)(_In_ DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("GetStdHandle"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetStdHandle"), STRONG_SEED));
 
 	return temp_GetStdHandle(nStdHandle);
 }
@@ -238,7 +242,7 @@ BOOL hash_GetConsoleScreenBufferInfo(_In_ HANDLE hConsoleOutput,
 
 	temp_GetConsoleScreenBufferInfo = static_cast<BOOL(WINAPI*)(_In_ HANDLE,
 	                                                            _Out_ PCONSOLE_SCREEN_BUFFER_INFO)>(get_api(
-		_hash, "kernel32.dll", strlen("GetConsoleScreenBufferInfo"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetConsoleScreenBufferInfo"), STRONG_SEED));
 
 	return temp_GetConsoleScreenBufferInfo(hConsoleOutput,
 	                                       lpConsoleScreenBufferInfo);
@@ -251,7 +255,7 @@ BOOL hash_SetConsoleTextAttribute(_In_ HANDLE hConsoleOutput,
 
 	temp_SetConsoleTextAttribute = static_cast<BOOL(WINAPI*)(_In_ HANDLE,
 	                                                         _In_ WORD)>(get_api(
-		_hash, "kernel32.dll", strlen("SetConsoleTextAttribute"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("SetConsoleTextAttribute"), STRONG_SEED));
 
 	return temp_SetConsoleTextAttribute(hConsoleOutput,
 	                                    wAttributes);
@@ -261,7 +265,7 @@ DWORD hash_GetTickCount()
 {
 	const auto _hash = t1ha0("GetTickCount", strlen("GetTickCount"), STRONG_SEED);
 
-	temp_GetTickCount = static_cast<DWORD(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("GetTickCount"),
+	temp_GetTickCount = static_cast<DWORD(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetTickCount"),
 	                                                          STRONG_SEED));
 
 	return temp_GetTickCount();
@@ -276,7 +280,7 @@ BOOL hash_VerifyVersionInfoW(LPOSVERSIONINFOEXA lpVersionInformation,
 	temp_VerifyVersionInfoW = static_cast<BOOL(WINAPI*)(LPOSVERSIONINFOEXA,
 	                                                    DWORD,
 	                                                    DWORDLONG)>(get_api(
-		_hash, "kernel32.dll", strlen("VerifyVersionInfoW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("VerifyVersionInfoW"), STRONG_SEED));
 
 	return temp_VerifyVersionInfoW(lpVersionInformation,
 	                               dwTypeMask,
@@ -290,7 +294,7 @@ UINT hash_GetSystemWindowsDirectoryW(LPWSTR lpBuffer,
 
 	temp_GetSystemWindowsDirectoryW = static_cast<UINT(WINAPI*)(LPWSTR,
 	                                                            UINT)>(get_api(
-		_hash, "kernel32.dll", strlen("GetSystemWindowsDirectoryW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetSystemWindowsDirectoryW"), STRONG_SEED));
 
 	return temp_GetSystemWindowsDirectoryW(lpBuffer,
 	                                       uSize);
@@ -303,7 +307,7 @@ UINT hash_GetWindowsDirectoryW(LPWSTR lpBuffer,
 
 	temp_GetWindowsDirectoryW = static_cast<UINT(WINAPI*)(LPWSTR,
 	                                                      UINT)>(get_api(
-		_hash, "kernel32.dll", strlen("GetWindowsDirectoryW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetWindowsDirectoryW"), STRONG_SEED));
 
 	return temp_GetWindowsDirectoryW(lpBuffer,
 	                                 uSize);
@@ -316,7 +320,7 @@ UINT hash_GetSystemDirectoryW(LPWSTR lpBuffer,
 
 	temp_GetSystemDirectoryW = static_cast<UINT(WINAPI*)(LPWSTR,
 	                                                     UINT)>(get_api(
-		_hash, "kernel32.dll", strlen("GetSystemDirectoryW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetSystemDirectoryW"), STRONG_SEED));
 
 	return temp_GetSystemDirectoryW(lpBuffer,
 	                                uSize);
@@ -329,7 +333,7 @@ UINT hash_GetSystemDirectoryA(LPSTR lpBuffer,
 
 	temp_GetSystemDirectoryA = static_cast<UINT(WINAPI*)(LPSTR,
 	                                                     UINT)>(get_api(
-		_hash, "kernel32.dll", strlen("GetSystemDirectoryA"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetSystemDirectoryA"), STRONG_SEED));
 
 	return temp_GetSystemDirectoryA(lpBuffer,
 	                                uSize);
@@ -340,7 +344,7 @@ void hash_GetSystemInfo(LPSYSTEM_INFO lpSystemInfo)
 	const auto _hash = t1ha0("GetSystemInfo", strlen("GetSystemInfo"), STRONG_SEED);
 
 	temp_GetSystemInfo = static_cast<void(WINAPI*)(LPSYSTEM_INFO)>(get_api(
-		_hash, "kernel32.dll", strlen("GetSystemInfo"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetSystemInfo"), STRONG_SEED));
 
 	return temp_GetSystemInfo(lpSystemInfo);
 }
@@ -354,7 +358,7 @@ DWORD hash_ExpandEnvironmentStringsW(LPCWSTR lpSrc,
 	temp_ExpandEnvironmentStringsW = static_cast<DWORD(WINAPI*)(LPCWSTR,
 	                                                            LPWSTR,
 	                                                            DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("ExpandEnvironmentStringsW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("ExpandEnvironmentStringsW"), STRONG_SEED));
 
 	return temp_ExpandEnvironmentStringsW(lpSrc,
 	                                      lpDst,
@@ -366,7 +370,7 @@ BOOL hash_QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount)
 	const auto _hash = t1ha0("QueryPerformanceCounter", strlen("QueryPerformanceCounter"), STRONG_SEED);
 
 	temp_QueryPerformanceCounter = static_cast<BOOL(WINAPI*)(LARGE_INTEGER*)>(get_api(
-		_hash, "kernel32.dll", strlen("QueryPerformanceCounter"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("QueryPerformanceCounter"), STRONG_SEED));
 
 	return temp_QueryPerformanceCounter(lpPerformanceCount);
 }
@@ -376,7 +380,7 @@ BOOL hash_IsProcessorFeaturePresent(DWORD ProcessorFeature)
 	const auto _hash = t1ha0("IsProcessorFeaturePresent", strlen("IsProcessorFeaturePresent"), STRONG_SEED);
 
 	temp_IsProcessorFeaturePresent = static_cast<BOOL(WINAPI*)(DWORD)>(get_api(
-			_hash, "kernel32.dll", strlen("IsProcessorFeaturePresent"), STRONG_SEED)
+			_hash, xorstr_("kernel32.dll"), strlen("IsProcessorFeaturePresent"), STRONG_SEED)
 	);
 
 	return temp_IsProcessorFeaturePresent(ProcessorFeature);
@@ -389,7 +393,7 @@ PVOID hash_AddVectoredExceptionHandler(ULONG First,
 	const auto _hash = t1ha0("AddVectoredExceptionHandler", strlen("AddVectoredExceptionHandler"), STRONG_SEED);
 
 	temp_AddVectoredExceptionHandler = static_cast<PVOID(WINAPI*)(ULONG, PVECTORED_EXCEPTION_HANDLER)>(get_api(
-		_hash, "kernel32.dll", strlen("AddVectoredExceptionHandler"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("AddVectoredExceptionHandler"), STRONG_SEED));
 
 	return temp_AddVectoredExceptionHandler(First, Handler);
 }
@@ -398,7 +402,7 @@ void hash_SetLastError(DWORD dwErrCode)
 {
 	const auto _hash = t1ha0("SetLastError", strlen("SetLastError"), STRONG_SEED);
 
-	temp_SetLastError = static_cast<void(WINAPI*)(DWORD)>(get_api(_hash, "kernel32.dll", strlen("SetLastError"),
+	temp_SetLastError = static_cast<void(WINAPI*)(DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("SetLastError"),
 	                                                              STRONG_SEED));
 
 	return temp_SetLastError(dwErrCode);
@@ -408,7 +412,7 @@ _Post_equals_last_error_ DWORD hash_GetLastError()
 {
 	const auto _hash = t1ha0("GetLastError", strlen("GetLastError"), STRONG_SEED);
 
-	temp_GetLastError = static_cast<DWORD(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("GetLastError"),
+	temp_GetLastError = static_cast<DWORD(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetLastError"),
 	                                                          STRONG_SEED));
 
 	return temp_GetLastError();
@@ -419,7 +423,7 @@ void hash_OutputDebugStringW(LPCWSTR lpOutputString)
 	const auto _hash = t1ha0("OutputDebugStringW", strlen("OutputDebugStringW"), STRONG_SEED);
 
 	temp_OutputDebugStringW = static_cast<void(WINAPI*)(LPCWSTR)>(get_api(
-		_hash, "kernel32.dll", strlen("OutputDebugStringW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("OutputDebugStringW"), STRONG_SEED));
 
 	return temp_OutputDebugStringW(lpOutputString);
 }
@@ -440,7 +444,7 @@ DWORD hash_FormatMessageW(DWORD dwFlags,
 	                                                 DWORD,
 	                                                 LPWSTR,
 	                                                 DWORD,
-	                                                 va_list*)>(get_api(_hash, "kernel32.dll", strlen("FormatMessageW"),
+	                                                 va_list*)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("FormatMessageW"),
 	                                                                    STRONG_SEED));
 
 	return temp_FormatMessageW(dwFlags,
@@ -460,7 +464,7 @@ HANDLE hash_CreateMutexW(LPSECURITY_ATTRIBUTES lpMutexAttributes,
 
 	temp_CreateMutexW = static_cast<HANDLE(WINAPI*)(LPSECURITY_ATTRIBUTES,
 	                                                BOOL,
-	                                                LPCWSTR)>(get_api(_hash, "kernel32.dll", strlen("CreateMutexW"),
+	                                                LPCWSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateMutexW"),
 	                                                                  STRONG_SEED));
 
 	return temp_CreateMutexW(lpMutexAttributes,
@@ -478,7 +482,7 @@ HANDLE hash_CreateEventW(LPSECURITY_ATTRIBUTES lpEventAttributes,
 	temp_CreateEventW = static_cast<HANDLE(WINAPI*)(LPSECURITY_ATTRIBUTES,
 	                                                BOOL,
 	                                                BOOL,
-	                                                LPCWSTR)>(get_api(_hash, "kernel32.dll", strlen("CreateEventW"),
+	                                                LPCWSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateEventW"),
 	                                                                  STRONG_SEED));
 
 	return temp_CreateEventW(lpEventAttributes,
@@ -491,7 +495,7 @@ BOOL hash_SetEvent(HANDLE hEvent)
 {
 	const auto _hash = t1ha0("SetEvent", strlen("SetEvent"), STRONG_SEED);
 
-	temp_SetEvent = static_cast<BOOL(WINAPI*)(HANDLE)>(get_api(_hash, "kernel32.dll", strlen("SetEvent"), STRONG_SEED));
+	temp_SetEvent = static_cast<BOOL(WINAPI*)(HANDLE)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("SetEvent"), STRONG_SEED));
 
 	return temp_SetEvent(hEvent);
 }
@@ -503,7 +507,7 @@ DWORD hash_WaitForSingleObject(HANDLE hHandle,
 
 	temp_WaitForSingleObject = static_cast<DWORD(WINAPI*)(HANDLE,
 	                                                      DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("WaitForSingleObject"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("WaitForSingleObject"), STRONG_SEED));
 
 	return temp_WaitForSingleObject(hHandle,
 	                                dwMilliseconds);
@@ -517,7 +521,7 @@ DWORD hash_QueueUserAPC(PAPCFUNC pfnAPC,
 
 	temp_QueueUserAPC = static_cast<DWORD(WINAPI*)(PAPCFUNC,
 	                                               HANDLE,
-	                                               ULONG_PTR)>(get_api(_hash, "kernel32.dll", strlen("QueueUserAPC"),
+	                                               ULONG_PTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("QueueUserAPC"),
 	                                                                   STRONG_SEED));
 
 	return temp_QueueUserAPC(pfnAPC,
@@ -539,7 +543,7 @@ HANDLE hash_CreateThread(LPSECURITY_ATTRIBUTES lpThreadAttributes,
 	                                                LPTHREAD_START_ROUTINE,
 	                                                __drv_aliasesMem LPVOID,
 	                                                DWORD,
-	                                                LPDWORD)>(get_api(_hash, "kernel32.dll", strlen("CreateEventW"),
+	                                                LPDWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateEventW"),
 	                                                                  STRONG_SEED));
 
 	return temp_CreateThread(lpThreadAttributes,
@@ -559,7 +563,7 @@ HANDLE hash_CreateWaitableTimerW(LPSECURITY_ATTRIBUTES lpTimerAttributes,
 	temp_CreateWaitableTimerW = static_cast<HANDLE(WINAPI*)(LPSECURITY_ATTRIBUTES,
 	                                                        BOOL,
 	                                                        LPCWSTR)>(get_api(
-		_hash, "kernel32.dll", strlen("CreateWaitableTimerW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CreateWaitableTimerW"), STRONG_SEED));
 
 	return temp_CreateWaitableTimerW(lpTimerAttributes,
 	                                 bManualReset,
@@ -580,7 +584,7 @@ BOOL hash_SetWaitableTimer(HANDLE hTimer,
 	                                                  LONG,
 	                                                  PTIMERAPCROUTINE,
 	                                                  LPVOID,
-	                                                  BOOL)>(get_api(_hash, "kernel32.dll", strlen("SetWaitableTimer"),
+	                                                  BOOL)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("SetWaitableTimer"),
 	                                                                 STRONG_SEED));
 
 	return temp_SetWaitableTimer(hTimer,
@@ -596,7 +600,7 @@ BOOL hash_CancelWaitableTimer(HANDLE hTimer)
 	const auto _hash = t1ha0("CancelWaitableTimer", strlen("CancelWaitableTimer"), STRONG_SEED);
 
 	temp_CancelWaitableTimer = static_cast<BOOL(WINAPI*)(HANDLE)>(get_api(
-		_hash, "kernel32.dll", strlen("CancelWaitableTimer"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CancelWaitableTimer"), STRONG_SEED));
 
 	return temp_CancelWaitableTimer(hTimer);
 }
@@ -618,7 +622,7 @@ BOOL hash_CreateTimerQueueTimer(PHANDLE phNewTimer,
 	                                                       DWORD,
 	                                                       DWORD,
 	                                                       ULONG)>(get_api(
-		_hash, "kernel32.dll", strlen("CreateTimerQueueTimer"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CreateTimerQueueTimer"), STRONG_SEED));
 
 	return temp_CreateTimerQueueTimer(phNewTimer,
 	                                  TimerQueue,
@@ -639,7 +643,7 @@ DWORD hash_SetFilePointer(HANDLE hFile,
 	temp_SetFilePointer = static_cast<DWORD(WINAPI*)(HANDLE,
 	                                                 LONG,
 	                                                 PLONG,
-	                                                 DWORD)>(get_api(_hash, "kernel32.dll", strlen("SetFilePointer"),
+	                                                 DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("SetFilePointer"),
 	                                                                 STRONG_SEED));
 
 	return temp_SetFilePointer(hFile,
@@ -660,7 +664,7 @@ BOOL hash_ReadFile(HANDLE hFile,
 	                                          LPVOID,
 	                                          DWORD,
 	                                          LPDWORD,
-	                                          LPOVERLAPPED)>(get_api(_hash, "kernel32.dll", strlen("ReadFile"),
+	                                          LPOVERLAPPED)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("ReadFile"),
 	                                                                 STRONG_SEED));
 
 	return temp_ReadFile(hFile,
@@ -686,7 +690,7 @@ HANDLE hash_CreateFileW(LPCWSTR lpFileName,
 	                                               LPSECURITY_ATTRIBUTES,
 	                                               DWORD,
 	                                               DWORD,
-	                                               HANDLE)>(get_api(_hash, "kernel32.dll", strlen("CreateFileW"),
+	                                               HANDLE)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateFileW"),
 	                                                                STRONG_SEED));
 
 	return temp_CreateFileW(lpFileName,
@@ -709,7 +713,7 @@ DWORD hash_GetFullPathNameW(LPCWSTR lpFileName,
 	                                                   DWORD,
 	                                                   LPWSTR,
 	                                                   LPWSTR*)>(get_api(
-		_hash, "kernel32.dll", strlen("GetFullPathNameW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetFullPathNameW"), STRONG_SEED));
 
 	return temp_GetFullPathNameW(lpFileName,
 	                             nBufferLength,
@@ -722,7 +726,7 @@ DWORD hash_GetFileAttributesW(LPCWSTR lpFileName)
 	const auto _hash = t1ha0("GetFileAttributesW", strlen("GetFileAttributesW"), STRONG_SEED);
 
 	temp_GetFileAttributesW = static_cast<DWORD(WINAPI*)(LPCWSTR)>(get_api(
-		_hash, "kernel32.dll", strlen("GetFileAttributesW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetFileAttributesW"), STRONG_SEED));
 
 	return temp_GetFileAttributesW(lpFileName);
 }
@@ -733,7 +737,7 @@ void hash_GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime)
 	const auto _hash = t1ha0("GetSystemTimeAsFileTime", strlen("GetSystemTimeAsFileTime"), STRONG_SEED);
 
 	temp_GetSystemTimeAsFileTime = static_cast<void(WINAPI*)(LPFILETIME)>(get_api(
-		_hash, "kernel32.dll", strlen("GetSystemTimeAsFileTime"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetSystemTimeAsFileTime"), STRONG_SEED));
 
 	return temp_GetSystemTimeAsFileTime(lpSystemTimeAsFileTime);
 }
@@ -746,7 +750,7 @@ SIZE_T hash_VirtualQuery(LPCVOID lpAddress,
 
 	temp_VirtualQuery = static_cast<SIZE_T(WINAPI*)(LPCVOID,
 	                                                PMEMORY_BASIC_INFORMATION,
-	                                                SIZE_T)>(get_api(_hash, "kernel32.dll", strlen("VirtualQuery"),
+	                                                SIZE_T)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("VirtualQuery"),
 	                                                                 STRONG_SEED));
 
 	return temp_VirtualQuery(lpAddress,
@@ -767,7 +771,7 @@ BOOL hash_ReadProcessQMemory(HANDLE hProcess,
 	                                                   LPVOID,
 	                                                   SIZE_T,
 	                                                   SIZE_T*)>(get_api(
-		_hash, "kernel32.dll", strlen("ReadProcessMemory"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("ReadProcessMemory"), STRONG_SEED));
 
 	return temp_ReadProcessMemory(hProcess,
 	                              lpBaseAddress,
@@ -783,7 +787,7 @@ HLOCAL hash_LocalAlloc(UINT uFlags,
 	const auto _hash = t1ha0("LocalAlloc", strlen("LocalAlloc"), STRONG_SEED);
 
 	temp_LocalAlloc = static_cast<HLOCAL(WINAPI*)(UINT,
-	                                              SIZE_T)>(get_api(_hash, "kernel32.dll", strlen("LocalAlloc"),
+	                                              SIZE_T)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("LocalAlloc"),
 	                                                               STRONG_SEED));
 
 	return temp_LocalAlloc(uFlags,
@@ -795,7 +799,7 @@ HLOCAL hash_LocalFree(_Frees_ptr_opt_ HLOCAL hMem)
 	const auto _hash = t1ha0("LocalFree", strlen("LocalFree"), STRONG_SEED);
 
 	temp_LocalFree = static_cast<HLOCAL(WINAPI*)(_Frees_ptr_opt_ HLOCAL)>(get_api(
-		_hash, "kernel32.dll", strlen("LocalFree"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("LocalFree"), STRONG_SEED));
 
 	return temp_LocalFree(hMem);
 }
@@ -805,7 +809,7 @@ BOOL hash_GlobalMemoryStatusEx(LPMEMORYSTATUSEX lpBuffer)
 	const auto _hash = t1ha0("GlobalMemoryStatusEx", strlen("GlobalMemoryStatusEx"), STRONG_SEED);
 
 	temp_GlobalMemoryStatusEx = static_cast<BOOL(WINAPI*)(LPMEMORYSTATUSEX)>(get_api(
-		_hash, "kernel32.dll", strlen("GlobalMemoryStatusEx"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GlobalMemoryStatusEx"), STRONG_SEED));
 
 	return temp_GlobalMemoryStatusEx(lpBuffer);
 }
@@ -823,7 +827,7 @@ BOOL hash_WriteProcessMemory(HANDLE hProcess,
 	                                                    LPCVOID,
 	                                                    SIZE_T,
 	                                                    SIZE_T*)>(get_api(
-		_hash, "kernel32.dll", strlen("WriteProcessMemory"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("WriteProcessMemory"), STRONG_SEED));
 
 	return temp_WriteProcessMemory(hProcess,
 	                               lpBaseAddress,
@@ -836,7 +840,7 @@ SIZE_T hash_LocalSize(HLOCAL hMem)
 {
 	const auto _hash = t1ha0("LocalSize", strlen("LocalSize"), STRONG_SEED);
 
-	temp_LocalSize = static_cast<SIZE_T(WINAPI*)(HLOCAL)>(get_api(_hash, "kernel32.dll", strlen("LocalSize"),
+	temp_LocalSize = static_cast<SIZE_T(WINAPI*)(HLOCAL)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("LocalSize"),
 	                                                              STRONG_SEED));
 
 	return temp_LocalSize(hMem);
@@ -851,7 +855,7 @@ LPVOID hash_HeapAlloc(HANDLE hHeap,
 
 	temp_HeapAlloc = static_cast<LPVOID(WINAPI*)(HANDLE,
 	                                             DWORD,
-	                                             SIZE_T)>(get_api(_hash, "kernel32.dll", strlen("HeapAlloc"),
+	                                             SIZE_T)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("HeapAlloc"),
 	                                                              STRONG_SEED));
 
 	return temp_HeapAlloc(hHeap,
@@ -863,7 +867,7 @@ HANDLE hash_GetProcessHeap()
 {
 	const auto _hash = t1ha0("GetProcessHeap", strlen("GetProcessHeap"), STRONG_SEED);
 
-	temp_GetProcessHeap = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("GetProcessHeap"),
+	temp_GetProcessHeap = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetProcessHeap"),
 	                                                             STRONG_SEED));
 
 	return temp_GetProcessHeap();
@@ -878,7 +882,7 @@ BOOL hash_HeapFree(HANDLE hHeap,
 	temp_HeapFree = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                          DWORD,
 	                                          _Frees_ptr_opt_ LPVOID)>(get_api(
-			_hash, "kernel32.dll", strlen("HeapFree"), STRONG_SEED)
+			_hash, xorstr_("kernel32.dll"), strlen("HeapFree"), STRONG_SEED)
 	);
 
 	return temp_HeapFree(hHeap,
@@ -892,7 +896,7 @@ BOOL hash_IsBadReadPtr(const VOID* lp,
 	const auto _hash = t1ha0("IsBadReadPtr", strlen("IsBadReadPtr"), STRONG_SEED);
 
 	temp_IsBadReadPtr = static_cast<BOOL(WINAPI*)(const VOID*,
-	                                              UINT_PTR)>(get_api(_hash, "kernel32.dll", strlen("IsBadReadPtr"),
+	                                              UINT_PTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("IsBadReadPtr"),
 	                                                                 STRONG_SEED));
 
 	return temp_IsBadReadPtr(lp,
@@ -903,7 +907,7 @@ HANDLE hash_GetCurrentProcess()
 {
 	const auto _hash = t1ha0("GetCurrentProcess", strlen("GetCurrentProcess"), STRONG_SEED);
 
-	temp_GetCurrentProcess = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("GetCurrentProcess"),
+	temp_GetCurrentProcess = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetCurrentProcess"),
 	                                                                STRONG_SEED));
 
 	return temp_GetCurrentProcess();
@@ -916,7 +920,7 @@ BOOL hash_GetThreadContext(HANDLE hThread,
 
 	temp_GetThreadContext = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                  LPCONTEXT)>(get_api(
-		_hash, "kernel32.dll", strlen("GetThreadContext"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetThreadContext"), STRONG_SEED));
 
 	return temp_GetThreadContext(hThread,
 	                             lpContext);
@@ -926,7 +930,7 @@ void hash_Sleep(DWORD dwMilliseconds)
 {
 	const auto _hash = t1ha0("Sleep", strlen("Sleep"), STRONG_SEED);
 
-	temp_Sleep = static_cast<void(WINAPI*)(DWORD)>(get_api(_hash, "kernel32.dll", strlen("Sleep"), STRONG_SEED));
+	temp_Sleep = static_cast<void(WINAPI*)(DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("Sleep"), STRONG_SEED));
 
 	return temp_Sleep(dwMilliseconds);
 }
@@ -949,7 +953,7 @@ HANDLE hash_OpenProcess(DWORD dwDesiredAccess,
 
 	temp_OpenProcess = static_cast<HANDLE(WINAPI*)(DWORD,
 	                                               BOOL,
-	                                               DWORD)>(get_api(_hash, "kernel32.dll", strlen("OpenProcess"),
+	                                               DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("OpenProcess"),
 	                                                               STRONG_SEED));
 
 	return temp_OpenProcess(dwDesiredAccess,
@@ -966,7 +970,7 @@ DWORD hash_GetEnvironmentVariableW(LPCWSTR lpName,
 	temp_GetEnvironmentVariableW = static_cast<DWORD(WINAPI*)(LPCWSTR,
 	                                                          LPWSTR,
 	                                                          DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("GetEnvironmentVariableW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("GetEnvironmentVariableW"), STRONG_SEED));
 
 	return temp_GetEnvironmentVariableW(lpName,
 	                                    lpBuffer,
@@ -980,7 +984,7 @@ HANDLE hash_CreateToolhelp32Snapshot(DWORD dwFlags,
 
 	temp_CreateToolhelp32Snapshot = static_cast<HANDLE(WINAPI*)(DWORD,
 	                                                            DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("CreateToolhelp32Snapshot"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CreateToolhelp32Snapshot"), STRONG_SEED));
 
 	return temp_CreateToolhelp32Snapshot(dwFlags,
 	                                     th32ProcessID);
@@ -991,7 +995,7 @@ BOOL hash_Module32FirstW(HANDLE hSnapshot, LPMODULEENTRY32W lpme)
 	const auto _hash = t1ha0("Module32FirstW", strlen("Module32FirstW"), STRONG_SEED);
 
 	temp_Module32FirstW = static_cast<BOOL(WINAPI*)(HANDLE, LPMODULEENTRY32W)>(get_api(
-		_hash, "kernel32.dll", strlen("Module32FirstW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("Module32FirstW"), STRONG_SEED));
 
 	return temp_Module32FirstW(hSnapshot, lpme);
 }
@@ -1003,7 +1007,7 @@ BOOL hash_Module32NextW(HANDLE hSnapshot,
 
 	temp_Module32NextW = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                               LPMODULEENTRY32W)>(get_api(
-		_hash, "kernel32.dll", strlen("Module32NextW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("Module32NextW"), STRONG_SEED));
 
 	return temp_Module32NextW(hSnapshot,
 	                          lpme);
@@ -1013,7 +1017,7 @@ BOOL hash_SwitchToThread()
 {
 	const auto _hash = t1ha0("SwitchToThread", strlen("SwitchToThread"), STRONG_SEED);
 
-	temp_SwitchToThread = static_cast<BOOL(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("SwitchToThread"),
+	temp_SwitchToThread = static_cast<BOOL(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("SwitchToThread"),
 	                                                           STRONG_SEED));
 
 	return temp_SwitchToThread();
@@ -1025,7 +1029,7 @@ BOOL hash_IsWow64Process(HANDLE hProcess,
 	const auto _hash = t1ha0("IsWow64Process", strlen("IsWow64Process"), STRONG_SEED);
 
 	temp_IsWow64Process = static_cast<BOOL(WINAPI*)(HANDLE,
-	                                                PBOOL)>(get_api(_hash, "kernel32.dll", strlen("IsWow64Process"),
+	                                                PBOOL)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("IsWow64Process"),
 	                                                                STRONG_SEED));
 
 	return temp_IsWow64Process(hProcess,
@@ -1049,7 +1053,7 @@ HANDLE hash_CreateRemoteThread(HANDLE hProcess,
 	                                                      LPVOID,
 	                                                      DWORD,
 	                                                      LPDWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("CreateRemoteThread"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CreateRemoteThread"), STRONG_SEED));
 
 	return temp_CreateRemoteThread(hProcess,
 	                               lpThreadAttributes,
@@ -1067,7 +1071,7 @@ BOOL hash_Thread32First(HANDLE hSnapshot,
 
 	temp_Thread32First = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                               LPTHREADENTRY32)>(get_api(
-		_hash, "kernel32.dll", strlen("Thread32First"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("Thread32First"), STRONG_SEED));
 
 	return temp_Thread32First(hSnapshot,
 	                          lpte);
@@ -1081,7 +1085,7 @@ HANDLE hash_OpenThread(DWORD dwDesiredAccess,
 
 	temp_OpenThread = static_cast<HANDLE(WINAPI*)(DWORD,
 	                                              BOOL,
-	                                              DWORD)>(get_api(_hash, "kernel32.dll", strlen("OpenThread"),
+	                                              DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("OpenThread"),
 	                                                              STRONG_SEED));
 
 	return temp_OpenThread(dwDesiredAccess,
@@ -1096,7 +1100,7 @@ BOOL hash_Thread32Next(HANDLE hSnapshot,
 
 	temp_Thread32Next = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                              LPTHREADENTRY32)>(get_api(
-		_hash, "kernel32.dll", strlen("Thread32Next"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("Thread32Next"), STRONG_SEED));
 
 	return temp_Thread32Next(hSnapshot,
 	                         lpte);
@@ -1109,7 +1113,7 @@ BOOL hash_Process32FirstW(HANDLE hSnapshot,
 
 	temp_Process32FirstW = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                 LPTHREADENTRY32)>(get_api(
-			_hash, "kernel32.dll", strlen("Process32FirstW"), STRONG_SEED)
+			_hash, xorstr_("kernel32.dll"), strlen("Process32FirstW"), STRONG_SEED)
 	);
 
 	return temp_Process32FirstW(hSnapshot,
@@ -1123,7 +1127,7 @@ BOOL hash_Process32NextW(HANDLE hSnapshot,
 
 	temp_Process32NextW = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                LPTHREADENTRY32)>(get_api(
-		_hash, "kernel32.dll", strlen("Process32NextW"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("Process32NextW"), STRONG_SEED));
 
 	return temp_Process32NextW(hSnapshot,
 	                           lpte);
@@ -1133,7 +1137,7 @@ DWORD hash_GetCurrentThreadId()
 {
 	const auto _hash = t1ha0("GetCurrentThreadId", strlen("GetCurrentThreadId"), STRONG_SEED);
 
-	temp_GetCurrentThreadId = static_cast<DWORD(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("GetCurrentThreadId"),
+	temp_GetCurrentThreadId = static_cast<DWORD(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("GetCurrentThreadId"),
 	                                                                STRONG_SEED));
 
 	return temp_GetCurrentThreadId();
@@ -1145,7 +1149,7 @@ BOOL hash_TerminateProcess(HANDLE hProcess,
 	const auto _hash = t1ha0("TerminateProcess", strlen("TerminateProcess"), STRONG_SEED);
 
 	temp_TerminateProcess = static_cast<BOOL(WINAPI*)(HANDLE,
-	                                                  UINT)>(get_api(_hash, "kernel32.dll", strlen("TerminateProcess"),
+	                                                  UINT)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("TerminateProcess"),
 	                                                                 STRONG_SEED));
 
 	return temp_TerminateProcess(hProcess,
@@ -1156,7 +1160,7 @@ BOOL hash_CloseHandle(HANDLE hObject)
 {
 	const auto _hash = t1ha0("CloseHandle", strlen("CloseHandle"), STRONG_SEED);
 
-	temp_CloseHandle = static_cast<BOOL(WINAPI*)(HANDLE)>(get_api(_hash, "kernel32.dll", strlen("CloseHandle"),
+	temp_CloseHandle = static_cast<BOOL(WINAPI*)(HANDLE)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CloseHandle"),
 	                                                              STRONG_SEED));
 
 	return temp_CloseHandle(hObject);
@@ -1178,7 +1182,7 @@ BOOL hash_DuplicateHandle(HANDLE hSourceProcessHandle,
 	                                                 LPHANDLE,
 	                                                 DWORD,
 	                                                 BOOL,
-	                                                 DWORD)>(get_api(_hash, "kernel32.dll", strlen("DuplicateHandle"),
+	                                                 DWORD)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("DuplicateHandle"),
 	                                                                 STRONG_SEED));
 
 	return temp_DuplicateHandle(hSourceProcessHandle,
@@ -1199,7 +1203,7 @@ BOOL hash_SetHandleInformation(HANDLE hObject,
 	temp_SetHandleInformation = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                      DWORD,
 	                                                      DWORD)>(get_api(
-		_hash, "kernel32.dll", strlen("SetHandleInformation"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("SetHandleInformation"), STRONG_SEED));
 
 	return temp_SetHandleInformation(hObject,
 	                                 dwMask,
@@ -1225,7 +1229,7 @@ BOOL hash_DeviceIoControl(HANDLE hDevice,
 	                                                 DWORD,
 	                                                 LPDWORD,
 	                                                 LPOVERLAPPED)>(get_api(
-		_hash, "kernel32.dll", strlen("DeviceIoControl"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("DeviceIoControl"), STRONG_SEED));
 
 	return temp_DeviceIoControl(hDevice,
 	                            dwIoControlCode,
@@ -1241,7 +1245,7 @@ int hash_lstrlenW(LPCWSTR lpString)
 {
 	const auto _hash = t1ha0("lstrlenW", strlen("lstrlenW"), STRONG_SEED);
 
-	temp_lstrlenW = static_cast<int(WINAPI*)(LPCWSTR)>(get_api(_hash, "kernel32.dll", strlen("lstrlenW"), STRONG_SEED));
+	temp_lstrlenW = static_cast<int(WINAPI*)(LPCWSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen("lstrlenW"), STRONG_SEED));
 
 	return temp_lstrlenW(lpString);
 }
@@ -1276,7 +1280,7 @@ HANDLE hash_CreateTimerQueue()
 {
 	const auto _hash = t1ha0("CreateTimerQueue", strlen("CreateTimerQueue"), STRONG_SEED);
 
-	temp_CreateTimerQueue = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, "kernel32.dll", strlen("CreateTimerQueue"),
+	temp_CreateTimerQueue = static_cast<HANDLE(WINAPI*)()>(get_api(_hash, xorstr_("kernel32.dll"), strlen("CreateTimerQueue"),
 	                                                               STRONG_SEED));
 
 	return temp_CreateTimerQueue();
@@ -1289,7 +1293,7 @@ BOOL hash_DeleteTimerQueueEx(HANDLE TimerQueue,
 
 	temp_DeleteTimerQueueEx = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                    HANDLE)>(get_api(
-		_hash, "kernel32.dll", strlen("DeleteTimerQueueEx"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("DeleteTimerQueueEx"), STRONG_SEED));
 
 	return temp_DeleteTimerQueueEx(TimerQueue, CompletionEvent);
 }
@@ -1301,7 +1305,7 @@ BOOL hash_CheckRemoteDebuggerPresent(HANDLE hProcess,
 
 	temp_CheckRemoteDebuggerPresent = static_cast<BOOL(WINAPI*)(HANDLE,
 	                                                            PBOOL)>(get_api(
-		_hash, "kernel32.dll", strlen("CheckRemoteDebuggerPresent"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("CheckRemoteDebuggerPresent"), STRONG_SEED));
 
 	return temp_CheckRemoteDebuggerPresent(hProcess,
 	                                       pbDebuggerPresent);
@@ -1312,7 +1316,7 @@ LONG hash_UnhandledExceptionFilter(_EXCEPTION_POINTERS* ExceptionInfo)
 	const auto _hash = t1ha0("UnhandledExceptionFilter", strlen("UnhandledExceptionFilter"), STRONG_SEED);
 
 	temp_UnhandledExceptionFilter = static_cast<LONG(WINAPI*)(_EXCEPTION_POINTERS*)>(get_api(
-		_hash, "kernel32.dll", strlen("UnhandledExceptionFilter"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("UnhandledExceptionFilter"), STRONG_SEED));
 
 	return temp_UnhandledExceptionFilter(ExceptionInfo);
 }
@@ -1323,7 +1327,7 @@ LPTOP_LEVEL_EXCEPTION_FILTER hash_SetUnhandledExceptionFilter(LPTOP_LEVEL_EXCEPT
 
 	temp_SetUnhandledExceptionFilter = static_cast<LPTOP_LEVEL_EXCEPTION_FILTER(WINAPI*)(LPTOP_LEVEL_EXCEPTION_FILTER)>(
 		get_api(
-			_hash, "kernel32.dll", strlen("SetUnhandledExceptionFilter"), STRONG_SEED));
+			_hash, xorstr_("kernel32.dll"), strlen("SetUnhandledExceptionFilter"), STRONG_SEED));
 
 	return temp_SetUnhandledExceptionFilter(lpTopLevelExceptionFilter);
 }
@@ -1333,7 +1337,7 @@ ULONG hash_RemoveVectoredExceptionHandler(PVOID Handle)
 	const auto _hash = t1ha0("RemoveVectoredExceptionHandler", strlen("RemoveVectoredExceptionHandler"), STRONG_SEED);
 
 	temp_RemoveVectoredExceptionHandler = static_cast<ULONG(WINAPI*)(PVOID)>(get_api(
-		_hash, "kernel32.dll", strlen("RemoveVectoredExceptionHandler"), STRONG_SEED));
+		_hash, xorstr_("kernel32.dll"), strlen("RemoveVectoredExceptionHandler"), STRONG_SEED));
 
 	return temp_RemoveVectoredExceptionHandler(Handle);
 }
@@ -1461,26 +1465,32 @@ ULONG hash_inet_addr(_In_z_ const char FAR* cp)
 void hash_RtlInitUnicodeString(PUNICODE_STRING DestinationString,
 	PCWSTR          SourceString)
 {
-	const auto _hash = t1ha0("RtlInitUnicodeString", strlen("RtlInitUnicodeString"), STRONG_SEED);
+	const char* func = xorstr_("RtlInitUnicodeString");
 
-	temp_RtlInitUnicodeString = static_cast<void(*)(PUNICODE_STRING, PCWSTR)>(get_api( _hash, "ntdll.dll", strlen("RtlInitUnicodeString"), STRONG_SEED));
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
+
+	temp_RtlInitUnicodeString = static_cast<void(*)(PUNICODE_STRING, PCWSTR)>(get_api( _hash, xorstr_("ntdll.dll"), strlen(func), STRONG_SEED));
 
 	return temp_RtlInitUnicodeString( DestinationString,
 		          SourceString);
 }
 NTSTATUS hash_NtClose(IN HANDLE Handle)
 {
-	const auto _hash = t1ha0("NtClose", strlen("NtClose"), STRONG_SEED);
+	const char* func = xorstr_("NtClose");
 
-	temp_NtClose = static_cast<NTSTATUS(*)(IN HANDLE)>(get_api(_hash, "ntdll.dll", strlen("NtClose"), STRONG_SEED));
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
+
+	temp_NtClose = static_cast<NTSTATUS(*)(IN HANDLE)>(get_api(_hash, xorstr_("ntdll.dll"), strlen(func), STRONG_SEED));
 
 	return temp_NtClose(Handle);
 }
 BOOL hash_FreeLibrary(HMODULE hLibModule)
 {
-	const auto _hash = t1ha0("FreeLibrary", strlen("FreeLibrary"), STRONG_SEED);
+	const char* func = xorstr_("FreeLibrary");
 
-	temp_FreeLibrary = static_cast<BOOL(*)(HMODULE)>(get_api(_hash, "kernel32.dll", strlen("FreeLibrary"), STRONG_SEED));
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
+
+	temp_FreeLibrary = static_cast<BOOL(*)(HMODULE)>(get_api(_hash, xorstr_("kernel32.dll"), strlen(func), STRONG_SEED));
 
 	return temp_FreeLibrary(hLibModule);
 }
