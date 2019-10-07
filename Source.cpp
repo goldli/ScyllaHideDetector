@@ -8,6 +8,7 @@
 #include "utils/crc32.h"
 #include "utils/LengthDisasm.h"
 #include <vector>
+#include <VersionHelpers.h>
 
 void* resolve_jmp(void* address, const uint8_t is64_bit)
 {
@@ -92,25 +93,8 @@ void kernelbase_restore(const char* func_name)
 
 void user32_restore(const char* func_name)
 {
-  // TODO: another method for detect build
-  std::wstring regSubKey;
-#ifdef _WIN64
-  regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
-#else
-    regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
-#endif
-  const std::wstring regValue(L"CurrentBuildNumber");
-  std::wstring CurrentBuildNumber;
-  try
-  {
-    CurrentBuildNumber = get_string_value_from_hklm(regSubKey, regValue);
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << e.what();
-  }
-
-  if (std::stoi(CurrentBuildNumber) >= 14393)
+  // TODO: Test on Win7,8
+  if (getSysOpType() == 10)
   {
     const auto h_module = LoadLibraryW(L"user32.dll");
 
