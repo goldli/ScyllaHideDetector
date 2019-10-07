@@ -1,6 +1,8 @@
 ﻿#include "../t1ha/t1ha.h"
 #pragma comment(lib, "t1ha-static.lib")
 #include "PointerHashFunc.h"
+#define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
+#include "../utils/xorstr.hpp"
 #define STRONG_SEED 10376313370251892926
 
 #include "export_work.h"

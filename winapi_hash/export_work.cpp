@@ -1,5 +1,7 @@
 ﻿#include "../t1ha/t1ha.h"
 #include "hash_work.h"
+#define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
+#include "../utils/xorstr.hpp"
 #define STRONG_SEED 10376313370251892926
 
 #include "export_work.h"
@@ -168,9 +170,9 @@ LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t se
 	
 	HMODULE hKernel32 = NULL;
 	hKernel32 = _getKernel32Handle();
-
-	const uint64_t api_hash_lstrcmpiW = t1ha0("lstrcmpiW", strlen("lstrcmpiW"), STRONG_SEED);
-	temp_lstrcmpiW = static_cast<int(*)(LPCWSTR,LPCWSTR)>(parse_export_table(hKernel32, api_hash_lstrcmpiW, strlen("lstrcmpiW"), STRONG_SEED));
+	const char* lstrcmpiW_ = xorstr_("lstrcmpiW");
+	const uint64_t api_hash_lstrcmpiW = t1ha0(lstrcmpiW_, strlen(lstrcmpiW_), STRONG_SEED);
+	temp_lstrcmpiW = static_cast<int(*)(LPCWSTR,LPCWSTR)>(parse_export_table(hKernel32, api_hash_lstrcmpiW, strlen(lstrcmpiW_), STRONG_SEED));
 
 	do
 	{
@@ -178,7 +180,7 @@ LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t se
 
 		if (mdl->base != nullptr)
 		{
-			if (!hash_lstrcmpiW(mdl->dllname.Buffer, L"kernel32.dll")) //сравниваем имя библиотеки в буфере с необходимым
+			if (!hash_lstrcmpiW(mdl->dllname.Buffer, xorstr_(L"kernel32.dll"))) //сравниваем имя библиотеки в буфере с необходимым
 			{
 				break;
 			}
@@ -189,9 +191,9 @@ LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t se
 	krnl32 = static_cast<HMODULE>(mdl->base);
 
 	//Получаем адрес функции LoadLibraryA
-	const uint64_t api_hash_LoadLibraryA = t1ha0("LoadLibraryA", strlen("LoadLibraryA"), STRONG_SEED);
-
-	temp_LoadLibraryA = static_cast<HMODULE(WINAPI*)(LPCSTR)>(parse_export_table(krnl32, api_hash_LoadLibraryA, strlen("LoadLibraryA"), STRONG_SEED));
+	const char* LoadLibraryA_ = xorstr_("LoadLibraryA");
+	const uint64_t api_hash_LoadLibraryA = t1ha0(LoadLibraryA_, strlen(LoadLibraryA_), STRONG_SEED);
+	temp_LoadLibraryA = static_cast<HMODULE(WINAPI*)(LPCSTR)>(parse_export_table(krnl32, api_hash_LoadLibraryA, strlen(LoadLibraryA_), STRONG_SEED));
 	hDll = hash_LoadLibraryA(module);
 
 	api_func = static_cast<LPVOID>(parse_export_table(hDll, api_hash, len, seed));
