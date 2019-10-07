@@ -11,19 +11,6 @@
 #include "utils/LengthDisasm.hpp"
 #include <vector>
 
-FORCEINLINE void* resolve_jmp(void* address, const uint8_t is64_bit)
-{
-  TLengthDisasm data = {0};
-
-  if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
-  {
-    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(address) + data.OpcodeSize);
-    return resolve_jmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(address) + delta + data.Length), is64_bit);
-  }
-
-  return address;
-}
-
 void ntdll_restore(const char* func_name)
 {
   const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
@@ -94,25 +81,8 @@ void kernelbase_restore(const char* func_name)
 
 void user32_restore(const char* func_name)
 {
-  // TODO: another method for detect build
-  std::wstring regSubKey;
-#ifdef _WIN64
-  regSubKey = xorstr_(L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\");
-#else
-    regSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\";
-#endif
-  const std::wstring regValue(xorstr_(L"CurrentBuildNumber"));
-  std::wstring CurrentBuildNumber;
-  try
-  {
-    CurrentBuildNumber = get_string_value_from_hklm(regSubKey, regValue);
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << e.what();
-  }
-
-  if (std::stoi(CurrentBuildNumber) >= 14393)
+  // TODO: Test on Win7,8
+  if (getSysOpType() == 10)
   {
     const auto h_module = LoadLibraryW(xorstr_(L"user32.dll"));
 
