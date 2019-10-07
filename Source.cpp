@@ -33,9 +33,9 @@ void ntdll_restore(const char* func_name)
 #endif
 
     DWORD oldprotect = 0;
-    VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+    hash_VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
     memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-    VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+    hash_VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
   }
   else
   {
@@ -67,9 +67,9 @@ void kernelbase_restore(const char* func_name)
 #endif
 
     DWORD oldprotect = 0;
-    VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+    hash_VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
     memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-    VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+    hash_VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
   }
   else
   {
@@ -106,9 +106,9 @@ void user32_restore(const char* func_name)
 #endif
 
       DWORD oldprotect = 0;
-      VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+      hash_VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
       memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-      VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+      hash_VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
     else
     {
@@ -143,9 +143,9 @@ void user32_restore(const char* func_name)
 #endif
 
       DWORD oldprotect = 0;
-      VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
+      hash_VirtualProtect(hooked_func_adress, hooked_func_size, PAGE_EXECUTE_READWRITE, &oldprotect);
       memcpy(hooked_func_adress,original_func_adress,hooked_func_size);
-      VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
+      hash_VirtualProtect(hooked_func_adress, hooked_func_size, oldprotect, &oldprotect);
     }
     else
     {
@@ -154,7 +154,7 @@ void user32_restore(const char* func_name)
 #endif
     }
 
-    FreeLibrary(h_module);
+    hash_FreeLibrary(h_module);
   }
 }
 
