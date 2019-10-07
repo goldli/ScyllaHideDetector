@@ -75,6 +75,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>C:\Users\RELAX\Documents\GitHub\ScyllaHideDetector\t1ha\x64\Debug\t1ha-static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>C:\Users\RELAX\Documents\GitHub\ScyllaHideDetector\t1ha\x64\Release\t1ha-static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -157,9 +163,14 @@
     <ClInclude Include="utils\Native.hpp" />
     <ClInclude Include="utils\Helpers.hpp" />
     <ClInclude Include="utils\xorstr.hpp" />
+    <ClInclude Include="winapi_hash\export_work.h" />
+    <ClInclude Include="winapi_hash\hash_work.h" />
+    <ClInclude Include="winapi_hash\PointerHashFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="winapi_hash\export_work.cpp" />
+    <ClCompile Include="winapi_hash\hash_work.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

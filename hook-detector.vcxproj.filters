@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="WinApi Hashing">
+      <UniqueIdentifier>{97e73038-edec-431d-9ec7-f35658e72aa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\crc32.hpp">
@@ -33,10 +36,25 @@
     <ClInclude Include="utils\xorstr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="winapi_hash\hash_work.h">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi_hash\PointerHashFunc.h">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi_hash\export_work.h">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="winapi_hash\hash_work.cpp">
+      <Filter>WinApi Hashing</Filter>
+    </ClCompile>
+    <ClCompile Include="winapi_hash\export_work.cpp">
+      <Filter>WinApi Hashing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

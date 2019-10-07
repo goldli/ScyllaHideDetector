@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <iostream>
-#define AHOOK_LOG
+//#define AHOOK_LOG
 #define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
 #include "utils/xorstr.hpp"
 #include "utils/Native.hpp"
@@ -84,7 +84,7 @@ void user32_restore(const char* func_name)
   // TODO: Test on Win7,8
   if (getSysOpType() == 10)
   {
-    const auto h_module = LoadLibraryW(xorstr_(L"user32.dll"));
+    const auto h_module = hash_LoadLibraryW(xorstr_(L"user32.dll"));
 
     const auto win32_u = GET_MODULE_BASE_ADDRESS("win32u.dll");
     PVOID win32_u_mapped = nullptr;
@@ -117,11 +117,11 @@ void user32_restore(const char* func_name)
 #endif
     }
 
-    FreeLibrary(h_module);
+    hash_FreeLibrary(h_module);
   }
   else
   {
-    const auto h_module = LoadLibraryW(xorstr_(L"user32.dll"));
+    const auto h_module = hash_LoadLibraryW(xorstr_(L"user32.dll"));
 
     const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "utils/LengthDisasm.hpp"
+#include "winapi_hash/hash_work.h"
 
 #define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
 #include "xorstr.hpp"
@@ -139,19 +140,19 @@ FORCEINLINE NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
   switch (ModuleHash)
   {
   case HASHSTR("kernel32.dll"):
-    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernel32.dll"));
+    hash_RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernel32.dll"));
     break;
   case HASHSTR("kernelbase.dll"):
-    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernelbase.dll"));
+    hash_RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\kernelbase.dll"));
     break;
   case HASHSTR("ntdll.dll"):
-    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\ntdll.dll"));
+    hash_RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\ntdll.dll"));
     break;
   case HASHSTR("win32u.dll"):
-    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\win32u.dll"));
+    hash_RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\win32u.dll"));
     break;
   case HASHSTR("user32.dll"):
-    RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\user32.dll"));
+    hash_RtlInitUnicodeString(&us_section_name, xorstr_(L"\\KnownDlls\\user32.dll"));
     break;
   default:
     return status;
@@ -174,7 +175,7 @@ FORCEINLINE NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 
   if (section_handle)
   {
-    status = NtClose(section_handle);
+    status = hash_NtClose(section_handle);
     if (!NT_SUCCESS(status))
     {
       return status;
