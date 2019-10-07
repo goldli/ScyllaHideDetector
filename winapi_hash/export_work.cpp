@@ -3,16 +3,97 @@
 #define STRONG_SEED 10376313370251892926
 
 #include "export_work.h"
+#define RAND_DWORD1		0x03EC7B5E
+#define ROR(x,n) (((x) >> (n)) | ((x) << (32-(n))))
 
+typedef struct _PEB_LDR_DATA_ {
+	BYTE       Reserved1[8];
+	PVOID      Reserved2[3];
+	LIST_ENTRY* InMemoryOrderModuleList;
+} PEB_LDR_DATA_, *PPEB_LDR_DATA_;
+
+#ifdef _WIN64
+typedef struct _PEB_c {
+	BYTE Reserved1[2];
+	BYTE BeingDebugged;
+	BYTE Reserved2[21];
+	PPEB_LDR_DATA_ Ldr;
+} PEB_c;
+#else
+
+typedef struct _PEB
+{
+	/*0x000*/     UINT8        InheritedAddressSpace;
+	/*0x001*/     UINT8        ReadImageFileExecOptions;
+	/*0x002*/     UINT8        BeingDebugged;
+	/*0x003*/     UINT8        SpareBool;
+	/*0x004*/     VOID*        Mutant;
+	/*0x008*/     VOID*        ImageBaseAddress;
+	/*0x00C*/     struct _PEB_LDR_DATA* Ldr;
+	/*.....*/
+} PEB_c;
+
+#endif
+HMODULE _getKernel32Handle(void)
+{
+	HMODULE dwResult = NULL;
+	PEB_c *lpPEB = NULL;
+	SIZE_T *lpFirstModule = NULL;
+
+#if defined _WIN64
+	lpPEB = *(PEB_c **)(__readgsqword(0x30) + 0x60); //get a pointer to the PEB
+#else
+	lpPEB = *(PEB_c **)(__readfsdword(0x18) + 0x30); //get a pointer to the PEB
+#endif
+
+	// PEB->Ldr->LdrInMemoryOrderModuleList
+	// PEB->Ldr = 0x0C
+	// Ldr->LdrInMemoryOrderModuleList = 0x14
+	lpFirstModule = (SIZE_T *)lpPEB->Ldr->InMemoryOrderModuleList;
+
+	SIZE_T *lpCurrModule = lpFirstModule;
+	do
+	{
+		PWCHAR szwModuleName = (PWCHAR)lpCurrModule[10]; // 0x28 - module name in unicode
+
+		DWORD i = 0;
+		DWORD dwHash = 0;
+		while (szwModuleName[i])
+		{
+			BYTE zByte = (BYTE)szwModuleName[i];
+			if (zByte >= 'a' && zByte <= 'z')
+				zByte -= 0x20; // Uppercase
+			dwHash = ROR(dwHash, 13) + zByte;
+			i++;
+		}
+
+		if ((dwHash ^ RAND_DWORD1) == (0x6E2BCA17 ^ RAND_DWORD1)) // KERNEL32.DLL hash
+		{
+			dwResult = (HMODULE)lpCurrModule[4];
+			return dwResult;
+		}
+		lpCurrModule = (SIZE_T*)lpCurrModule[0];	// next module in linked list
+	} while (lpFirstModule != (SIZE_T*)lpCurrModule[0]);
+
+	return dwResult;
+}
 /*
 Для запуска функции LoadLibraryA из хеша, её выносить в модуль hash_work нестал, т.к. это нужно в этом модуле
 */
 
-static HMODULE (WINAPI* temp_LoadLibraryA)(__in LPCSTR file_name) = nullptr;
+static HMODULE(WINAPI* temp_LoadLibraryA)(__in LPCSTR file_name) = nullptr;
+static int(*temp_lstrcmpiW)(LPCWSTR lpString1,
+	LPCWSTR lpString2) = nullptr;
 
 static HMODULE hash_LoadLibraryA(__in LPCSTR file_name)
 {
 	return temp_LoadLibraryA(file_name);
+}
+static int hash_lstrcmpiW(LPCWSTR lpString1,
+	LPCWSTR lpString2)
+{
+	return temp_lstrcmpiW(lpString1,
+		lpString2);
 }
 
 static LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len, const uint64_t seed)
@@ -84,13 +165,20 @@ LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t se
 	auto krnbase = *(INT_PTR*)(mlink + KernelBaseAddr);
 
 	auto mdl = (LDR_MODULE*)mlink;
+	
+	HMODULE hKernel32 = NULL;
+	hKernel32 = _getKernel32Handle();
+
+	const uint64_t api_hash_lstrcmpiW = t1ha0("lstrcmpiW", strlen("lstrcmpiW"), STRONG_SEED);
+	temp_lstrcmpiW = static_cast<int(*)(LPCWSTR,LPCWSTR)>(parse_export_table(hKernel32, api_hash_lstrcmpiW, strlen("lstrcmpiW"), STRONG_SEED));
+
 	do
 	{
 		mdl = (LDR_MODULE*)mdl->e[0].Flink;
 
 		if (mdl->base != nullptr)
 		{
-			if (!lstrcmpiW(mdl->dllname.Buffer, L"kernel32.dll")) //сравниваем имя библиотеки в буфере с необходимым
+			if (!hash_lstrcmpiW(mdl->dllname.Buffer, L"kernel32.dll")) //сравниваем имя библиотеки в буфере с необходимым
 			{
 				break;
 			}
@@ -103,8 +191,7 @@ LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t se
 	//Получаем адрес функции LoadLibraryA
 	const uint64_t api_hash_LoadLibraryA = t1ha0("LoadLibraryA", strlen("LoadLibraryA"), STRONG_SEED);
 
-	temp_LoadLibraryA = static_cast<HMODULE(WINAPI*)(LPCSTR)>(parse_export_table(
-		krnl32, api_hash_LoadLibraryA, strlen("LoadLibraryA"), STRONG_SEED));
+	temp_LoadLibraryA = static_cast<HMODULE(WINAPI*)(LPCSTR)>(parse_export_table(krnl32, api_hash_LoadLibraryA, strlen("LoadLibraryA"), STRONG_SEED));
 	hDll = hash_LoadLibraryA(module);
 
 	api_func = static_cast<LPVOID>(parse_export_table(hDll, api_hash, len, seed));
