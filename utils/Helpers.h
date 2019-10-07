@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include "LengthDisasm.h"
+
 #if _WIN32 || _WIN64
 #if _WIN64
 #define ENV64BIT
@@ -8,12 +10,12 @@
 #endif
 #endif
 
-inline void log()
+FORCEINLINE inline void log()
 {
 }
 
 template <typename First, typename ...Rest>
-void log(First&& message, Rest&& ...rest)
+FORCEINLINE void log(First&& message, Rest&& ...rest)
 {
   std::cout << std::forward<First>(message);
   log(std::forward<Rest>(rest)...);
@@ -21,7 +23,7 @@ void log(First&& message, Rest&& ...rest)
 
 
 template <const hash_t::value_type ModuleHash>
-PVOID get_module_handle() noexcept
+FORCEINLINE PVOID get_module_handle() noexcept
 {
 #if defined (ENV64BIT)
   const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
@@ -45,7 +47,7 @@ PVOID get_module_handle() noexcept
   return nullptr;
 }
 
-inline PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
+FORCEINLINE PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -90,7 +92,7 @@ inline PVOID get_proc_address(const PVOID module_base_address, const hash_t::val
 }
 
 template <const hash_t::value_type FunctionHash>
-PVOID _GetProcAddress(const PVOID module_base_address) noexcept
+FORCEINLINE PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -135,7 +137,7 @@ PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 }
 
 template <hash_t::value_type ModuleHash>
-NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
+FORCEINLINE NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 {
   auto status = STATUS_NOT_SUPPORTED;
   HANDLE section_handle = nullptr;
@@ -191,7 +193,7 @@ NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
   return status;
 }
 
-int getSysOpType()
+FORCEINLINE int getSysOpType()
 {
 	int ret = 0.0;
 	NTSTATUS(WINAPI *RtlGetVersion)(LPOSVERSIONINFOEXW);
@@ -208,4 +210,17 @@ int getSysOpType()
 		ret = osInfo.dwMajorVersion;
 	}
 	return ret;
+}
+
+FORCEINLINE void* resolve_jmp(void* address, const uint8_t is64_bit)
+{
+	TLengthDisasm data = { 0 };
+
+	if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
+	{
+		const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(address) + data.OpcodeSize);
+		return resolve_jmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(address) + delta + data.Length), is64_bit);
+	}
+
+	return address;
 }

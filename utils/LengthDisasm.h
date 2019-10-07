@@ -705,7 +705,7 @@ extern "C"
 
 		  Mod R/M Byte               SIB Byte
 */
-inline uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
+FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
 {
   if (!Address || !Data)
     return 0;
@@ -943,7 +943,7 @@ inline uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
   return Data->Length;
 }
 
-uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
+FORCEINLINE uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
 {
   TLengthDisasm Data = {0};
 
@@ -969,7 +969,7 @@ uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
   return Result;
 }
 
-inline uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
+FORCEINLINE uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
 {
   if (!Buffer || !Data)
     return 0;

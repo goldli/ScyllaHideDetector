@@ -8,20 +8,6 @@
 #include "utils/crc32.h"
 #include "utils/LengthDisasm.h"
 #include <vector>
-#include <VersionHelpers.h>
-
-void* resolve_jmp(void* address, const uint8_t is64_bit)
-{
-  TLengthDisasm data = {0};
-
-  if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
-  {
-    const auto delta = *reinterpret_cast<uint32_t*>(reinterpret_cast<size_t>(address) + data.OpcodeSize);
-    return resolve_jmp(reinterpret_cast<void*>(reinterpret_cast<size_t>(address) + delta + data.Length), is64_bit);
-  }
-
-  return address;
-}
 
 void ntdll_restore(const char* func_name)
 {
