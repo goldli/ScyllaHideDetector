@@ -409,7 +409,6 @@ typedef union T1HA_ALIGN_PREFIX t1ha_state256 {
   uint8_t bytes[32];
   uint32_t u32[8];
   uint64_t u64[4];
-
   struct {
     uint64_t a, b, c, d;
   } n;
@@ -637,7 +636,6 @@ T1HA_API uint64_t t1ha0(const void *data, size_t length, uint64_t seed);
  * Unfortunately this may cause some overhead calling. */
 T1HA_API extern uint64_t (*t1ha0_funcptr)(const void *data, size_t length,
                                           uint64_t seed);
-
 static __force_inline uint64_t t1ha0(const void *data, size_t length,
                                      uint64_t seed) {
   return t1ha0_funcptr(data, length, seed);
