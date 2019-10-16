@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "../LengthDisasm.hpp"
-#include "winapi_hash/hash_work.h"
+#include "../../winapi_hash/hash_work.h"
 
 static __inline int sg(int i1, int i2) {
   return 98 + i1 + i2;
@@ -10,7 +10,7 @@ static __inline int dg(int i1, int i2) {
   return 108 + i1 + i2;
 }
 static __inline int r0(int i) {
-  if (i <= -176) hash_VirtualAlloc(NULL, 264, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -176) VirtualAlloc(NULL, 264, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -645,7 +645,7 @@ static __inline int r0(int i) {
 
 static __inline int r1(int i) {
   i = i + r0(i);
-  if (i <= -121) hash_VirtualAlloc(NULL, 8, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -121) VirtualAlloc(NULL, 8, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -1286,7 +1286,7 @@ static __inline int r1(int i) {
 
 static __inline int r2(int i) {
   i = i + r1(i);
-  if (i <= -91) hash_VirtualAlloc(NULL, 297, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -91) VirtualAlloc(NULL, 297, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -1897,7 +1897,7 @@ static __inline int r2(int i) {
 
 static __inline int r3(int i) {
   i = i + r2(i);
-  if (i <= -24) hash_VirtualAlloc(NULL, 125, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -24) VirtualAlloc(NULL, 125, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -2473,7 +2473,7 @@ static __inline int r3(int i) {
 
 static __inline int r4(int i) {
   i = i + r3(i);
-  if (i <= -50) hash_VirtualAlloc(NULL, 125, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -50) VirtualAlloc(NULL, 125, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -3731,7 +3731,7 @@ static __inline int r5(int i) {
 
 static __inline int r6(int i) {
   i = i + r5(i);
-  if (i <= -195) hash_VirtualAlloc(NULL, 181, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -195) VirtualAlloc(NULL, 181, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -4389,7 +4389,7 @@ static __inline int r6(int i) {
 
 static __inline int r7(int i) {
   i = i + r6(i);
-  if (i <= -62) hash_VirtualAlloc(NULL, 171, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -62) VirtualAlloc(NULL, 171, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -5621,7 +5621,7 @@ static __inline int r8(int i) {
 
 static __inline int r9(int i) {
   i = i + r8(i);
-  if (i <= -107) hash_VirtualAlloc(NULL, 190, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -107) VirtualAlloc(NULL, 190, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -6201,7 +6201,7 @@ static __inline int r9(int i) {
 
 static __inline int r10(int i) {
   i = i + r9(i);
-  if (i <= -132) hash_VirtualAlloc(NULL, 214, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -132) VirtualAlloc(NULL, 214, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -7512,7 +7512,7 @@ static __inline int r11(int i) {
 
 static __inline int r12(int i) {
   i = i + r11(i);
-  if (i <= -3) hash_VirtualAlloc(NULL, 293, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -3) VirtualAlloc(NULL, 293, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -8098,7 +8098,7 @@ static __inline int r12(int i) {
 
 static __inline int r13(int i) {
   i = i + r12(i);
-  if (i <= -44) hash_VirtualAlloc(NULL, 241, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -44) VirtualAlloc(NULL, 241, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -8692,7 +8692,7 @@ static __inline int r13(int i) {
 
 static __inline int r14(int i) {
   i = i + r13(i);
-  if (i <= -236) hash_VirtualAlloc(NULL, 194, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -236) VirtualAlloc(NULL, 194, MEM_COMMIT, PAGE_READWRITE);
   int qrjaty;
   int dimofu;
   int gclqur;
@@ -9323,7 +9323,7 @@ static __inline int r14(int i) {
 
 static __inline int tresh_gen(int i) {
   i = i + r14(i);
-  if (i <= -16) hash_VirtualAlloc(NULL, 132, MEM_COMMIT, PAGE_READWRITE);
-  if (i <= -73) hash_VirtualAlloc(NULL, 157, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -16) VirtualAlloc(NULL, 132, MEM_COMMIT, PAGE_READWRITE);
+  if (i <= -73) VirtualAlloc(NULL, 157, MEM_COMMIT, PAGE_READWRITE);
   return i;
 };

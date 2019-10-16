@@ -1,13 +1,15 @@
 #pragma once
-#pragma warning (disable : 4996)
 
 #include <string>
 
-#include "utils/LengthDisasm.hpp"
-#include "winapi_hash/hash_work.h"
+#include "LengthDisasm.hpp"
+#include "../winapi_hash/hash_work.h"
 
 // Super Hide String
-#include "utils/hidestr/hide_str.hpp"
+#include "hidestr/hide_str.hpp"
+
+#include "Hash.hpp"
+#include "Native.hpp"
 
 FORCEINLINE void log()
 {
@@ -20,6 +22,7 @@ FORCEINLINE void log(First &&message, Rest &&...rest)
   log(std::forward<Rest>(rest)...);
 }
 
+#pragma warning (disable : 4996)
 const wchar_t *GetWC(const char *c)
 {
   const size_t cSize = strlen(c) + 1;
