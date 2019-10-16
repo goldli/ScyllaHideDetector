@@ -2,9 +2,9 @@
 #include <array>
 #include <cstdarg>
 
-#include "xtea3.h"
-#include "trash.h"
-#include "murmurhash.h"
+#include "xtea3.hpp"
+#include "trash.hpp"
+#include "murmurhash.hpp"
 
 #define BEGIN_NAMESPACE( x ) namespace x {
 #define END_NAMESPACE }

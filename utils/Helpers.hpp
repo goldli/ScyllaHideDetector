@@ -3,7 +3,7 @@
 #include <string>
 
 #include "LengthDisasm.hpp"
-#include "../winapi_hash/hash_work.h"
+#include "../winapi_hash/hash_work.hpp"
 
 // Super Hide String
 #include "hidestr/hide_str.hpp"

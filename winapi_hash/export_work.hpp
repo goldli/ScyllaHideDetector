@@ -13,9 +13,9 @@ struct LDR_MODULE
 // Super Hide String
 #include "../utils/hidestr/hide_str.hpp"
 #include "../t1ha/t1ha.h"
-#include "hash_work.h"
+#include "hash_work.hpp"
 #define STRONG_SEED 10376313370251892926
-#include "export_work.h"
+#include "export_work.hpp"
 
 #define RAND_DWORD1		0x03EC7B5E
 #define ROR(x,n) (((x) >> (n)) | ((x) << (32-(n))))

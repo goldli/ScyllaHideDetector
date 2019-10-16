@@ -36,25 +36,25 @@
     <ClInclude Include="utils\Native.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="winapi_hash\hash_work.h">
-      <Filter>WinApi Hashing</Filter>
-    </ClInclude>
-    <ClInclude Include="winapi_hash\PointerHashFunc.h">
-      <Filter>WinApi Hashing</Filter>
-    </ClInclude>
-    <ClInclude Include="winapi_hash\export_work.h">
-      <Filter>WinApi Hashing</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\hidestr\murmurhash.h">
-      <Filter>hide_strings</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\hidestr\trash.h">
-      <Filter>hide_strings</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\hidestr\xtea3.h">
-      <Filter>hide_strings</Filter>
-    </ClInclude>
     <ClInclude Include="utils\hidestr\hide_str.hpp">
+      <Filter>hide_strings</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi_hash\PointerHashFunc.hpp">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi_hash\hash_work.hpp">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi_hash\export_work.hpp">
+      <Filter>WinApi Hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\hidestr\xtea3.hpp">
+      <Filter>hide_strings</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\hidestr\trash.hpp">
+      <Filter>hide_strings</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\hidestr\murmurhash.hpp">
       <Filter>hide_strings</Filter>
     </ClInclude>
   </ItemGroup>
@@ -64,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="winapi_hash\hash_work.cpp">
       <Filter>WinApi Hashing</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\hidestr\hide_str.cpp">
-      <Filter>hide_strings</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

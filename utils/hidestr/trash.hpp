@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "../LengthDisasm.hpp"
-#include "../../winapi_hash/hash_work.h"
+#include "../../winapi_hash/hash_work.hpp"
 
 static __inline int sg(int i1, int i2) {
   return 98 + i1 + i2;

@@ -3,11 +3,11 @@
 
 #include "../t1ha/t1ha.h"
 #pragma comment(lib, "t1ha-static.lib")
-#include "PointerHashFunc.h"
+#include "PointerHashFunc.hpp"
 
 #define STRONG_SEED 10376313370251892926
 
-#include "export_work.h"
+#include "export_work.hpp"
 #include <string>
 
 HANDLE hash_CreateFileA(
