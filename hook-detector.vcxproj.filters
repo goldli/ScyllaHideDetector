@@ -36,9 +36,6 @@
     <ClInclude Include="utils\Native.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils\xorstr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="winapi_hash\hash_work.h">
       <Filter>WinApi Hashing</Filter>
     </ClInclude>

@@ -102,8 +102,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -168,7 +168,6 @@
     <ClInclude Include="utils\LengthDisasm.hpp" />
     <ClInclude Include="utils\Native.hpp" />
     <ClInclude Include="utils\Helpers.hpp" />
-    <ClInclude Include="utils\xorstr.hpp" />
     <ClInclude Include="winapi_hash\export_work.h" />
     <ClInclude Include="winapi_hash\hash_work.h" />
     <ClInclude Include="winapi_hash\PointerHashFunc.h" />
