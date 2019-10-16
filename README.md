@@ -1,7 +1,7 @@
-# ScyllaHide Detector V2
+# ScyllaHide Detector
 Allows you to find the use of ScyllaHide, if your program will debug and *restore bytes*.
 
-Check `hide` branch if u need hidden code usage.
+Check `hide` branch if you need hidden code usage.
 
 ## TODO
 - [ ] support x86 
