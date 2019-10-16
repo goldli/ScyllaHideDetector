@@ -83,7 +83,7 @@ __forceinline HMODULE _getKernel32Handle(void)
     DWORD dwHash = 0;
     while (szwModuleName[i])
     {
-      BYTE zByte = static_cast<BYTE>(szwModuleName[i]);
+      BYTE zByte = (BYTE)szwModuleName[i];
       if (zByte >= 'a' && zByte <= 'z')
         zByte -= 0x20; // Uppercase
       dwHash = ROR(dwHash, 13) + zByte;
