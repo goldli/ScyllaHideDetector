@@ -31,22 +31,22 @@ struct hash_t
   constexpr static unsigned long long prime64 = prime;
 
   FORCEINLINE constexpr static value_type single(value_type value,
-                                                 char c) noexcept
+      char c) noexcept
   {
     return static_cast<hash_t::value_type>(
-      (value ^ TOLOWER(c)) *
-      static_cast<unsigned long long>(prime));
+             (value ^ TOLOWER(c)) *
+             static_cast<unsigned long long>(prime));
   }
 };
 
 template <class CharT = char>
-FORCEINLINE constexpr hash_t::value_type khash(const CharT* str, hash_t::value_type value = hash_t::offset) noexcept
+__forceinline constexpr hash_t::value_type khash(const CharT *str, hash_t::value_type value = hash_t::offset) noexcept
 {
   return (*str ? khash(str + 1, hash_t::single(value, static_cast<char>(*str))) : value);
 }
 
 template <class CharT = char>
-FORCEINLINE hash_t::value_type get_hash(const CharT* str) noexcept
+__forceinline hash_t::value_type get_hash(const CharT *str) noexcept
 {
   auto value = hash_t::offset;
   for (;;)
@@ -58,8 +58,8 @@ FORCEINLINE hash_t::value_type get_hash(const CharT* str) noexcept
   }
 }
 
-FORCEINLINE hash_t::value_type get_hash(
-  const UNICODE_STRING& str) noexcept
+__forceinline hash_t::value_type get_hash(
+  const UNICODE_STRING &str) noexcept
 {
   auto first = str.Buffer;
   const auto last = first + str.Length / sizeof(wchar_t);

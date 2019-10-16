@@ -704,7 +704,7 @@ extern "C"
 
 		  Mod R/M Byte               SIB Byte
 */
-FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
+__forceinline uint8_t LengthDisasm(void *Address, uint8_t Is64Bit, PLengthDisasm Data)
 {
   if (!Address || !Data)
     return 0;
@@ -716,26 +716,26 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     Data->Flags |= F_PREFIX;
     switch (*Ip)
     {
-    case LockPrefix:
-      Data->Flags |= F_PREFIX_LOCK;
-      break;
-    case RepneRepnzPrefix:
-      Data->Flags |= F_PREFIX_REPNZ;
-      break;
-    case RepeRepzPrefix:
-      Data->Flags |= F_PREFIX_REPX;
-      break;
-    case CSOverridePrefix: case SSOverridePrefix:
-    case DSOverridePrefix: case ESOverridePrefix:
-    case FSOverridePrefix: case GSOverridePrefix:
-      Data->Flags |= F_PREFIX_SEG;
-      break;
-    case OperandSizeOverridePrefix:
-      Data->Flags |= F_PREFIX66;
-      break;
-    case AddressSizeOverridePrefix:
-      Data->Flags |= F_PREFIX67;
-      break;
+      case LockPrefix:
+        Data->Flags |= F_PREFIX_LOCK;
+        break;
+      case RepneRepnzPrefix:
+        Data->Flags |= F_PREFIX_REPNZ;
+        break;
+      case RepeRepzPrefix:
+        Data->Flags |= F_PREFIX_REPX;
+        break;
+      case CSOverridePrefix: case SSOverridePrefix:
+      case DSOverridePrefix: case ESOverridePrefix:
+      case FSOverridePrefix: case GSOverridePrefix:
+        Data->Flags |= F_PREFIX_SEG;
+        break;
+      case OperandSizeOverridePrefix:
+        Data->Flags |= F_PREFIX66;
+        break;
+      case AddressSizeOverridePrefix:
+        Data->Flags |= F_PREFIX67;
+        break;
     }
     if (Data->Length > MAX_PREFIXES)
     {
@@ -817,26 +817,26 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     }
     switch (Data->MODRM.Mod)
     {
-    case 0:
-      if (Data->MODRM.Rm == 5)
-      {
-        Data->DisplacementSize = 4;
-        if (Is64Bit)
-          Data->Flags |= F_RELATIVE;
-      }
-      if (Data->SIB.Base == 5)
-        Data->DisplacementSize = 4;
-      if (Data->MODRM.Rm == 6 && Data->Flags & F_PREFIX67)
-        Data->DisplacementSize = 2;
-      break;
-    case 1:
-      Data->DisplacementSize = 1;
-      break;
-    case 2:
-      if (Data->Flags & F_PREFIX67)
-        Data->DisplacementSize = 2;
-      else
-        Data->DisplacementSize = 4;
+      case 0:
+        if (Data->MODRM.Rm == 5)
+        {
+          Data->DisplacementSize = 4;
+          if (Is64Bit)
+            Data->Flags |= F_RELATIVE;
+        }
+        if (Data->SIB.Base == 5)
+          Data->DisplacementSize = 4;
+        if (Data->MODRM.Rm == 6 && Data->Flags & F_PREFIX67)
+          Data->DisplacementSize = 2;
+        break;
+      case 1:
+        Data->DisplacementSize = 1;
+        break;
+      case 2:
+        if (Data->Flags & F_PREFIX67)
+          Data->DisplacementSize = 2;
+        else
+          Data->DisplacementSize = 4;
     }
   }
   if (Data->DisplacementSize > 0)
@@ -846,12 +846,12 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     Data->Length += Data->DisplacementSize;
     switch (Data->DisplacementSize)
     {
-    case 1: Data->AddressDisplacement.Displacement08 = *Ip;
-      break;
-    case 2: Data->AddressDisplacement.Displacement16 = *(uint16_t *)Ip;
-      break;
-    case 4: Data->AddressDisplacement.Displacement32 = *(uint32_t *)Ip;
-      break;
+      case 1: Data->AddressDisplacement.Displacement08 = *Ip;
+        break;
+      case 2: Data->AddressDisplacement.Displacement16 = *(uint16_t *)Ip;
+        break;
+      case 4: Data->AddressDisplacement.Displacement32 = *(uint32_t *)Ip;
+        break;
     }
     Ip += Data->DisplacementSize;
   }
@@ -893,14 +893,14 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       Data->Flags |= F_RELATIVE;
     switch (Data->ImmediateDataSize)
     {
-    case 1: Data->ImmediateData.ImmediateData08 = *Ip;
-      break;
-    case 2: Data->ImmediateData.ImmediateData16 = *(uint16_t *)Ip;
-      break;
-    case 4: Data->ImmediateData.ImmediateData32 = *(uint32_t *)Ip;
-      break;
-    case 8: Data->ImmediateData.ImmediateData64 = *(uint64_t *)Ip;
-      break;
+      case 1: Data->ImmediateData.ImmediateData08 = *Ip;
+        break;
+      case 2: Data->ImmediateData.ImmediateData16 = *(uint16_t *)Ip;
+        break;
+      case 4: Data->ImmediateData.ImmediateData32 = *(uint32_t *)Ip;
+        break;
+      case 8: Data->ImmediateData.ImmediateData64 = *(uint64_t *)Ip;
+        break;
     }
     Ip += Data->ImmediateDataSize;
   }
@@ -912,7 +912,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
   return Data->Length;
 }
 
-FORCEINLINE uint32_t get_size_of_proc(void* Address, uint8_t Is64Bit)
+__forceinline uint32_t get_size_of_proc(void *Address, uint8_t Is64Bit)
 {
   TLengthDisasm Data = {0};
   uint8_t Size = 0;
@@ -932,7 +932,7 @@ FORCEINLINE uint32_t get_size_of_proc(void* Address, uint8_t Is64Bit)
   return Result;
 }
 
-FORCEINLINE uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
+__forceinline uint8_t LengthAssemble(void *Buffer, PLengthDisasm Data)
 {
   if (!Buffer || !Data)
     return 0;

@@ -16,7 +16,7 @@ DWORD hash_QueryDosDeviceW(LPCWSTR lpDeviceName, LPWSTR lpTargetPath, DWORD ucch
 BOOL hash_GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                               PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes);
 HMODULE hash_LoadLibraryW(LPCWSTR lpLibFileName);
-BOOL hash_GetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE* phModule);
+BOOL hash_GetModuleHandleExW(DWORD dwFlags, LPCWSTR lpModuleName, HMODULE *phModule);
 DWORD hash_GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 HMODULE hash_GetModuleHandleA(LPCSTR lpModuleName);
 HMODULE hash_GetModuleHandleW(LPCWSTR lpModuleName);
@@ -33,14 +33,14 @@ UINT hash_GetSystemDirectoryW(LPWSTR lpBuffer, UINT uSize);
 UINT hash_GetSystemDirectoryA(LPSTR lpBuffer, UINT uSize);
 void hash_GetSystemInfo(LPSYSTEM_INFO lpSystemInfo);
 DWORD hash_ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);
-BOOL hash_QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount);
+BOOL hash_QueryPerformanceCounter(LARGE_INTEGER *lpPerformanceCount);
 BOOL hash_IsProcessorFeaturePresent(DWORD ProcessorFeature);
 PVOID hash_AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler);
 void hash_SetLastError(DWORD dwErrCode);
 _Post_equals_last_error_ DWORD hash_GetLastError();
 void hash_OutputDebugStringW(LPCWSTR lpOutputString);
 DWORD hash_FormatMessageW(DWORD dwFlags, LPCVOID lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer,
-                          DWORD nSize, va_list* Arguments);
+                          DWORD nSize, va_list *Arguments);
 HANDLE hash_CreateMutexW(LPSECURITY_ATTRIBUTES lpMutexAttributes, BOOL bInitialOwner, LPCWSTR lpName);
 HANDLE hash_CreateEventW(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManualReset, BOOL bInitialState,
                          LPCWSTR lpName);
@@ -51,7 +51,7 @@ HANDLE hash_CreateThread(LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStac
                          LPTHREAD_START_ROUTINE lpStartAddress, __drv_aliasesMem LPVOID lpParameter,
                          DWORD dwCreationFlags, LPDWORD lpThreadId);
 HANDLE hash_CreateWaitableTimerW(LPSECURITY_ATTRIBUTES lpTimerAttributes, BOOL bManualReset, LPCWSTR lpTimerName);
-BOOL hash_SetWaitableTimer(HANDLE hTimer, const LARGE_INTEGER* lpDueTime, LONG lPeriod,
+BOOL hash_SetWaitableTimer(HANDLE hTimer, const LARGE_INTEGER *lpDueTime, LONG lPeriod,
                            PTIMERAPCROUTINE pfnCompletionRoutine, LPVOID lpArgToCompletionRoutine, BOOL fResume);
 BOOL hash_CancelWaitableTimer(HANDLE hTimer);
 BOOL hash_CreateTimerQueueTimer(PHANDLE phNewTimer, HANDLE TimerQueue, WAITORTIMERCALLBACK Callback, PVOID DueTime,
@@ -62,22 +62,22 @@ BOOL hash_ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LP
 HANDLE hash_CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode,
                         LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition,
                         DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
-DWORD hash_GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR* lpFilePart);
+DWORD hash_GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR *lpFilePart);
 DWORD hash_GetFileAttributesW(LPCWSTR lpFileName);
 void hash_GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime);
 void hash_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer, SIZE_T dwLength);
 BOOL hash_ReadProcessQMemory(HANDLE hProcess, LPCVOID lpBaseAddress, LPVOID lpBuffer, SIZE_T nSize,
-                             SIZE_T* lpNumberOfBytesRead);
+                             SIZE_T *lpNumberOfBytesRead);
 HLOCAL hash_LocalAlloc(UINT uFlags, SIZE_T uBytes);
 HLOCAL hash_LocalFree(_Frees_ptr_opt_ HLOCAL hMem);
 BOOL hash_GlobalMemoryStatusEx(LPMEMORYSTATUSEX lpBuffer);
 BOOL hash_WriteProcessMemory(HANDLE hProcess, LPVOID lpBaseAddress, LPCVOID lpBuffer, SIZE_T nSize,
-                             SIZE_T* lpNumberOfBytesWritten);
+                             SIZE_T *lpNumberOfBytesWritten);
 SIZE_T hash_LocalSize(HLOCAL hMem);
 LPVOID hash_HeapAlloc(HANDLE hHeap, DWORD dwFlags, SIZE_T dwBytes);
 HANDLE hash_GetProcessHeap();
 BOOL hash_HeapFree(HANDLE hHeap, DWORD dwFlags, _Frees_ptr_opt_ LPVOID lpMem);
-BOOL hash_IsBadReadPtr(const VOID* lp, UINT_PTR ucb);
+BOOL hash_IsBadReadPtr(const VOID *lp, UINT_PTR ucb);
 HANDLE hash_GetCurrentProcess();
 BOOL hash_GetThreadContext(HANDLE hThread, LPCONTEXT lpContext);
 void hash_Sleep(DWORD dwMilliseconds);
@@ -111,19 +111,19 @@ int hash_MultiByteToWideChar(UINT CodePage, DWORD dwFlags, _In_NLS_string_(cbMul
                              int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
 BOOL hash_DeleteTimerQueueEx(HANDLE TimerQueue, HANDLE CompletionEvent);
 BOOL hash_CheckRemoteDebuggerPresent(HANDLE hProcess, PBOOL pbDebuggerPresent);
-LONG hash_UnhandledExceptionFilter(_EXCEPTION_POINTERS* ExceptionInfo);
+LONG hash_UnhandledExceptionFilter(_EXCEPTION_POINTERS *ExceptionInfo);
 LPTOP_LEVEL_EXCEPTION_FILTER hash_SetUnhandledExceptionFilter(LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter);
 ULONG hash_RemoveVectoredExceptionHandler(PVOID Handle);
 int hash_WSAStartup(WORD wVersionRequired, LPWSADATA lpWSAData);
 int hash_WSACleanup();
 int hash_closesocket(IN SOCKET s);
-int hash_recv(SOCKET s, char* buf, int len, int flags);
-int hash_send(SOCKET s, const char* buf, int len, int flags);
+int hash_recv(SOCKET s, char *buf, int len, int flags);
+int hash_send(SOCKET s, const char *buf, int len, int flags);
 SOCKET hash_socket(int af, int type, int protocol);
-int hash_connect(SOCKET s, const sockaddr* name, int namelen);
+int hash_connect(SOCKET s, const sockaddr *name, int namelen);
 u_short hash_htons(u_short hostshort);
 int hash_WSAGetLastError();
-ULONG hash_inet_addr(_In_z_ const char FAR * cp);
+ULONG hash_inet_addr(_In_z_ const char FAR *cp);
 void hash_RtlInitUnicodeString(PUNICODE_STRING DestinationString, PCWSTR SourceString);
 NTSTATUS hash_NtClose(IN HANDLE Handle);
 BOOL hash_FreeLibrary(HMODULE hLibModule);

@@ -5,7 +5,7 @@ struct LDR_MODULE
 {
   LIST_ENTRY e[3];
   HMODULE base;
-  void* entry;
+  void *entry;
   UINT size;
   UNICODE_STRING dllPath;
   UNICODE_STRING dllname;
@@ -25,7 +25,7 @@ typedef struct _PEB_LDR_DATA_
 {
   BYTE Reserved1[8];
   PVOID Reserved2[3];
-  LIST_ENTRY* InMemoryOrderModuleList;
+  LIST_ENTRY *InMemoryOrderModuleList;
 } PEB_LDR_DATA_, *PPEB_LDR_DATA_;
 
 #ifdef _WIN64
@@ -53,10 +53,10 @@ typedef struct _PEB
 #endif
 
 #pragma warning (disable : 4996)
-__forceinline const wchar_t* GetWC_(const char* c)
+__forceinline const wchar_t *GetWC_(const char *c)
 {
   const size_t cSize = strlen(c) + 1;
-  wchar_t* wc = new wchar_t[cSize];
+  wchar_t *wc = new wchar_t[cSize];
   mbstowcs(wc, c, cSize);
   return wc;
 }
@@ -64,8 +64,8 @@ __forceinline const wchar_t* GetWC_(const char* c)
 __forceinline HMODULE _getKernel32Handle(void)
 {
   HMODULE dwResult = NULL;
-  PEB_c* lpPEB = NULL;
-  SIZE_T* lpFirstModule = NULL;
+  PEB_c *lpPEB = NULL;
+  SIZE_T *lpFirstModule = NULL;
 #if defined _WIN64
   lpPEB = *(PEB_c **)(__readgsqword(0x30) + 0x60); //get a pointer to the PEB
 #else
@@ -75,7 +75,7 @@ __forceinline HMODULE _getKernel32Handle(void)
   // PEB->Ldr = 0x0C
   // Ldr->LdrInMemoryOrderModuleList = 0x14
   lpFirstModule = (SIZE_T *)lpPEB->Ldr->InMemoryOrderModuleList;
-  SIZE_T* lpCurrModule = lpFirstModule;
+  SIZE_T *lpCurrModule = lpFirstModule;
   do
   {
     PWCHAR szwModuleName = (PWCHAR)lpCurrModule[10]; // 0x28 - module name in unicode
@@ -115,7 +115,7 @@ static __forceinline int hash_lstrcmpiW(LPCWSTR lpString1,
                         lpString2);
 }
 
-inline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len, const uint64_t seed)
+__forceinline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len, const uint64_t seed)
 {
   PIMAGE_DOS_HEADER img_dos_header;
   PIMAGE_NT_HEADERS img_nt_header;
@@ -123,13 +123,13 @@ inline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len
   img_dos_header = (PIMAGE_DOS_HEADER)module;
   img_nt_header = (PIMAGE_NT_HEADERS)((DWORD_PTR)img_dos_header + img_dos_header->e_lfanew);
   in_export = (PIMAGE_EXPORT_DIRECTORY)((DWORD_PTR)img_dos_header + img_nt_header->OptionalHeader.DataDirectory[
-    IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
+                                         IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
   PDWORD rva_name;
   PWORD rva_ordinal;
   rva_name = (PDWORD)((DWORD_PTR)img_dos_header + in_export->AddressOfNames);
   rva_ordinal = (PWORD)((DWORD_PTR)img_dos_header + in_export->AddressOfNameOrdinals);
   UINT ord = -1;
-  char* api_name;
+  char *api_name;
   unsigned int i;
   for (i = 0; i < in_export->NumberOfNames - 1; i++)
   {
@@ -151,7 +151,7 @@ inline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len
 }
 
 
-inline LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t seed)
+__forceinline LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint64_t seed)
 {
   HMODULE krnl32, hDll;
   LPVOID api_func;
@@ -173,10 +173,10 @@ inline LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint
   auto mdl = (LDR_MODULE *)mlink;
   HMODULE hKernel32 = NULL;
   hKernel32 = _getKernel32Handle();
-  const char* lstrcmpiW_ = (LPCSTR)PRINT_HIDE_STR("lstrcmpiW");
+  const char *lstrcmpiW_ = (LPCSTR)PRINT_HIDE_STR("lstrcmpiW");
   const uint64_t api_hash_lstrcmpiW = t1ha0(lstrcmpiW_, strlen(lstrcmpiW_), STRONG_SEED);
   temp_lstrcmpiW = static_cast<int(*)(LPCWSTR, LPCWSTR)>(parse_export_table(
-    hKernel32, api_hash_lstrcmpiW, strlen(lstrcmpiW_), STRONG_SEED));
+                     hKernel32, api_hash_lstrcmpiW, strlen(lstrcmpiW_), STRONG_SEED));
   do
   {
     mdl = (LDR_MODULE *)mdl->e[0].Flink;
@@ -192,10 +192,10 @@ inline LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, const uint
   while (mlink != (INT_PTR)mdl);
   krnl32 = static_cast<HMODULE>(mdl->base);
   //Получаем адрес функции LoadLibraryA
-  const char* LoadLibraryA_ = (LPCSTR)PRINT_HIDE_STR("LoadLibraryA");
+  const char *LoadLibraryA_ = (LPCSTR)PRINT_HIDE_STR("LoadLibraryA");
   const uint64_t api_hash_LoadLibraryA = t1ha0(LoadLibraryA_, strlen(LoadLibraryA_), STRONG_SEED);
   temp_LoadLibraryA = static_cast<HMODULE(WINAPI *)(LPCSTR)>(parse_export_table(
-    krnl32, api_hash_LoadLibraryA, strlen(LoadLibraryA_), STRONG_SEED));
+                        krnl32, api_hash_LoadLibraryA, strlen(LoadLibraryA_), STRONG_SEED));
   hDll = hash_LoadLibraryA(module);
   api_func = static_cast<LPVOID>(parse_export_table(hDll, api_hash, len, seed));
   return api_func;

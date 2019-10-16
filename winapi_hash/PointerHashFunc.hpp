@@ -50,7 +50,7 @@ HMODULE (WINAPI *temp_LoadLibraryW)(LPCWSTR lpLibFileName) = nullptr;
 
 BOOL (WINAPI *temp_GetModuleHandleExW)(DWORD dwFlags,
                                        LPCWSTR lpModuleName,
-                                       HMODULE* phModule) = nullptr;
+                                       HMODULE *phModule) = nullptr;
 
 DWORD (WINAPI *temp_GetModuleFileNameW)(HMODULE hModule,
                                         LPWSTR lpFilename,
@@ -66,10 +66,10 @@ HMODULE (WINAPI *temp_GetModuleHandleW)(LPCWSTR lpModuleName) = nullptr;
 HANDLE (WINAPI *temp_GetStdHandle)(_In_ DWORD nStdHandle) = nullptr;
 
 BOOL (WINAPI *temp_GetConsoleScreenBufferInfo)(_In_ HANDLE hConsoleOutput,
-                                               _Out_ PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo) = nullptr;
+    _Out_ PCONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo) = nullptr;
 
 BOOL (WINAPI *temp_SetConsoleTextAttribute)(_In_ HANDLE hConsoleOutput,
-                                            _In_ WORD wAttributes) = nullptr;
+    _In_ WORD wAttributes) = nullptr;
 
 DWORD (WINAPI *temp_GetTickCount)() = nullptr;
 
@@ -78,10 +78,10 @@ BOOL (WINAPI *temp_VerifyVersionInfoW)(LPOSVERSIONINFOEXA lpVersionInformation,
                                        DWORDLONG dwlConditionMask) = nullptr;
 
 UINT (WINAPI *temp_GetSystemWindowsDirectoryW)(LPWSTR lpBuffer,
-                                               UINT uSize) = nullptr;
+    UINT uSize) = nullptr;
 
 UINT (WINAPI *temp_GetWindowsDirectoryW)(LPWSTR lpBuffer,
-                                         UINT uSize) = nullptr;
+    UINT uSize) = nullptr;
 
 UINT (WINAPI *temp_GetSystemDirectoryW)(LPWSTR lpBuffer,
                                         UINT uSize) = nullptr;
@@ -92,10 +92,10 @@ UINT (WINAPI *temp_GetSystemDirectoryA)(LPSTR lpBuffer,
 void (WINAPI *temp_GetSystemInfo)(LPSYSTEM_INFO lpSystemInfo) = nullptr;
 
 DWORD (WINAPI *temp_ExpandEnvironmentStringsW)(LPCWSTR lpSrc,
-                                               LPWSTR lpDst,
-                                               DWORD nSize) = nullptr;
+    LPWSTR lpDst,
+    DWORD nSize) = nullptr;
 
-BOOL (WINAPI *temp_QueryPerformanceCounter)(LARGE_INTEGER* lpPerformanceCount) = nullptr;
+BOOL (WINAPI *temp_QueryPerformanceCounter)(LARGE_INTEGER *lpPerformanceCount) = nullptr;
 
 BOOL (WINAPI *temp_IsProcessorFeaturePresent)(DWORD ProcessorFeature) = nullptr;
 
@@ -113,7 +113,7 @@ DWORD (WINAPI *temp_FormatMessageW)(DWORD dwFlags,
                                     DWORD dwLanguageId,
                                     LPWSTR lpBuffer,
                                     DWORD nSize,
-                                    va_list* Arguments) = nullptr;
+                                    va_list *Arguments) = nullptr;
 
 HANDLE (WINAPI *temp_CreateMutexW)(LPSECURITY_ATTRIBUTES lpMutexAttributes,
                                    BOOL bInitialOwner,
@@ -127,7 +127,7 @@ HANDLE (WINAPI *temp_CreateEventW)(LPSECURITY_ATTRIBUTES lpEventAttributes,
 BOOL (WINAPI *temp_SetEvent)(HANDLE hEvent) = nullptr;
 
 DWORD (WINAPI *temp_WaitForSingleObject)(HANDLE hHandle,
-                                         DWORD dwMilliseconds) = nullptr;
+    DWORD dwMilliseconds) = nullptr;
 
 DWORD (WINAPI *temp_QueueUserAPC)(PAPCFUNC pfnAPC,
                                   HANDLE hThread,
@@ -141,11 +141,11 @@ HANDLE (WINAPI *temp_CreateThread)(LPSECURITY_ATTRIBUTES lpThreadAttributes,
                                    LPDWORD lpThreadId) = nullptr;
 
 HANDLE (WINAPI *temp_CreateWaitableTimerW)(LPSECURITY_ATTRIBUTES lpTimerAttributes,
-                                           BOOL bManualReset,
-                                           LPCWSTR lpTimerName) = nullptr;
+    BOOL bManualReset,
+    LPCWSTR lpTimerName) = nullptr;
 
 BOOL (WINAPI *temp_SetWaitableTimer)(HANDLE hTimer,
-                                     const LARGE_INTEGER* lpDueTime,
+                                     const LARGE_INTEGER *lpDueTime,
                                      LONG lPeriod,
                                      PTIMERAPCROUTINE pfnCompletionRoutine,
                                      LPVOID lpArgToCompletionRoutine,
@@ -154,12 +154,12 @@ BOOL (WINAPI *temp_SetWaitableTimer)(HANDLE hTimer,
 BOOL (WINAPI *temp_CancelWaitableTimer)(HANDLE hTimer) = nullptr;
 
 BOOL (WINAPI *temp_CreateTimerQueueTimer)(PHANDLE phNewTimer,
-                                          HANDLE TimerQueue,
-                                          WAITORTIMERCALLBACK Callback,
-                                          PVOID DueTime,
-                                          DWORD Period,
-                                          DWORD Flags,
-                                          ULONG Parameter) = nullptr;
+    HANDLE TimerQueue,
+    WAITORTIMERCALLBACK Callback,
+    PVOID DueTime,
+    DWORD Period,
+    DWORD Flags,
+    ULONG Parameter) = nullptr;
 
 DWORD (WINAPI *temp_SetFilePointer)(HANDLE hFile,
                                     LONG lDistanceToMove,
@@ -183,7 +183,7 @@ HANDLE (WINAPI *temp_CreateFileW)(LPCWSTR lpFileName,
 DWORD (WINAPI *temp_GetFullPathNameW)(LPCWSTR lpFileName,
                                       DWORD nBufferLength,
                                       LPWSTR lpBuffer,
-                                      LPWSTR* lpFilePart) = nullptr;
+                                      LPWSTR *lpFilePart) = nullptr;
 
 DWORD (WINAPI *temp_GetFileAttributesW)(LPCWSTR lpFileName) = nullptr;
 
@@ -197,7 +197,7 @@ BOOL (WINAPI *temp_ReadProcessMemory)(HANDLE hProcess,
                                       LPCVOID lpBaseAddress,
                                       LPVOID lpBuffer,
                                       SIZE_T nSize,
-                                      SIZE_T* lpNumberOfBytesRead) = nullptr;
+                                      SIZE_T *lpNumberOfBytesRead) = nullptr;
 
 /*DECLSPEC_ALLOCATOR*/
 HLOCAL (WINAPI *temp_LocalAlloc)(UINT uFlags,
@@ -211,7 +211,7 @@ BOOL (WINAPI *temp_WriteProcessMemory)(HANDLE hProcess,
                                        LPVOID lpBaseAddress,
                                        LPCVOID lpBuffer,
                                        SIZE_T nSize,
-                                       SIZE_T* lpNumberOfBytesWritten) = nullptr;
+                                       SIZE_T *lpNumberOfBytesWritten) = nullptr;
 
 SIZE_T (WINAPI *temp_LocalSize)(HLOCAL hMem) = nullptr;
 
@@ -224,7 +224,7 @@ BOOL (WINAPI *temp_HeapFree)(HANDLE hHeap,
                              DWORD dwFlags,
                              _Frees_ptr_opt_ LPVOID lpMem) = nullptr;
 
-BOOL (WINAPI *temp_IsBadReadPtr)(const VOID* lp,
+BOOL (WINAPI *temp_IsBadReadPtr)(const VOID *lp,
                                  UINT_PTR ucb) = nullptr;
 HANDLE (WINAPI *temp_GetCurrentProcess)() = nullptr;
 
@@ -240,11 +240,11 @@ HANDLE (WINAPI *temp_OpenProcess)(DWORD dwDesiredAccess,
                                   DWORD dwProcessId) = nullptr;
 
 DWORD (WINAPI *temp_GetEnvironmentVariableW)(LPCWSTR lpName,
-                                             LPWSTR lpBuffer,
-                                             DWORD nSize) = nullptr;
+    LPWSTR lpBuffer,
+    DWORD nSize) = nullptr;
 
 HANDLE (WINAPI *temp_CreateToolhelp32Snapshot)(DWORD dwFlags,
-                                               DWORD th32ProcessID) = nullptr;
+    DWORD th32ProcessID) = nullptr;
 
 BOOL (WINAPI *temp_Module32FirstW)(HANDLE hSnapshot,
                                    LPMODULEENTRY32W lpme) = nullptr;
@@ -258,12 +258,12 @@ BOOL (WINAPI *temp_IsWow64Process)(HANDLE hProcess,
                                    PBOOL Wow64Process) = nullptr;
 
 HANDLE (WINAPI *temp_CreateRemoteThread)(HANDLE hProcess,
-                                         LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                         SIZE_T dwStackSize,
-                                         LPTHREAD_START_ROUTINE lpStartAddress,
-                                         LPVOID lpParameter,
-                                         DWORD dwCreationFlags,
-                                         LPDWORD lpThreadId) = nullptr;
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    SIZE_T dwStackSize,
+    LPTHREAD_START_ROUTINE lpStartAddress,
+    LPVOID lpParameter,
+    DWORD dwCreationFlags,
+    LPDWORD lpThreadId) = nullptr;
 
 BOOL (WINAPI *temp_Thread32First)(HANDLE hSnapshot,
                                   LPTHREADENTRY32 lpte) = nullptr;
@@ -300,8 +300,8 @@ BOOL (WINAPI *temp_DuplicateHandle)(HANDLE hSourceProcessHandle,
 
 
 BOOL (WINAPI *temp_SetHandleInformation)(HANDLE hObject,
-                                         DWORD dwMask,
-                                         DWORD dwFlags) = nullptr;
+    DWORD dwMask,
+    DWORD dwFlags) = nullptr;
 
 BOOL (WINAPI *temp_DeviceIoControl)(HANDLE hDevice,
                                     DWORD dwIoControlCode,
@@ -327,9 +327,9 @@ BOOL (WINAPI *temp_DeleteTimerQueueEx)(HANDLE TimerQueue,
                                        HANDLE CompletionEvent) = nullptr;
 
 BOOL (WINAPI *temp_CheckRemoteDebuggerPresent)(HANDLE hProcess,
-                                               PBOOL pbDebuggerPresent) = nullptr;
+    PBOOL pbDebuggerPresent) = nullptr;
 
-LONG (WINAPI *temp_UnhandledExceptionFilter)(_EXCEPTION_POINTERS* ExceptionInfo) = nullptr;
+LONG (WINAPI *temp_UnhandledExceptionFilter)(_EXCEPTION_POINTERS *ExceptionInfo) = nullptr;
 
 LPTOP_LEVEL_EXCEPTION_FILTER (WINAPI *temp_SetUnhandledExceptionFilter)(
   LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter) = nullptr;
@@ -344,12 +344,12 @@ int (*temp_WSACleanup)() = nullptr;
 int (*temp_closesocket)(IN SOCKET s) = nullptr;
 
 int (*temp_recv)(SOCKET s,
-                 char* buf,
+                 char *buf,
                  int len,
                  int flags) = nullptr;
 
 int (*temp_send)(SOCKET s,
-                 const char* buf,
+                 const char *buf,
                  int len,
                  int flags) = nullptr;
 
@@ -357,10 +357,10 @@ int (*temp_send)(SOCKET s,
 SOCKET (*temp_socket)(int af, int type, int protocol) = nullptr;
 
 int (*temp_connect)(SOCKET s,
-                    const sockaddr* name,
+                    const sockaddr *name,
                     int namelen) = nullptr;
 
-ULONG (*temp_inet_addr)(_In_z_ const char FAR * cp) = nullptr;
+ULONG (*temp_inet_addr)(_In_z_ const char FAR *cp) = nullptr;
 
 u_short (*temp_htons)(u_short hostshort) = nullptr;
 
@@ -370,6 +370,6 @@ void (*temp_RtlInitUnicodeString)(PUNICODE_STRING DestinationString,
                                   PCWSTR SourceString) = nullptr;
 NTSTATUS (*temp_NtClose)(IN HANDLE Handle) = nullptr;
 BOOL (*temp_FreeLibrary)(HMODULE hLibModule
-) = nullptr;
+                        ) = nullptr;
 
 HMODULE (*temp_LoadLibraryAA)(LPCSTR lpLibFileName) = nullptr;

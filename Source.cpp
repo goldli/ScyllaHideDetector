@@ -13,7 +13,7 @@
 #include "utils/LengthDisasm.hpp"
 #include <vector>
 
-void ntdll_restore(const char* func_name)
+void ntdll_restore(const char *func_name)
 {
   const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
   PVOID ntdll_mapped = nullptr;
@@ -43,7 +43,7 @@ void ntdll_restore(const char* func_name)
   }
 }
 
-void kernelbase_restore(const char* func_name)
+void kernelbase_restore(const char *func_name)
 {
   const auto kernelbase = GET_MODULE_BASE_ADDRESS("kernelbase.dll");
   PVOID kernelbase_mapped = nullptr;
@@ -73,7 +73,7 @@ void kernelbase_restore(const char* func_name)
   }
 }
 
-void user32_restore(const char* func_name)
+void user32_restore(const char *func_name)
 {
   // TODO: Test on Win7,8
   if (getSysOpType() == 10)
