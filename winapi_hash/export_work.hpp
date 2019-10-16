@@ -134,7 +134,7 @@ inline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len
   for (i = 0; i < in_export->NumberOfNames - 1; i++)
   {
     api_name = (PCHAR)((DWORD_PTR)img_dos_header + rva_name[i]);
-    const uint64_t get_hash = t1ha0(api_name, (len), seed);
+    const uint64_t get_hash = t1ha0(api_name, len, seed);
     //if (strcmp("CreateFileA", (const char*)api_name) == 0)
     //{
     //	int debug_me = 3;

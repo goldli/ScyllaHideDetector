@@ -27,11 +27,11 @@ protected:
     d = v[3] + k[3];
     for (i = 0; i < num_rounds; i++)
     {
-      a += (((b << 4) + rol(k[(sum % 4) + 4], b)) ^
-        (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
+      a += (b << 4) + rol(k[sum % 4 + 4], b) ^
+        d + sum ^ (b >> 5) + rol(k[sum % 4], b >> 27);
       sum += delta;
-      c += (((d << 4) + rol(k[((sum >> 11) % 4) + 4], d)) ^
-        (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
+      c += (d << 4) + rol(k[(sum >> 11) % 4 + 4], d) ^
+        b + sum ^ (d >> 5) + rol(k[(sum >> 11) % 4], d >> 27);
       t = a;
       a = b;
       b = c;
@@ -59,11 +59,11 @@ protected:
       c = b;
       b = a;
       a = t;
-      c -= (((d << 4) + rol(k[((sum >> 11) % 4) + 4], d)) ^
-        (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
+      c -= (d << 4) + rol(k[(sum >> 11) % 4 + 4], d) ^
+        b + sum ^ (d >> 5) + rol(k[(sum >> 11) % 4], d >> 27);
       sum -= delta;
-      a -= (((b << 4) + rol(k[(sum % 4) + 4], b)) ^
-        (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
+      a -= (b << 4) + rol(k[sum % 4 + 4], b) ^
+        d + sum ^ (b >> 5) + rol(k[sum % 4], b >> 27);
     }
     v[3] = d - k[3];
     v[2] = c - k[2];
@@ -87,7 +87,7 @@ protected:
     if (len % BLOCK_SIZE != 0)
     {
       int mod = len % BLOCK_SIZE;
-      int offset = (len / BLOCK_SIZE) * BLOCK_SIZE;
+      int offset = len / BLOCK_SIZE * BLOCK_SIZE;
       uint32_t data[BLOCK_SIZE];
       memcpy(data, inout + offset, mod);
       if (encrypt)
@@ -109,7 +109,7 @@ public:
     uint32_t res;
     /* only 5 bits of shift are significant*/
     shift &= 0x1F;
-    res = (base << shift) | (base >> (32 - shift));
+    res = base << shift | base >> 32 - shift;
     return res;
   }
 
@@ -124,7 +124,7 @@ public:
     DEBUG_PRINT("CRYPT: \n");
     DEBUG_PRINT("SIZE = %d \n", size);
     //Выровнить размер буфера до 16-ти (для этого алгоритма)
-    while ((size_crypt_tmp % 16) != 0)
+    while (size_crypt_tmp % 16 != 0)
     {
       size_crypt_tmp++;
     }

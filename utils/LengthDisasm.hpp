@@ -746,7 +746,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     Data->PrefixesCount++;
     Data->Length++;
   }
-  if (Is64Bit && ((*Ip & 0xF0) == 0x40)) // REX
+  if (Is64Bit && (*Ip & 0xF0) == 0x40) // REX
   {
     Data->Flags |= F_REX;
     Data->REX.B = _bittest((const long *)Ip, 0);
@@ -793,10 +793,10 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
   {
     Data->Flags |= F_MODRM;
     Data->ModRMByte = *Ip++;
-    Data->ModRMOffset = (Data->OpcodeOffset + Data->OpcodeSize);
-    Data->MODRM.Mod = (Data->ModRMByte >> 6);
+    Data->ModRMOffset = Data->OpcodeOffset + Data->OpcodeSize;
+    Data->MODRM.Mod = Data->ModRMByte >> 6;
     Data->MODRM.Reg = (Data->ModRMByte & 0x38) >> 3;
-    Data->MODRM.Rm = (Data->ModRMByte & 7);
+    Data->MODRM.Rm = Data->ModRMByte & 7;
     Data->Length++;
     if (Data->MODRM.Reg <= 1)
     {
@@ -805,14 +805,14 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       if (Data->Opcode[0] == 0xF7)
         OpFlag |= OP_DATA_I16_I32_I64;
     }
-    if (Data->MODRM.Mod != 3 && Data->MODRM.Rm == 4 && !(!Is64Bit && (Data->Flags & F_PREFIX67))) // SIB
+    if (Data->MODRM.Mod != 3 && Data->MODRM.Rm == 4 && !(!Is64Bit && Data->Flags & F_PREFIX67)) // SIB
     {
       Data->Flags |= F_SIB;
       Data->SIBByte = *Ip++;
-      Data->SIBOffset = (Data->ModRMOffset + 1);
-      Data->SIB.Scale = (Data->SIBByte >> 6);
+      Data->SIBOffset = Data->ModRMOffset + 1;
+      Data->SIB.Scale = Data->SIBByte >> 6;
       Data->SIB.Index = (Data->SIBByte & 0x38) >> 3;
-      Data->SIB.Base = (Data->SIBByte & 7);
+      Data->SIB.Base = Data->SIBByte & 7;
       Data->Length++;
     }
     switch (Data->MODRM.Mod)
@@ -826,7 +826,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       }
       if (Data->SIB.Base == 5)
         Data->DisplacementSize = 4;
-      if ((Data->MODRM.Rm == 6) && (Data->Flags & F_PREFIX67))
+      if (Data->MODRM.Rm == 6 && Data->Flags & F_PREFIX67)
         Data->DisplacementSize = 2;
       break;
     case 1:
@@ -912,7 +912,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
   return Data->Length;
 }
 
-FORCEINLINE uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
+FORCEINLINE uint32_t get_size_of_proc(void* Address, uint8_t Is64Bit)
 {
   TLengthDisasm Data = {0};
   uint8_t Size = 0;
@@ -922,10 +922,10 @@ FORCEINLINE uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
   {
     Result += Size;
     Offset += Size;
-    if ((Data.Opcode[0] == 0xC3) || (Data.Opcode[0] == 0xC2))
+    if (Data.Opcode[0] == 0xC3 || Data.Opcode[0] == 0xC2)
     {
       Size = LengthDisasm(Offset, Is64Bit, &Data);
-      if ((Data.Opcode[0] == 0xCC) || (Data.Opcode[0] == 0x0F))
+      if (Data.Opcode[0] == 0xCC || Data.Opcode[0] == 0x0F)
         break;
     }
   }

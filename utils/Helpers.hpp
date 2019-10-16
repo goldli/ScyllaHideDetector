@@ -184,7 +184,7 @@ __forceinline int getSysOpType()
   *(PVOID *)&RtlGetVersion = get_proc_address(ntdll, HASHSTR((LPCSTR)PRINT_HIDE_STR("RtlGetVersion")));
   if (NULL != RtlGetVersion)
   {
-    osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+    osInfo.dwOSVersionInfoSize = sizeof osInfo;
     RtlGetVersion(&osInfo);
     ret = osInfo.dwMajorVersion;
   }

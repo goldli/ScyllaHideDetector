@@ -80,7 +80,7 @@ FORCEINLINE unsigned int crc32(const void* buffer, unsigned int len)
   unsigned int crc32 = ~0L;
   for (unsigned int i = 0; i < len; i++)
   {
-    CRC32_C(crc32, (static_cast<const unsigned char *>(buffer))[i]);
+    CRC32_C(crc32, static_cast<const unsigned char *>(buffer)[i]);
   }
   return ~crc32;
 }

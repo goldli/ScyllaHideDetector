@@ -88,7 +88,7 @@ BEGIN_NAMESPACE(StringCompileTime)
       //Генерация пароля для XTEA3
       for (int i = 0; i < 8; i++)
       {
-        key_for_xtea3[i] = Murmur3(&value_for_gen_key, sizeof(value_for_gen_key), i);
+        key_for_xtea3[i] = Murmur3(&value_for_gen_key, sizeof value_for_gen_key, i);
       }
       //Зашифровать данные
       crypted_str = data_crypt((const uint8_t *)_encrypted.data(), key_for_xtea3, N);
@@ -102,7 +102,7 @@ BEGIN_NAMESPACE(StringCompileTime)
       //Генерация пароля для XTEA3
       for (int i = 0; i < 8; i++)
       {
-        key_for_xtea3[i] = Murmur3(&value_for_gen_key, sizeof(value_for_gen_key), i);
+        key_for_xtea3[i] = Murmur3(&value_for_gen_key, sizeof value_for_gen_key, i);
       }
       //Расшифровать данные
       uint8_t* decrypted_str = data_decrypt(crypted_str, key_for_xtea3, this->get_crypt_size());
