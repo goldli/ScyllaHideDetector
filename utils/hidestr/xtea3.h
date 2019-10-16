@@ -17,7 +17,7 @@ static uint32_t size_decrypt_data = 0;;
 class xtea3
 {
  protected:
-  inline void xtea3_encipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
+  __forceinline void xtea3_encipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
   {
     unsigned int i;
     uint32_t a, b, c, d, sum = 0, t, delta = 0x9E3779B9;
@@ -40,7 +40,7 @@ class xtea3
     v[3] = d ^ k[7];
   }
 
-  inline void xtea3_decipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
+  __forceinline void xtea3_decipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
   {
     unsigned int i;
     uint32_t a, b, c, d, t, delta = 0x9E3779B9, sum = delta * num_rounds;
@@ -62,7 +62,7 @@ class xtea3
     v[0] = a - k[0];
   }
 
-  inline void xtea3_data_crypt(uint8_t *inout, uint32_t len, bool encrypt, const uint32_t *key)
+  __forceinline void xtea3_data_crypt(uint8_t *inout, uint32_t len, bool encrypt, const uint32_t *key)
   {
     static unsigned char dataArray[BLOCK_SIZE];
     for (int i = 0; i < len / BLOCK_SIZE; i++)
@@ -94,7 +94,7 @@ class xtea3
   {
   }
 
-  inline static uint32_t rol(uint32_t base, uint32_t shift)
+  __forceinline static uint32_t rol(uint32_t base, uint32_t shift)
   {
     uint32_t res;
     /* only 5 bits of shift are significant*/
