@@ -9,14 +9,14 @@
 #define DEBUG_PRINT(m,...) //printf(m,__VA_ARGS__)
 #define BLOCK_SIZE 16
 
-static uint8_t *data_ptr = NULL;
+static uint8_t* data_ptr = NULL;
 static uint32_t size_crypt = 0;
 static uint32_t size_decrypt_data = 0;
 
 class xtea3
 {
- protected:
-  __forceinline void xtea3_encipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
+protected:
+  __forceinline void xtea3_encipher(unsigned int num_rounds, uint32_t* v, const uint32_t* k)
   {
     unsigned int i;
     uint32_t a, b, c, d, sum = 0, t, delta = 0x9E3779B9;
@@ -25,13 +25,18 @@ class xtea3
     b = v[1] + k[1];
     c = v[2] + k[2];
     d = v[3] + k[3];
-    for (i = 0; i < num_rounds; i++) {
+    for (i = 0; i < num_rounds; i++)
+    {
       a += (((b << 4) + rol(k[(sum % 4) + 4], b)) ^
-            (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
+        (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
       sum += delta;
       c += (((d << 4) + rol(k[((sum >> 11) % 4) + 4], d)) ^
-            (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
-      t = a; a = b; b = c; c = d; d = t;
+        (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
+      t = a;
+      a = b;
+      b = c;
+      c = d;
+      d = t;
     }
     v[0] = a ^ k[4];
     v[1] = b ^ k[5];
@@ -39,7 +44,7 @@ class xtea3
     v[3] = d ^ k[7];
   }
 
-  __forceinline void xtea3_decipher(unsigned int num_rounds, uint32_t *v, const uint32_t *k)
+  __forceinline void xtea3_decipher(unsigned int num_rounds, uint32_t* v, const uint32_t* k)
   {
     unsigned int i;
     uint32_t a, b, c, d, t, delta = 0x9E3779B9, sum = delta * num_rounds;
@@ -47,13 +52,18 @@ class xtea3
     c = v[2] ^ k[6];
     b = v[1] ^ k[5];
     a = v[0] ^ k[4];
-    for (i = 0; i < num_rounds; i++) {
-      t = d; d = c; c = b; b = a; a = t;
+    for (i = 0; i < num_rounds; i++)
+    {
+      t = d;
+      d = c;
+      c = b;
+      b = a;
+      a = t;
       c -= (((d << 4) + rol(k[((sum >> 11) % 4) + 4], d)) ^
-            (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
+        (b + sum) ^ ((d >> 5) + rol(k[(sum >> 11) % 4], d >> 27)));
       sum -= delta;
       a -= (((b << 4) + rol(k[(sum % 4) + 4], b)) ^
-            (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
+        (d + sum) ^ ((b >> 5) + rol(k[sum % 4], b >> 27)));
     }
     v[3] = d - k[3];
     v[2] = c - k[2];
@@ -61,7 +71,7 @@ class xtea3
     v[0] = a - k[0];
   }
 
-  __forceinline void xtea3_data_crypt(uint8_t *inout, uint32_t len, bool encrypt, const uint32_t *key)
+  __forceinline void xtea3_data_crypt(uint8_t* inout, uint32_t len, bool encrypt, const uint32_t* key)
   {
     static unsigned char dataArray[BLOCK_SIZE];
     for (int i = 0; i < len / BLOCK_SIZE; i++)
@@ -87,7 +97,8 @@ class xtea3
       memcpy(inout + offset, data, mod);
     }
   }
- public:
+
+public:
 
   xtea3()
   {
@@ -107,7 +118,7 @@ class xtea3
   {
   }
 
-  __forceinline uint8_t *data_crypt(const uint8_t *data, const uint32_t key[8], uint32_t size)
+  __forceinline uint8_t* data_crypt(const uint8_t* data, const uint32_t key[8], uint32_t size)
   {
     uint32_t size_crypt_tmp = size;
     DEBUG_PRINT("CRYPT: \n");
@@ -137,7 +148,7 @@ class xtea3
   }
 
 
-  __forceinline uint8_t *data_decrypt(const uint8_t *data, const uint32_t key[8], uint32_t size)
+  __forceinline uint8_t* data_decrypt(const uint8_t* data, const uint32_t key[8], uint32_t size)
   {
     //Получим размер криптованных данных и размер оригинала
     memcpy((char *)&size_crypt, data, 4);
@@ -180,9 +191,8 @@ class xtea3
   }
 
 
-  __forceinline void free_ptr(uint8_t *ptr)
+  __forceinline void free_ptr(uint8_t* ptr)
   {
     free(ptr);
   }
-
 };;
