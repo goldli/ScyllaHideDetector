@@ -11,19 +11,19 @@
 #include "Hash.hpp"
 #include "Native.hpp"
 
-FORCEINLINE void log()
+__forceinline void log()
 {
 }
 
 template <typename First, typename ...Rest>
-FORCEINLINE void log(First &&message, Rest &&...rest)
+__forceinline void log(First &&message, Rest &&...rest)
 {
   std::cout << std::forward<First>(message);
   log(std::forward<Rest>(rest)...);
 }
 
 #pragma warning (disable : 4996)
-const wchar_t *GetWC(const char *c)
+__forceinline const wchar_t *GetWC(const char *c)
 {
   const size_t cSize = strlen(c) + 1;
   wchar_t *wc = new wchar_t[cSize];
@@ -32,7 +32,7 @@ const wchar_t *GetWC(const char *c)
 }
 
 template <const hash_t::value_type ModuleHash>
-FORCEINLINE PVOID get_module_handle() noexcept
+__forceinline PVOID get_module_handle() noexcept
 {
   const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
   if (p_peb)
@@ -49,7 +49,7 @@ FORCEINLINE PVOID get_module_handle() noexcept
   return nullptr;
 }
 
-FORCEINLINE PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
+__forceinline PVOID get_proc_address(const PVOID module_base_address, const hash_t::value_type FunctionHash) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -87,7 +87,7 @@ FORCEINLINE PVOID get_proc_address(const PVOID module_base_address, const hash_t
 }
 
 template <const hash_t::value_type FunctionHash>
-FORCEINLINE PVOID _GetProcAddress(const PVOID module_base_address) noexcept
+__forceinline PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 {
   const auto dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(module_base_address);
   PIMAGE_EXPORT_DIRECTORY export_directory;
@@ -125,7 +125,7 @@ FORCEINLINE PVOID _GetProcAddress(const PVOID module_base_address) noexcept
 }
 
 template <hash_t::value_type ModuleHash>
-FORCEINLINE NTSTATUS remap_nt_module(PVOID *BaseAddress) noexcept
+__forceinline NTSTATUS remap_nt_module(PVOID *BaseAddress) noexcept
 {
   auto status = STATUS_NOT_SUPPORTED;
   HANDLE section_handle = nullptr;
@@ -175,7 +175,7 @@ FORCEINLINE NTSTATUS remap_nt_module(PVOID *BaseAddress) noexcept
   return status;
 }
 
-FORCEINLINE int getSysOpType()
+__forceinline int getSysOpType()
 {
   int ret = (int)0.0;
   NTSTATUS(WINAPI * RtlGetVersion)(LPOSVERSIONINFOEXW);
@@ -191,7 +191,7 @@ FORCEINLINE int getSysOpType()
   return ret;
 }
 
-FORCEINLINE void *resolve_jmp(void *address, const uint8_t is64_bit)
+__forceinline void *resolve_jmp(void *address, const uint8_t is64_bit)
 {
   TLengthDisasm data = { 0 };
   if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)

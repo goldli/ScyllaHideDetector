@@ -175,9 +175,6 @@
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="utils\hidestr\hide_str.cpp" />
-    <ClCompile Include="utils\hidestr\murmurhash.cpp" />
-    <ClCompile Include="utils\hidestr\xtea3.cpp" />
-    <ClCompile Include="winapi_hash\export_work.cpp" />
     <ClCompile Include="winapi_hash\hash_work.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -65,16 +65,7 @@
     <ClCompile Include="winapi_hash\hash_work.cpp">
       <Filter>WinApi Hashing</Filter>
     </ClCompile>
-    <ClCompile Include="winapi_hash\export_work.cpp">
-      <Filter>WinApi Hashing</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\hidestr\xtea3.cpp">
-      <Filter>hide_strings</Filter>
-    </ClCompile>
     <ClCompile Include="utils\hidestr\hide_str.cpp">
-      <Filter>hide_strings</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\hidestr\murmurhash.cpp">
       <Filter>hide_strings</Filter>
     </ClCompile>
   </ItemGroup>
