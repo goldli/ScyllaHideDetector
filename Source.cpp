@@ -2,6 +2,10 @@
 #include <winternl.h>
 #include <iostream>
 //#define AHOOK_LOG
+
+// Super Hide String
+#include "utils/hidestr/hide_str.hpp"
+
 #define JM_XORSTR_DISABLE_AVX_INTRINSICS // amd fix
 #include "utils/xorstr.hpp"
 #include "utils/Native.hpp"

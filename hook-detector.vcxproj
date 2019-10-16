@@ -161,6 +161,10 @@
   <ItemGroup>
     <ClInclude Include="utils\crc32.hpp" />
     <ClInclude Include="utils\Hash.hpp" />
+    <ClInclude Include="utils\hidestr\hide_str.hpp" />
+    <ClInclude Include="utils\hidestr\murmurhash.h" />
+    <ClInclude Include="utils\hidestr\trash.h" />
+    <ClInclude Include="utils\hidestr\xtea3.h" />
     <ClInclude Include="utils\LengthDisasm.hpp" />
     <ClInclude Include="utils\Native.hpp" />
     <ClInclude Include="utils\Helpers.hpp" />
@@ -171,6 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="utils\hidestr\hide_str.cpp" />
+    <ClCompile Include="utils\hidestr\murmurhash.cpp" />
+    <ClCompile Include="utils\hidestr\xtea3.cpp" />
     <ClCompile Include="winapi_hash\export_work.cpp" />
     <ClCompile Include="winapi_hash\hash_work.cpp" />
   </ItemGroup>
