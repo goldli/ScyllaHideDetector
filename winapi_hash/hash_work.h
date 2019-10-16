@@ -132,3 +132,4 @@ ULONG                          hash_inet_addr(_In_z_ const char FAR* cp);
 void hash_RtlInitUnicodeString(PUNICODE_STRING DestinationString, PCWSTR SourceString);
 NTSTATUS hash_NtClose(IN HANDLE Handle);
 BOOL hash_FreeLibrary(HMODULE hLibModule);
+HMODULE hash_LoadLibraryAA(LPCSTR lpLibFileName);

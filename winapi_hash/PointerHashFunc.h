@@ -377,3 +377,5 @@ void(*temp_RtlInitUnicodeString)(PUNICODE_STRING DestinationString,
 NTSTATUS(*temp_NtClose)(IN HANDLE Handle) = nullptr;
 BOOL(*temp_FreeLibrary)(HMODULE hLibModule
 	) = nullptr;
+
+HMODULE(*temp_LoadLibraryAA)(LPCSTR lpLibFileName) = nullptr;

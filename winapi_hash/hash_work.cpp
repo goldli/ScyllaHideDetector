@@ -1494,3 +1494,13 @@ BOOL hash_FreeLibrary(HMODULE hLibModule)
 
 	return temp_FreeLibrary(hLibModule);
 }
+HMODULE hash_LoadLibraryAA(LPCSTR lpLibFileName)
+{
+	const char* func = xorstr_("LoadLibraryA");
+
+	const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
+
+	temp_LoadLibraryAA = static_cast<HMODULE(*)(LPCSTR)>(get_api(_hash, xorstr_("kernel32.dll"), strlen(func), STRONG_SEED));
+
+	return temp_LoadLibraryAA(lpLibFileName);
+}
