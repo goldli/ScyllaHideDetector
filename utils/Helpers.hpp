@@ -187,7 +187,7 @@ FORCEINLINE NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 
 FORCEINLINE int getSysOpType()
 {
-	int ret = 0.0;
+	int ret = (int)0.0;
 	NTSTATUS(WINAPI *RtlGetVersion)(LPOSVERSIONINFOEXW);
 	OSVERSIONINFOEXW osInfo;
 
