@@ -51,7 +51,7 @@
 #define MAX_OPCODE_SIZE 3       // Максимальный размер опкода инструкции.
 #define MAX_INSTRUCTION_SIZE 15 // Максимальный размер инструкции.
 
-typedef enum TPrefixes
+typedef enum t_prefixes
 {
   LockPrefix = 0xF0,
   RepneRepnzPrefix = 0xF2,
@@ -64,14 +64,13 @@ typedef enum TPrefixes
   GSOverridePrefix = 0x65,
   OperandSizeOverridePrefix = 0x66,
   AddressSizeOverridePrefix = 0x67
-}
-TPrefixes;
+} t_prefixes;
 
-typedef struct TLengthDisasm
+typedef struct t_length_disasm
 {
   uint8_t Length;
   uint8_t PrefixesCount;
-  TPrefixes Prefix[MAX_PREFIXES];
+  t_prefixes Prefix[MAX_PREFIXES];
 
   union
   {
@@ -131,7 +130,7 @@ typedef struct TLengthDisasm
   } ImmediateData;
 
   uint32_t Flags;
-} TLengthDisasm, *PLengthDisasm;
+} t_length_disasm, *p_length_disasm;
 
 static uint8_t FlagsTable[256] =
 {
@@ -704,11 +703,11 @@ extern "C"
 
 		  Mod R/M Byte               SIB Byte
 */
-FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
+FORCEINLINE uint8_t length_disasm(void* Address, uint8_t Is64Bit, p_length_disasm Data)
 {
   if (!Address || !Data)
     return 0;
-  __stosb((unsigned char *)Data, 0, sizeof(TLengthDisasm));
+  __stosb((unsigned char *)Data, 0, sizeof(t_length_disasm));
   uint8_t OpFlag = 0;
   auto Ip = static_cast<uint8_t *>(Address);
   while (FlagsTable[*Ip] & OP_PREFIX)
@@ -742,7 +741,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       Data->Flags |= F_INVALID;
       return 0;
     }
-    Data->Prefix[Data->PrefixesCount] = static_cast<TPrefixes>(*Ip++);
+    Data->Prefix[Data->PrefixesCount] = static_cast<t_prefixes>(*Ip++);
     Data->PrefixesCount++;
     Data->Length++;
   }
@@ -914,17 +913,17 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
 
 FORCEINLINE uint32_t get_size_of_proc(void* Address, uint8_t Is64Bit)
 {
-  TLengthDisasm Data = {0};
+  t_length_disasm Data = {0};
   uint8_t Size = 0;
   uint32_t Result = 0;
   auto Offset = static_cast<uint8_t *>(Address);
-  while ((Size = LengthDisasm(Offset, Is64Bit, &Data)))
+  while ((Size = length_disasm(Offset, Is64Bit, &Data)))
   {
     Result += Size;
     Offset += Size;
     if (Data.Opcode[0] == 0xC3 || Data.Opcode[0] == 0xC2)
     {
-      Size = LengthDisasm(Offset, Is64Bit, &Data);
+      Size = length_disasm(Offset, Is64Bit, &Data);
       if (Data.Opcode[0] == 0xCC || Data.Opcode[0] == 0x0F)
         break;
     }
@@ -932,7 +931,7 @@ FORCEINLINE uint32_t get_size_of_proc(void* Address, uint8_t Is64Bit)
   return Result;
 }
 
-FORCEINLINE uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
+FORCEINLINE uint8_t length_assemble(void* Buffer, p_length_disasm Data)
 {
   if (!Buffer || !Data)
     return 0;

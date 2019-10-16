@@ -91,9 +91,9 @@ protected:
       uint32_t data[BLOCK_SIZE];
       memcpy(data, inout + offset, mod);
       if (encrypt)
-        xtea3_encipher(32, (uint32_t *)data, key);
+        xtea3_encipher(32, static_cast<uint32_t *>(data), key);
       else
-        xtea3_decipher(32, (uint32_t *)data, key);
+        xtea3_decipher(32, static_cast<uint32_t *>(data), key);
       memcpy(inout + offset, data, mod);
     }
   }
@@ -130,7 +130,7 @@ public:
     }
     //Выделить память под выровненный буфер (Плюс восемь байт, что-бы был размер зашифрованных данных и размер оригинальных данных, всё это будет хранится в зашифрованных данных)
     data_ptr = NULL;
-    data_ptr = (uint8_t *)malloc(size_crypt_tmp + 8);
+    data_ptr = static_cast<uint8_t *>(malloc(size_crypt_tmp + 8));
     if (data_ptr == NULL)
     {
       DEBUG_PRINT("NO FREE MEM \n");
@@ -161,7 +161,7 @@ public:
     {
       //Выделить память для расшифрованных данных
       data_ptr = NULL;
-      data_ptr = (uint8_t *)malloc(size_crypt);
+      data_ptr = static_cast<uint8_t *>(malloc(size_crypt));
       if (data_ptr == NULL)
       {
         DEBUG_PRINT("NO FREE MEM \n");

@@ -91,7 +91,7 @@ BEGIN_NAMESPACE(StringCompileTime)
         key_for_xtea3[i] = Murmur3(&value_for_gen_key, sizeof value_for_gen_key, i);
       }
       //Зашифровать данные
-      crypted_str = data_crypt((const uint8_t *)_encrypted.data(), key_for_xtea3, N);
+      crypted_str = data_crypt(static_cast<const uint8_t *>(_encrypted.data()), key_for_xtea3, N);
     }
 
     //Получит указатель на рашифрованную строку

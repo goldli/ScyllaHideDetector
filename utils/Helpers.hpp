@@ -177,7 +177,7 @@ __forceinline NTSTATUS remap_nt_module(PVOID* BaseAddress) noexcept
 
 __forceinline int getSysOpType()
 {
-  int ret = (int)0.0;
+  int ret = static_cast<int>(0.0);
   NTSTATUS (WINAPI * RtlGetVersion)(LPOSVERSIONINFOEXW);
   OSVERSIONINFOEXW osInfo;
   const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
@@ -193,7 +193,7 @@ __forceinline int getSysOpType()
 
 __forceinline void* resolve_jmp(void* address, const uint8_t is64_bit)
 {
-  TLengthDisasm data = {0};
+  t_length_disasm data = {0};
   if (data.Opcode[0] == 0xE9 && data.Length == 5 && data.OpcodeSize == 1)
   {
     const auto delta = *reinterpret_cast<uint32_t *>(reinterpret_cast<size_t>(address) + data.OpcodeSize);
