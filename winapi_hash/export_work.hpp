@@ -95,13 +95,8 @@ __forceinline HMODULE _getKernel32Handle(void)
   } while (lpFirstModule != (SIZE_T *)lpCurrModule[0]);
   return dwResult;
 }
-/*
-Для запуска функции LoadLibraryA из хеша, её выносить в модуль hash_work нестал, т.к. это нужно в этом модуле
-*/
-
 static HMODULE(WINAPI *temp_LoadLibraryA)(__in LPCSTR file_name) = nullptr;
-static int(*temp_lstrcmpiW)(LPCWSTR lpString1,
-                            LPCWSTR lpString2) = nullptr;
+static int(*temp_lstrcmpiW)(LPCWSTR lpString1, LPCWSTR lpString2) = nullptr;
 
 static __forceinline HMODULE hash_LoadLibraryA(__in LPCSTR file_name)
 {

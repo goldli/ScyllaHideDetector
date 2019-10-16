@@ -11,8 +11,7 @@
 
 static uint8_t *data_ptr = NULL;
 static uint32_t size_crypt = 0;
-static uint32_t size_decrypt_data = 0;;
-
+static uint32_t size_decrypt_data = 0;
 
 class xtea3
 {
