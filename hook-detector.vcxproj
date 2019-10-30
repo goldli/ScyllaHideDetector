@@ -76,9 +76,11 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <LibraryPath>C:\Users\RelaxLife\source\repos\ScyllaHideDetector\utils\crc32c\build\Debug;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>C:\Users\RelaxLife\source\repos\ScyllaHideDetector\utils\crc32c\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>C:\Users\RelaxLife\source\repos\ScyllaHideDetector\utils\crc32c\build\Release;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>C:\Users\RelaxLife\source\repos\ScyllaHideDetector\utils\crc32c\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -153,7 +155,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="utils\crc32.h" />
     <ClInclude Include="utils\Hash.h" />
     <ClInclude Include="utils\LengthDisasm.h" />
     <ClInclude Include="utils\Native.h" />
