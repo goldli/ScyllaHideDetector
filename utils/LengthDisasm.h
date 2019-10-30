@@ -705,43 +705,38 @@ extern "C"
 
 		  Mod R/M Byte               SIB Byte
 */
-FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm Data)
+FORCEINLINE uint8_t LengthDisasm(void *Address, uint8_t Is64Bit, PLengthDisasm Data)
 {
   if (!Address || !Data)
     return 0;
-
-  __stosb((unsigned char*)Data, 0, sizeof(TLengthDisasm));
-
+  __stosb((unsigned char *)Data, 0, sizeof(TLengthDisasm));
   uint8_t OpFlag = 0;
-
-  auto Ip = static_cast<uint8_t*>(Address);
-
+  auto Ip = static_cast<uint8_t *>(Address);
   while (FlagsTable[*Ip] & OP_PREFIX)
   {
     Data->Flags |= F_PREFIX;
-
     switch (*Ip)
     {
-    case LockPrefix:
-      Data->Flags |= F_PREFIX_LOCK;
-      break;
-    case RepneRepnzPrefix:
-      Data->Flags |= F_PREFIX_REPNZ;
-      break;
-    case RepeRepzPrefix:
-      Data->Flags |= F_PREFIX_REPX;
-      break;
-    case CSOverridePrefix: case SSOverridePrefix:
-    case DSOverridePrefix: case ESOverridePrefix:
-    case FSOverridePrefix: case GSOverridePrefix:
-      Data->Flags |= F_PREFIX_SEG;
-      break;
-    case OperandSizeOverridePrefix:
-      Data->Flags |= F_PREFIX66;
-      break;
-    case AddressSizeOverridePrefix:
-      Data->Flags |= F_PREFIX67;
-      break;
+      case LockPrefix:
+        Data->Flags |= F_PREFIX_LOCK;
+        break;
+      case RepneRepnzPrefix:
+        Data->Flags |= F_PREFIX_REPNZ;
+        break;
+      case RepeRepzPrefix:
+        Data->Flags |= F_PREFIX_REPX;
+        break;
+      case CSOverridePrefix: case SSOverridePrefix:
+      case DSOverridePrefix: case ESOverridePrefix:
+      case FSOverridePrefix: case GSOverridePrefix:
+        Data->Flags |= F_PREFIX_SEG;
+        break;
+      case OperandSizeOverridePrefix:
+        Data->Flags |= F_PREFIX66;
+        break;
+      case AddressSizeOverridePrefix:
+        Data->Flags |= F_PREFIX67;
+        break;
     }
     if (Data->Length > MAX_PREFIXES)
     {
@@ -752,30 +747,22 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     Data->PrefixesCount++;
     Data->Length++;
   }
-
   if (Is64Bit && ((*Ip & 0xF0) == 0x40)) // REX
   {
     Data->Flags |= F_REX;
-
-    Data->REX.B = _bittest((const long*)Ip, 0);
-    Data->REX.X = _bittest((const long*)Ip, 1);
-    Data->REX.R = _bittest((const long*)Ip, 2);
-    Data->REX.W = _bittest((const long*)Ip, 3);
-
+    Data->REX.B = _bittest((const long *)Ip, 0);
+    Data->REX.X = _bittest((const long *)Ip, 1);
+    Data->REX.R = _bittest((const long *)Ip, 2);
+    Data->REX.W = _bittest((const long *)Ip, 3);
     Data->REXByte = *Ip++;
-
     Data->Length++;
   }
-
   Data->OpcodeSize = 1;
   Data->OpcodeOffset = Data->Length;
-
   if (*Ip == 0x0F) // Двухбайтный опкод
   {
     Data->OpcodeSize++;
-
     OpFlag = FlagsTableEx[*(Ip + 1)];
-
     if (OpFlag == OP_INVALID)
     {
       Data->Flags |= F_INVALID;
@@ -787,7 +774,6 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
   else // Однобайтовый
   {
     OpFlag = FlagsTable[*Ip];
-
     if (OpFlag == OP_INVALID)
     {
       Data->Flags |= F_INVALID;
@@ -801,12 +787,9 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
         Data->Flags &= ~F_PREFIX66;
     }
   }
-
-  __movsb((unsigned char*)&Data->Opcode, Ip, Data->OpcodeSize); //  Копируем опкод
-
+  __movsb((unsigned char *)&Data->Opcode, Ip, Data->OpcodeSize); //  Копируем опкод
   Data->Length += Data->OpcodeSize;
   Ip += Data->OpcodeSize;
-
   if (OpFlag & OP_MODRM)
   {
     Data->Flags |= F_MODRM;
@@ -815,9 +798,7 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     Data->MODRM.Mod = (Data->ModRMByte >> 6);
     Data->MODRM.Reg = (Data->ModRMByte & 0x38) >> 3;
     Data->MODRM.Rm = (Data->ModRMByte & 7);
-
     Data->Length++;
-
     if (Data->MODRM.Reg <= 1)
     {
       if (Data->Opcode[0] == 0xF6)
@@ -825,7 +806,6 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       if (Data->Opcode[0] == 0xF7)
         OpFlag |= OP_DATA_I16_I32_I64;
     }
-
     if (Data->MODRM.Mod != 3 && Data->MODRM.Rm == 4 && !(!Is64Bit && (Data->Flags & F_PREFIX67))) // SIB
     {
       Data->Flags |= F_SIB;
@@ -834,54 +814,48 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
       Data->SIB.Scale = (Data->SIBByte >> 6);
       Data->SIB.Index = (Data->SIBByte & 0x38) >> 3;
       Data->SIB.Base = (Data->SIBByte & 7);
-
       Data->Length++;
     }
-
     switch (Data->MODRM.Mod)
     {
-    case 0:
-      if (Data->MODRM.Rm == 5)
-      {
-        Data->DisplacementSize = 4;
-        if (Is64Bit)
-          Data->Flags |= F_RELATIVE;
-      }
-      if (Data->SIB.Base == 5)
-        Data->DisplacementSize = 4;
-
-      if ((Data->MODRM.Rm == 6) && (Data->Flags & F_PREFIX67))
-        Data->DisplacementSize = 2;
-      break;
-    case 1:
-      Data->DisplacementSize = 1;
-      break;
-    case 2:
-      if (Data->Flags & F_PREFIX67)
-        Data->DisplacementSize = 2;
-      else
-        Data->DisplacementSize = 4;
+      case 0:
+        if (Data->MODRM.Rm == 5)
+        {
+          Data->DisplacementSize = 4;
+          if (Is64Bit)
+            Data->Flags |= F_RELATIVE;
+        }
+        if (Data->SIB.Base == 5)
+          Data->DisplacementSize = 4;
+        if ((Data->MODRM.Rm == 6) && (Data->Flags & F_PREFIX67))
+          Data->DisplacementSize = 2;
+        break;
+      case 1:
+        Data->DisplacementSize = 1;
+        break;
+      case 2:
+        if (Data->Flags & F_PREFIX67)
+          Data->DisplacementSize = 2;
+        else
+          Data->DisplacementSize = 4;
     }
   }
-
   if (Data->DisplacementSize > 0)
   {
     Data->Flags |= F_DISP;
     Data->DisplacementOffset = Data->Length;
     Data->Length += Data->DisplacementSize;
-
     switch (Data->DisplacementSize)
     {
-    case 1: Data->AddressDisplacement.Displacement08 = *Ip;
-      break;
-    case 2: Data->AddressDisplacement.Displacement16 = *(uint16_t*)Ip;
-      break;
-    case 4: Data->AddressDisplacement.Displacement32 = *(uint32_t*)Ip;
-      break;
+      case 1: Data->AddressDisplacement.Displacement08 = *Ip;
+        break;
+      case 2: Data->AddressDisplacement.Displacement16 = *(uint16_t *)Ip;
+        break;
+      case 4: Data->AddressDisplacement.Displacement32 = *(uint32_t *)Ip;
+        break;
     }
     Ip += Data->DisplacementSize;
   }
-
   if (OpFlag & OP_DATA_I8)
   {
     Data->ImmediateDataSize = 1;
@@ -911,30 +885,26 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
     else
       Data->ImmediateDataSize = 4;
   }
-
   if (Data->ImmediateDataSize > 0)
   {
     Data->Flags |= F_IMM;
     Data->ImmediateDataOffset = Data->Length;
     Data->Length += Data->ImmediateDataSize;
-
     if (OpFlag & OP_RELATIVE)
       Data->Flags |= F_RELATIVE;
-
     switch (Data->ImmediateDataSize)
     {
-    case 1: Data->ImmediateData.ImmediateData08 = *Ip;
-      break;
-    case 2: Data->ImmediateData.ImmediateData16 = *(uint16_t*)Ip;
-      break;
-    case 4: Data->ImmediateData.ImmediateData32 = *(uint32_t*)Ip;
-      break;
-    case 8: Data->ImmediateData.ImmediateData64 = *(uint64_t*)Ip;
-      break;
+      case 1: Data->ImmediateData.ImmediateData08 = *Ip;
+        break;
+      case 2: Data->ImmediateData.ImmediateData16 = *(uint16_t *)Ip;
+        break;
+      case 4: Data->ImmediateData.ImmediateData32 = *(uint32_t *)Ip;
+        break;
+      case 8: Data->ImmediateData.ImmediateData64 = *(uint64_t *)Ip;
+        break;
     }
     Ip += Data->ImmediateDataSize;
   }
-
   if (Data->Length > MAX_INSTRUCTION_SIZE)
   {
     Data->Flags |= F_INVALID;
@@ -943,82 +913,61 @@ FORCEINLINE uint8_t LengthDisasm(void* Address, uint8_t Is64Bit, PLengthDisasm D
   return Data->Length;
 }
 
-FORCEINLINE uint32_t GetSizeOfProc(void* Address, uint8_t Is64Bit)
+FORCEINLINE uint32_t GetSizeOfProc(void *Address, uint8_t Is64Bit)
 {
   TLengthDisasm Data = {0};
-
   uint8_t Size = 0;
   uint32_t Result = 0;
-  auto Offset = static_cast<uint8_t*>(Address);
-
+  auto Offset = static_cast<uint8_t *>(Address);
   while ((Size = LengthDisasm(Offset, Is64Bit, &Data)))
   {
     Result += Size;
-
     Offset += Size;
-
     if ((Data.Opcode[0] == 0xC3) || (Data.Opcode[0] == 0xC2))
     {
       Size = LengthDisasm(Offset, Is64Bit, &Data);
-
       if ((Data.Opcode[0] == 0xCC) || (Data.Opcode[0] == 0x0F))
         break;
     }
   }
-
   return Result;
 }
 
-FORCEINLINE uint8_t LengthAssemble(void* Buffer, PLengthDisasm Data)
+FORCEINLINE uint8_t LengthAssemble(void *Buffer, PLengthDisasm Data)
 {
   if (!Buffer || !Data)
     return 0;
-
-  auto pCode = static_cast<unsigned char*>(Buffer);
-
+  auto pCode = static_cast<unsigned char *>(Buffer);
   if (Data->Flags & F_PREFIX)
   {
-    __movsb(pCode, (uint8_t*)&Data->Prefix, Data->PrefixesCount);
-
+    __movsb(pCode, (uint8_t *)&Data->Prefix, Data->PrefixesCount);
     pCode += Data->PrefixesCount;
   }
-
   if (Data->Flags & F_REX)
   {
     *pCode = Data->REXByte;
-
     pCode++;
   }
-
-  __movsb(pCode, (uint8_t*)&Data->Opcode, Data->OpcodeSize);
-
+  __movsb(pCode, (uint8_t *)&Data->Opcode, Data->OpcodeSize);
   pCode += Data->OpcodeSize;
-
   if (Data->Flags & F_MODRM)
   {
     *pCode = Data->ModRMByte;
-
     pCode++;
   }
-
   if (Data->Flags & F_SIB)
   {
     *pCode = Data->SIBByte;
-
     pCode++;
   }
-
   if (Data->Flags & F_DISP)
   {
-    __movsb(pCode, (uint8_t*)&Data->AddressDisplacement, Data->DisplacementSize);
-
+    __movsb(pCode, (uint8_t *)&Data->AddressDisplacement, Data->DisplacementSize);
     pCode += Data->DisplacementSize;
   }
-
   if (Data->Flags & F_IMM)
   {
-    __movsb(pCode, (uint8_t*)&Data->ImmediateData, Data->ImmediateDataSize);
-
+    __movsb(pCode, (uint8_t *)&Data->ImmediateData, Data->ImmediateDataSize);
     pCode += Data->ImmediateDataSize;
   }
   return Data->Length;
