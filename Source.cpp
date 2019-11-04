@@ -119,6 +119,7 @@ void user32_restore(const char *func_name)
     const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
     PVOID user32_mapped = nullptr;
     MAP_NATIVE_MODULE("user32.dll", &user32_mapped);
+    // TODO: bug Windows 7, detect only one hook
     // original
     const auto original_func_adress = resolve_jmp(get_proc_address(user32_mapped, HASHSTR(func_name)), 1);
     const auto original_func_size = static_cast<size_t>(get_size_of_proc(original_func_adress, 1));
