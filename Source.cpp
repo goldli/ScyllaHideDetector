@@ -25,7 +25,7 @@ void ntdll_restore(const char *func_name)
   // hooked
   const auto hooked_func_adress = resolve_jmp(get_proc_address(ntdll, HASHSTR(func_name)), 1);
   const auto hooked_func_size = static_cast<size_t>(get_size_of_proc(hooked_func_adress, 1));
-  const auto _hooked = RtlCompareMemory(hooked_func_adress, hooked_func_adress, hooked_func_size);
+  const auto _hooked = RtlCompareMemory(hooked_func_adress, original_func_adress, hooked_func_size);
   // detect hook and restore bytes
   if (_original != _hooked)
   {
@@ -57,7 +57,7 @@ void kernelbase_restore(const char *func_name)
   // hooked
   const auto hooked_func_adress = resolve_jmp(get_proc_address(kernelbase, HASHSTR(func_name)), 1);
   const auto hooked_func_size = static_cast<size_t>(get_size_of_proc(hooked_func_adress, 1));
-  const auto _hooked = RtlCompareMemory(hooked_func_adress, hooked_func_adress, hooked_func_size);
+  const auto _hooked = RtlCompareMemory(hooked_func_adress, original_func_adress, hooked_func_size);
   // detect hook and restore bytes
   if (_original != _hooked)
   {
@@ -93,7 +93,7 @@ void user32_restore(const char *func_name)
     // hooked
     const auto hooked_func_adress = resolve_jmp(get_proc_address(win32_u, HASHSTR(func_name)), 1);
     const auto hooked_func_size = static_cast<size_t>(get_size_of_proc(hooked_func_adress, 1));
-    const auto _hooked = RtlCompareMemory(hooked_func_adress, hooked_func_adress, hooked_func_size);
+    const auto _hooked = RtlCompareMemory(hooked_func_adress, original_func_adress, hooked_func_size);
     // detect hook and restore bytes
     if (_original != _hooked)
     {
@@ -126,7 +126,7 @@ void user32_restore(const char *func_name)
     // hooked
     const auto hooked_func_adress = resolve_jmp(get_proc_address(user_32, HASHSTR(func_name)), 1);
     const auto hooked_func_size = static_cast<size_t>(get_size_of_proc(hooked_func_adress, 1));
-    const auto _hooked = RtlCompareMemory(hooked_func_adress, hooked_func_adress, hooked_func_size);
+    const auto _hooked = RtlCompareMemory(hooked_func_adress, original_func_adress, hooked_func_size);
     // detect hook and restore bytes
     if (_original != _hooked)
     {
@@ -174,6 +174,7 @@ int main()
   user32_restore((LPCSTR)PRINT_HIDE_STR("NtUserFindWindowEx"));
   user32_restore((LPCSTR)PRINT_HIDE_STR("NtUserBuildHwndList"));
   // additional
+  user32_restore((LPCSTR)PRINT_HIDE_STR("FindWindowA"));
   user32_restore((LPCSTR)PRINT_HIDE_STR("BlockInput"));
   kernelbase_restore((LPCSTR)PRINT_HIDE_STR("CheckRemoteDebuggerPresent"));
   kernelbase_restore((LPCSTR)PRINT_HIDE_STR("OutputDebugString"));
