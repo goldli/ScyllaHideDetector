@@ -9,7 +9,6 @@
 #include "utils/Native.hpp"
 #include "utils/Hash.hpp"
 #include "utils/Helpers.hpp"
-#include "utils/crc32.hpp"
 #include "utils/LengthDisasm.hpp"
 #include <vector>
 
