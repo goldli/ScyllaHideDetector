@@ -11,6 +11,140 @@
 #include "Hash.hpp"
 #include "Native.hpp"
 
+typedef struct _LDR_DATA_TABLE_ENTRY_custom
+{
+  LIST_ENTRY InLoadOrderLinks;
+  LIST_ENTRY InMemoryOrderLinks;
+  LIST_ENTRY InInitializationOrderLinks;
+  PVOID DllBase;                             // Base address of the module
+  PVOID EntryPoint;
+  ULONG SizeOfImage;
+  UNICODE_STRING FullDllName;
+  UNICODE_STRING BaseDllName;
+  ULONG  Flags;
+  USHORT LoadCount;
+  USHORT TlsIndex;
+  LIST_ENTRY HashLinks;
+  PVOID SectionPointer;
+  ULONG CheckSum;
+  ULONG TimeDateStamp;
+  PVOID LoadedImports;
+  PVOID EntryPointActivationContext;
+  PVOID PatchInformation;
+  PVOID Unknown1;
+  PVOID Unknown2;
+  PVOID Unknown3;
+
+} LDR_DATA_TABLE_ENTRY_custom, * PLDR_DATA_TABLE_ENTRY_custom;
+typedef struct _PEB_LDR_DATA_custom
+{
+  ULONG Length;
+  BOOLEAN Initialized;
+  HANDLE SsHandle;
+  LIST_ENTRY InLoadOrderModuleList;               // Points to the loaded modules (main EXE usually)
+  LIST_ENTRY InMemoryOrderModuleList;             // Points to all modules (EXE and all DLLs)
+  LIST_ENTRY InInitializationOrderModuleList;
+  PVOID      EntryInProgress;
+
+} PEB_LDR_DATA_custom, * PPEB_LDR_DATA_custom;
+
+typedef struct _PEB_custom
+{
+  BOOLEAN InheritedAddressSpace;      // These four fields cannot change unless the
+  BOOLEAN ReadImageFileExecOptions;   //
+  BOOLEAN BeingDebugged;              //
+  BOOLEAN SpareBool;                  //
+  HANDLE Mutant;                      // INITIAL_PEB structure is also updated.
+
+  PVOID ImageBaseAddress;
+  PPEB_LDR_DATA_custom Ldr;
+  PRTL_USER_PROCESS_PARAMETERS ProcessParameters;
+  PVOID SubSystemData;
+  PVOID ProcessHeap;
+  PVOID FastPebLock;
+  PVOID FastPebLockRoutine;
+  PVOID FastPebUnlockRoutine;
+  ULONG EnvironmentUpdateCount;
+  PVOID KernelCallbackTable;
+  HANDLE SystemReserved;
+  PVOID  AtlThunkSListPtr32;
+  //PPEB_FREE_BLOCK FreeList;
+  ULONG TlsExpansionCounter;
+  PVOID TlsBitmap;
+  ULONG TlsBitmapBits[2];         // relates to TLS_MINIMUM_AVAILABLE
+  PVOID ReadOnlySharedMemoryBase;
+  PVOID ReadOnlySharedMemoryHeap;
+  PVOID *ReadOnlyStaticServerData;
+  PVOID AnsiCodePageData;
+  PVOID OemCodePageData;
+  PVOID UnicodeCaseTableData;
+
+  //
+  // Useful information for LdrpInitialize
+
+  ULONG NumberOfProcessors;
+  ULONG NtGlobalFlag;
+
+  //
+  // Passed up from MmCreatePeb from Session Manager registry key
+  //
+
+  LARGE_INTEGER CriticalSectionTimeout;
+  ULONG HeapSegmentReserve;
+  ULONG HeapSegmentCommit;
+  ULONG HeapDeCommitTotalFreeThreshold;
+  ULONG HeapDeCommitFreeBlockThreshold;
+
+  //
+  // Where heap manager keeps track of all heaps created for a process
+  // Fields initialized by MmCreatePeb.  ProcessHeaps is initialized
+  // to point to the first free byte after the PEB and MaximumNumberOfHeaps
+  // is computed from the page size used to hold the PEB, less the fixed
+  // size of this data structure.
+  //
+
+  ULONG NumberOfHeaps;
+  ULONG MaximumNumberOfHeaps;
+  PVOID *ProcessHeaps;
+
+  //
+  //
+  PVOID GdiSharedHandleTable;
+  PVOID ProcessStarterHelper;
+  PVOID GdiDCAttributeList;
+  PVOID LoaderLock;
+
+  //
+  // Following fields filled in by MmCreatePeb from system values and/or
+  // image header. These fields have changed since Windows NT 4.0,
+  // so use with caution
+  //
+
+  ULONG OSMajorVersion;
+  ULONG OSMinorVersion;
+  USHORT OSBuildNumber;
+  USHORT OSCSDVersion;
+  ULONG OSPlatformId;
+  ULONG ImageSubsystem;
+  ULONG ImageSubsystemMajorVersion;
+  ULONG ImageSubsystemMinorVersion;
+  ULONG ImageProcessAffinityMask;
+  ULONG GdiHandleBuffer[GDI_HANDLE_BUFFER_SIZE];
+
+} PEB_custom, * PPEB_custom;
+
+__forceinline int xwcsicmp(wchar_t *s1, wchar_t *s2)
+{
+  wchar_t f, l;
+  do
+  {
+    f = ((*s1 <= 'Z') && (*s1 >= 'A')) ? *s1 + 'a' - 'A' : *s1;
+    l = ((*s2 <= 'Z') && (*s2 >= 'A')) ? *s2 + 'a' - 'A' : *s2;
+    s1++;
+    s2++;
+  } while ((f) && (f == l));
+  return (int)(f - l);
+}
 __forceinline void log()
 {
 }
@@ -31,19 +165,26 @@ __forceinline const wchar_t *GetWC(const char *c)
   return wc;
 }
 
-template <const hash_t::value_type ModuleHash>
-__forceinline PVOID get_module_handle() noexcept
+__forceinline PVOID get_module_handle(const wchar_t *ModuleName) noexcept
 {
-  const auto p_peb = reinterpret_cast<nt::PPEB>(__readgsqword(0x60));
+#ifdef _WIN64
+  PPEB_custom p_peb = (PPEB_custom)__readgsqword(0x60);
+#else
+  PPEB_custom p_peb = (PPEB_custom)__readfsdword(0x30);
+#endif
   if (p_peb)
   {
-    for (auto p_list_entry = p_peb->Ldr->InLoadOrderModuleList.Flink;
-         p_list_entry != &p_peb->Ldr->InLoadOrderModuleList;
-         p_list_entry = p_list_entry->Flink)
+    PLDR_DATA_TABLE_ENTRY_custom Entry;
+    PLIST_ENTRY Next;
+    Next = p_peb->Ldr->InMemoryOrderModuleList.Flink;
+    while (Next != &p_peb->Ldr->InMemoryOrderModuleList)
     {
-      const auto p_entry = CONTAINING_RECORD(p_list_entry, nt::LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
-      if (ModuleHash == NULL || get_hash(p_entry->BaseDllName) == ModuleHash)
-        return p_entry->DllBase;
+      Entry = CONTAINING_RECORD(Next, LDR_DATA_TABLE_ENTRY_custom, InMemoryOrderLinks);
+      if (!xwcsicmp(Entry->BaseDllName.Buffer, (wchar_t *)ModuleName))
+      {
+        return Entry->DllBase;
+      }
+      Next = Next->Flink;
     }
   }
   return nullptr;
@@ -180,7 +321,7 @@ __forceinline int getSysOpType()
   int ret = (int)0.0;
   NTSTATUS (WINAPI * RtlGetVersion)(LPOSVERSIONINFOEXW);
   OSVERSIONINFOEXW osInfo;
-  const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
+  const auto ntdll = get_module_handle(L"ntdll.dll");
   *(PVOID *)&RtlGetVersion = get_proc_address(ntdll, HASHSTR((LPCSTR)PRINT_HIDE_STR("RtlGetVersion")));
   if (NULL != RtlGetVersion)
   {

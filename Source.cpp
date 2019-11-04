@@ -14,7 +14,7 @@
 
 void ntdll_restore(const char *func_name)
 {
-  const auto ntdll = GET_MODULE_BASE_ADDRESS(L"ntdll.dll");
+  const auto ntdll = get_module_handle(L"ntdll.dll");
   PVOID ntdll_mapped = nullptr;
   MAP_NATIVE_MODULE("ntdll.dll", &ntdll_mapped);
   // original
@@ -46,7 +46,7 @@ void ntdll_restore(const char *func_name)
 
 void kernelbase_restore(const char *func_name)
 {
-  const auto kernelbase = GET_MODULE_BASE_ADDRESS("kernelbase.dll");
+  const auto kernelbase = get_module_handle(L"kernelbase.dll");
   PVOID kernelbase_mapped = nullptr;
   MAP_NATIVE_MODULE("kernelbase.dll", &kernelbase_mapped);
   // original
@@ -82,7 +82,7 @@ void user32_restore(const char *func_name)
   if (getSysOpType() == 10)
   {
     const auto h_module = hash_LoadLibraryAA((LPCSTR)PRINT_HIDE_STR("user32.dll"));
-    const auto win32_u = GET_MODULE_BASE_ADDRESS("win32u.dll");
+    const auto win32_u = get_module_handle(L"win32u.dll");
     PVOID win32_u_mapped = nullptr;
     MAP_NATIVE_MODULE("win32u.dll", &win32_u_mapped);
     // original
@@ -115,7 +115,7 @@ void user32_restore(const char *func_name)
   else
   {
     const auto h_module = hash_LoadLibraryAA((LPCSTR)PRINT_HIDE_STR("user32.dll"));
-    const auto user_32 = GET_MODULE_BASE_ADDRESS(L"user32.dll");
+    const auto user_32 = get_module_handle(L"user32.dll");
     PVOID user32_mapped = nullptr;
     MAP_NATIVE_MODULE("user32.dll", &user32_mapped);
     // TODO: bug Windows 7, detect only one hook

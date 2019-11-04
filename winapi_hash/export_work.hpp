@@ -21,36 +21,35 @@ struct LDR_MODULE
 #define RAND_DWORD1		0x03EC7B5E
 #define ROR(x,n) (((x) >> (n)) | ((x) << (32-(n))))
 
-typedef struct _PEB_LDR_DATA_
-{
-  BYTE Reserved1[8];
-  PVOID Reserved2[3];
+typedef struct _PEB_LDR_DATA_C2 {
+  BYTE       Reserved1[8];
+  PVOID      Reserved2[3];
   LIST_ENTRY *InMemoryOrderModuleList;
-} PEB_LDR_DATA_, *PPEB_LDR_DATA_;
+} PEB_LDR_DATA_C2, * PPEB_LDR_DATA_C2;
 
 #ifdef _WIN64
-typedef struct _PEB_c
-{
+typedef struct _PEB_C2 {
   BYTE Reserved1[2];
   BYTE BeingDebugged;
   BYTE Reserved2[21];
-  PPEB_LDR_DATA_ Ldr;
-} PEB_c;
+  PPEB_LDR_DATA_C2 Ldr;
+} PEB_C2;
 #else
 
-typedef struct _PEB
+typedef struct _PEB_C2
 {
   /*0x000*/     UINT8        InheritedAddressSpace;
   /*0x001*/     UINT8        ReadImageFileExecOptions;
   /*0x002*/     UINT8        BeingDebugged;
   /*0x003*/     UINT8        SpareBool;
-  /*0x004*/     VOID        *Mutant;
-  /*0x008*/     VOID        *ImageBaseAddress;
-  /*0x00C*/     struct _PEB_LDR_DATA *Ldr;
+  /*0x004*/     VOID *Mutant;
+  /*0x008*/     VOID *ImageBaseAddress;
+  /*0x00C*/     struct _PEB_LDR_DATA_C2 *Ldr;
   /*.....*/
-} PEB_c;
+} PEB_C2;
 
 #endif
+
 
 #pragma warning (disable : 4996)
 __forceinline const wchar_t *GetWC_(const char *c)
@@ -64,12 +63,12 @@ __forceinline const wchar_t *GetWC_(const char *c)
 __forceinline HMODULE _getKernel32Handle(void)
 {
   HMODULE dwResult = NULL;
-  PEB_c *lpPEB = NULL;
+  PEB_C2 *lpPEB = NULL;
   SIZE_T *lpFirstModule = NULL;
 #if defined _WIN64
-  lpPEB = *(PEB_c **)(__readgsqword(0x30) + 0x60); //get a pointer to the PEB
+  lpPEB = *(PEB_C2 **)(__readgsqword(0x30) + 0x60); //get a pointer to the PEB
 #else
-  lpPEB = *(PEB_c **)(__readfsdword(0x18) + 0x30); //get a pointer to the PEB
+  lpPEB = *(PEB_C2 **)(__readfsdword(0x18) + 0x30); //get a pointer to the PEB
 #endif
   // PEB->Ldr->LdrInMemoryOrderModuleList
   // PEB->Ldr = 0x0C
@@ -101,18 +100,17 @@ __forceinline HMODULE _getKernel32Handle(void)
 }
 
 static HMODULE (WINAPI *temp_LoadLibraryA)(__in LPCSTR file_name) = nullptr;
-static int (*temp_lstrcmpiW)(LPCWSTR lpString1, LPCWSTR lpString2) = nullptr;
+static int (WINAPI *temp_lstrcmpiW)(LPCWSTR, LPCWSTR ) = nullptr;
 
 static __forceinline HMODULE hash_LoadLibraryA(__in LPCSTR file_name)
 {
   return temp_LoadLibraryA(file_name);
 }
 
-static __forceinline int hash_lstrcmpiW(LPCWSTR lpString1,
-                                        LPCWSTR lpString2)
+static __forceinline  int hash_lstrcmpiW(LPCWSTR lpString1,
+    LPCWSTR lpString2)
 {
-  return temp_lstrcmpiW(lpString1,
-                        lpString2);
+  return temp_lstrcmpiW(lpString1, lpString2);
 }
 
 __forceinline LPVOID parse_export_table(HMODULE module, uint64_t api_hash, uint64_t len, const uint64_t seed)
@@ -175,7 +173,7 @@ __forceinline LPVOID get_api(uint64_t api_hash, LPCSTR module, uint64_t len, con
   hKernel32 = _getKernel32Handle();
   const char *lstrcmpiW_ = (LPCSTR)PRINT_HIDE_STR("lstrcmpiW");
   const uint64_t api_hash_lstrcmpiW = t1ha0(lstrcmpiW_, strlen(lstrcmpiW_), STRONG_SEED);
-  temp_lstrcmpiW = static_cast<int(*)(LPCWSTR, LPCWSTR)>(parse_export_table(
+  temp_lstrcmpiW = static_cast<int(WINAPI *)(LPCWSTR, LPCWSTR)>(parse_export_table(
                      hKernel32, api_hash_lstrcmpiW, strlen(lstrcmpiW_), STRONG_SEED));
   do
   {

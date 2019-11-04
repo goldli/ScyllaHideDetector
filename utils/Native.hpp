@@ -5,10 +5,9 @@
 #define NT_CURRENT_PROCESS() ((HANDLE)-1)
 #define NT_CURRENT_THREAD()  ((HANDLE)-2)
 
-#define GET_MODULE_BASE_ADDRESS(ModuleName)                     get_module_handle<HASHSTR(ModuleName)>()
 #define GET_PROCEDURE_ADDRESS(ModuleBaseAddress, FunctionName) _GetProcAddress<HASHSTR(FunctionName)>(ModuleBaseAddress)
-#define NT_FUNCTION_CALL(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("ntdll.dll"),  #FunctionName))
-#define WIN_FUNCTION_CALL(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(GET_MODULE_BASE_ADDRESS("win32u.dll"), #FunctionName))
+#define NT_FUNCTION_CALL(FunctionName)  reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(get_module_handle(L"ntdll.dll"),  #FunctionName))
+#define WIN_FUNCTION_CALL(FunctionName) reinterpret_cast<nt::fn::_##FunctionName>(GET_PROCEDURE_ADDRESS(get_module_handle(L"win32u.dll"), #FunctionName))
 #define MAP_NATIVE_MODULE(ModuleName, ModuleBaseAddress)       remap_nt_module<HASHSTR(ModuleName)>(ModuleBaseAddress)
 
 #ifdef DEBUG
@@ -57,11 +56,11 @@ using _LdrFindEntryForAddress = NTSTATUS(NTAPI *)(
                                   PLDR_DATA_TABLE_ENTRY *Module
                                 );
 
-using _RtlLookupFunctionEntry = PRUNTIME_FUNCTION(NTAPI *)(
-                                  DWORD64 ControlPc,
-                                  PDWORD64 ImageBase,
-                                  PUNWIND_HISTORY_TABLE HistoryTable
-                                );
+//using _RtlLookupFunctionEntry = PRUNTIME_FUNCTION(NTAPI *)(
+//                                  DWORD64 ControlPc,
+//                                  PDWORD64 ImageBase,
+//                                  PUNWIND_HISTORY_TABLE HistoryTable
+//                                );
 }
 
 namespace nt

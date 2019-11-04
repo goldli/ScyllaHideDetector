@@ -1203,8 +1203,8 @@ int hash_WSAStartup(WORD wVersionRequired,
                     LPWSADATA lpWSAData)
 {
   const auto _hash = t1ha0("WSAStartup", strlen("WSAStartup"), STRONG_SEED);
-  temp_WSAStartup = static_cast<int(*)(WORD,
-                                       LPWSADATA)>(get_api(_hash, "ws2_32.dll", strlen("WSAStartup"), STRONG_SEED));
+  temp_WSAStartup = static_cast<int(WINAPI *)(WORD,
+                    LPWSADATA)>(get_api(_hash, "ws2_32.dll", strlen("WSAStartup"), STRONG_SEED));
   return temp_WSAStartup(wVersionRequired,
                          lpWSAData);
 }
@@ -1212,14 +1212,14 @@ int hash_WSAStartup(WORD wVersionRequired,
 int hash_WSACleanup()
 {
   const auto _hash = t1ha0("WSACleanup", strlen("WSACleanup"), STRONG_SEED);
-  temp_WSACleanup = static_cast<int(*)()>(get_api(_hash, "ws2_32.dll", strlen("WSACleanup"), STRONG_SEED));
+  temp_WSACleanup = static_cast<int(WINAPI *)()>(get_api(_hash, "ws2_32.dll", strlen("WSACleanup"), STRONG_SEED));
   return temp_WSACleanup();
 }
 
 int hash_closesocket(IN SOCKET s)
 {
   const auto _hash = t1ha0("closesocket", strlen("closesocket"), STRONG_SEED);
-  temp_closesocket = static_cast<int(*)(IN SOCKET)>(get_api(_hash, "ws2_32.dll", strlen("closesocket"), STRONG_SEED));
+  temp_closesocket = static_cast<int(WINAPI *)(IN SOCKET)>(get_api(_hash, "ws2_32.dll", strlen("closesocket"), STRONG_SEED));
   return temp_closesocket(s);
 }
 
@@ -1229,10 +1229,10 @@ int hash_recv(SOCKET s,
               int flags)
 {
   const auto _hash = t1ha0("recv", strlen("recv"), STRONG_SEED);
-  temp_recv = static_cast<int(*)(SOCKET,
-                                 char *,
-                                 int,
-                                 int)>(get_api(_hash, "ws2_32.dll", strlen("recv"), STRONG_SEED));
+  temp_recv = static_cast<int(WINAPI *)(SOCKET,
+                                        char *,
+                                        int,
+                                        int)>(get_api(_hash, "ws2_32.dll", strlen("recv"), STRONG_SEED));
   return temp_recv(s,
                    buf,
                    len,
@@ -1245,10 +1245,10 @@ int hash_send(SOCKET s,
               int flags)
 {
   const auto _hash = t1ha0("send", strlen("send"), STRONG_SEED);
-  temp_send = static_cast<int(*)(SOCKET,
-                                 const char *,
-                                 int,
-                                 int)>(get_api(_hash, "ws2_32.dll", strlen("send"), STRONG_SEED));
+  temp_send = static_cast<int(WINAPI *)(SOCKET,
+                                        const char *,
+                                        int,
+                                        int)>(get_api(_hash, "ws2_32.dll", strlen("send"), STRONG_SEED));
   return temp_send(s,
                    buf,
                    len,
@@ -1261,7 +1261,7 @@ SOCKET hash_socket(int af,
                    int protocol)
 {
   const auto _hash = t1ha0("socket", strlen("socket"), STRONG_SEED);
-  temp_socket = static_cast<SOCKET(*)(int, int, int)>(get_api(_hash, "ws2_32.dll", strlen("socket"), STRONG_SEED));
+  temp_socket = static_cast<SOCKET(WINAPI *)(int, int, int)>(get_api(_hash, "ws2_32.dll", strlen("socket"), STRONG_SEED));
   return temp_socket(af, type, protocol);
 }
 
@@ -1270,9 +1270,9 @@ int hash_connect(SOCKET s,
                  int namelen)
 {
   const auto _hash = t1ha0("connect", strlen("connect"), STRONG_SEED);
-  temp_connect = static_cast<int(*)(SOCKET,
-                                    const sockaddr *,
-                                    int)>(get_api(_hash, "ws2_32.dll", strlen("connect"), STRONG_SEED));
+  temp_connect = static_cast<int(WINAPI *)(SOCKET,
+                 const sockaddr *,
+                 int)>(get_api(_hash, "ws2_32.dll", strlen("connect"), STRONG_SEED));
   return temp_connect(s,
                       name,
                       namelen);
@@ -1281,21 +1281,21 @@ int hash_connect(SOCKET s,
 u_short hash_htons(u_short hostshort)
 {
   const auto _hash = t1ha0("htons", strlen("htons"), STRONG_SEED);
-  temp_htons = static_cast<u_short(*)(u_short)>(get_api(_hash, "ws2_32.dll", strlen("htons"), STRONG_SEED));
+  temp_htons = static_cast<u_short(WINAPI *)(u_short)>(get_api(_hash, "ws2_32.dll", strlen("htons"), STRONG_SEED));
   return temp_htons(hostshort);
 }
 
 int hash_WSAGetLastError()
 {
   const auto _hash = t1ha0("WSAGetLastError", strlen("WSAGetLastError"), STRONG_SEED);
-  temp_WSAGetLastError = static_cast<int(*)()>(get_api(_hash, "ws2_32.dll", strlen("WSAGetLastError"), STRONG_SEED));
+  temp_WSAGetLastError = static_cast<int(WINAPI *)()>(get_api(_hash, "ws2_32.dll", strlen("WSAGetLastError"), STRONG_SEED));
   return temp_WSAGetLastError();
 }
 
 ULONG hash_inet_addr(_In_z_ const char FAR *cp)
 {
   const auto _hash = t1ha0("inet_addr", strlen("inet_addr"), STRONG_SEED);
-  temp_inet_addr = static_cast<ULONG(*)(_In_z_ const char FAR *)>(get_api(
+  temp_inet_addr = static_cast<ULONG(WINAPI *)(_In_z_ const char FAR *)>(get_api(
                      _hash, "ws2_32.dll", strlen("inet_addr"), STRONG_SEED));
   return temp_inet_addr(cp);
 }
@@ -1305,7 +1305,7 @@ void hash_RtlInitUnicodeString(PUNICODE_STRING DestinationString,
 {
   const char *func = (LPCSTR)PRINT_HIDE_STR("RtlInitUnicodeString");
   const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
-  temp_RtlInitUnicodeString = static_cast<void(*)(PUNICODE_STRING, PCWSTR)>(get_api(
+  temp_RtlInitUnicodeString = static_cast<void(WINAPI *)(PUNICODE_STRING, PCWSTR)>(get_api(
                                 _hash, (LPCSTR)PRINT_HIDE_STR("ntdll.dll"), strlen(func), STRONG_SEED));
   return temp_RtlInitUnicodeString(DestinationString,
                                    SourceString);
@@ -1315,7 +1315,7 @@ NTSTATUS hash_NtClose(IN HANDLE Handle)
 {
   const char *func = (LPCSTR)PRINT_HIDE_STR("NtClose");
   const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
-  temp_NtClose = static_cast<NTSTATUS(*)(IN HANDLE)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("ntdll.dll"), strlen(func),
+  temp_NtClose = static_cast<NTSTATUS(WINAPI *)(IN HANDLE)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("ntdll.dll"), strlen(func),
                  STRONG_SEED));
   return temp_NtClose(Handle);
 }
@@ -1324,7 +1324,7 @@ BOOL hash_FreeLibrary(HMODULE hLibModule)
 {
   const char *func = (LPCSTR)PRINT_HIDE_STR("FreeLibrary");
   const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
-  temp_FreeLibrary = static_cast<BOOL(*)(HMODULE)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("kernel32.dll"), strlen(func),
+  temp_FreeLibrary = static_cast<BOOL(WINAPI *)(HMODULE)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("kernel32.dll"), strlen(func),
                      STRONG_SEED));
   return temp_FreeLibrary(hLibModule);
 }
@@ -1333,7 +1333,7 @@ HMODULE hash_LoadLibraryAA(LPCSTR lpLibFileName)
 {
   const char *func = (LPCSTR)PRINT_HIDE_STR("LoadLibraryA");
   const auto _hash = t1ha0(func, strlen(func), STRONG_SEED);
-  temp_LoadLibraryAA = static_cast<HMODULE(*)(LPCSTR)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("kernel32.dll"),
+  temp_LoadLibraryAA = static_cast<HMODULE(WINAPI *)(LPCSTR)>(get_api(_hash, (LPCSTR)PRINT_HIDE_STR("kernel32.dll"),
                        strlen(func), STRONG_SEED));
   return temp_LoadLibraryAA(lpLibFileName);
 }

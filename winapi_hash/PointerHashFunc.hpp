@@ -336,40 +336,40 @@ LPTOP_LEVEL_EXCEPTION_FILTER (WINAPI *temp_SetUnhandledExceptionFilter)(
 
 ULONG (WINAPI *temp_RemoveVectoredExceptionHandler)(PVOID Handle) = nullptr;
 
-int (*temp_WSAStartup)(WORD wVersionRequired,
-                       LPWSADATA lpWSAData) = nullptr;
+int (WINAPI *temp_WSAStartup)(WORD wVersionRequired,
+                              LPWSADATA lpWSAData) = nullptr;
 
-int (*temp_WSACleanup)() = nullptr;
+int (WINAPI *temp_WSACleanup)() = nullptr;
 
-int (*temp_closesocket)(IN SOCKET s) = nullptr;
+int (WINAPI *temp_closesocket)(IN SOCKET s) = nullptr;
 
-int (*temp_recv)(SOCKET s,
-                 char *buf,
-                 int len,
-                 int flags) = nullptr;
+int (WINAPI *temp_recv)(SOCKET s,
+                        char *buf,
+                        int len,
+                        int flags) = nullptr;
 
-int (*temp_send)(SOCKET s,
-                 const char *buf,
-                 int len,
-                 int flags) = nullptr;
+int (WINAPI *temp_send)(SOCKET s,
+                        const char *buf,
+                        int len,
+                        int flags) = nullptr;
 
 
-SOCKET (*temp_socket)(int af, int type, int protocol) = nullptr;
+SOCKET (WINAPI *temp_socket)(int af, int type, int protocol) = nullptr;
 
-int (*temp_connect)(SOCKET s,
-                    const sockaddr *name,
-                    int namelen) = nullptr;
+int (WINAPI *temp_connect)(SOCKET s,
+                           const sockaddr *name,
+                           int namelen) = nullptr;
 
-ULONG (*temp_inet_addr)(_In_z_ const char FAR *cp) = nullptr;
+ULONG (WINAPI *temp_inet_addr)(_In_z_ const char FAR *cp) = nullptr;
 
-u_short (*temp_htons)(u_short hostshort) = nullptr;
+u_short (WINAPI *temp_htons)(u_short hostshort) = nullptr;
 
-int (*temp_WSAGetLastError)() = nullptr;
+int (WINAPI *temp_WSAGetLastError)() = nullptr;
 
-void (*temp_RtlInitUnicodeString)(PUNICODE_STRING DestinationString,
-                                  PCWSTR SourceString) = nullptr;
-NTSTATUS (*temp_NtClose)(IN HANDLE Handle) = nullptr;
-BOOL (*temp_FreeLibrary)(HMODULE hLibModule
-                        ) = nullptr;
+void (WINAPI *temp_RtlInitUnicodeString)(PUNICODE_STRING DestinationString,
+    PCWSTR SourceString) = nullptr;
+NTSTATUS (WINAPI *temp_NtClose)(IN HANDLE Handle) = nullptr;
+BOOL (WINAPI *temp_FreeLibrary)(HMODULE hLibModule
+                               ) = nullptr;
 
-HMODULE (*temp_LoadLibraryAA)(LPCSTR lpLibFileName) = nullptr;
+HMODULE (WINAPI *temp_LoadLibraryAA)(LPCSTR lpLibFileName) = nullptr;
